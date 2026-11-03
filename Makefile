@@ -8,7 +8,8 @@
 #   - Targets never delete env files, databases, or anything under .local/
 #     except the test scratch folder.
 #   - `stop` only kills the process listening on $(PORT) (default 3000).
-#   - MongoDB is never started or stopped here; `check-health` only probes it.
+#   - MongoDB (Atlas) is never started, stopped, or modified here; `check-db`
+#     and `check-health` only ping it with MONGODB_URI from .env.local.
 # =============================================================================
 
 .DEFAULT_GOAL := help
@@ -16,7 +17,6 @@ SHELL := /bin/sh
 
 # ---- Configuration (override on the command line: make dev PORT=4000) -------
 PORT       ?= 3000
-MONGO_PORT ?= 27017
 APP_URL    ?= http://localhost:$(PORT)
 NPM        ?= npm
 
@@ -36,27 +36,27 @@ RED    := \033[31m
 # -----------------------------------------------------------------------------
 help: ## Show this help
 	@printf "$(BOLD)Utsav-Connect$(RESET) — Next.js (JavaScript only) + MongoDB\n\n"
-	@printf "$(BOLD)Usage:$(RESET) make $(CYAN)<target>$(RESET) [PORT=3000] [MONGO_PORT=27017]\n\n"
+	@printf "$(BOLD)Usage:$(RESET) make $(CYAN)<target>$(RESET) [PORT=3000]\n\n"
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "  $(CYAN)%-18s$(RESET) %s\n", $$1, $$2}'
-	@printf "\n$(DIM)Typical flow: make install → make setup-env → (start MongoDB) → make dev$(RESET)\n"
+	@printf "\n$(DIM)Typical flow: make install → make setup-env (add Atlas URI) → make check-db → make dev$(RESET)\n"
 
 # ---- Setup ------------------------------------------------------------------
-doctor: ## Check required tools (node, npm) and report versions
+doctor: ## Check required tools (node, npm) and whether .env.local exists
 	@printf "$(BOLD)Toolchain$(RESET)\n"
 	@command -v node >/dev/null 2>&1 && printf "  node  %s\n" "$$(node --version)" || { printf "  $(RED)node not found$(RESET) (need >= 20.12)\n"; exit 1; }
 	@command -v $(NPM) >/dev/null 2>&1 && printf "  npm   %s\n" "$$($(NPM) --version)" || { printf "  $(RED)npm not found$(RESET)\n"; exit 1; }
-	@command -v mongod >/dev/null 2>&1 && printf "  mongod %s\n" "$$(mongod --version | head -1)" || printf "  $(YELLOW)mongod not on PATH$(RESET) (optional: any reachable MongoDB works)\n"
+	@command -v mongosh >/dev/null 2>&1 && printf "  mongosh %s (optional)\n" "$$(mongosh --version)" || printf "  $(DIM)mongosh not installed (optional)$(RESET)\n"
 	@[ -f .env.local ] && printf "  .env.local present\n" || printf "  $(YELLOW).env.local missing$(RESET) → run: make setup-env\n"
 
 install: ## Install dependencies from package-lock.json
 	$(NPM) install --no-audit --no-fund
 
-setup-env: ## Create .env.local from .env.example (never overwrites)
+setup-env: ## Create .env.local from .env.example (never overwrites); then add your Atlas URIs
 	@if [ -f .env.local ]; then \
 		printf "$(YELLOW).env.local already exists — not touched.$(RESET)\n"; \
 	else \
-		cp .env.example .env.local && printf "$(GREEN)Created .env.local$(RESET) — edit it if your MongoDB is not on localhost:27017.\n"; \
+		cp .env.example .env.local && printf "$(GREEN)Created .env.local$(RESET) — now set MONGODB_URI and MONGODB_URI_TEST to your Atlas connection strings.\n"; \
 	fi
 
 # ---- Run --------------------------------------------------------------------
@@ -103,14 +103,15 @@ ci: ## check + integration tests (MongoDB required, no skipping) + production bu
 	$(NPM) run build
 
 # ---- Operations -------------------------------------------------------------
-check-db: ## Ping MongoDB using MONGODB_URI from .env.local
+check-db: ## Ping MongoDB (Atlas) using MONGODB_URI from .env.local
 	$(NPM) run check:db
 
-check-health: ## Non-blocking probe: is anything listening on MONGO_PORT (27017) and PORT (3000)?
-	@if lsof -nP -iTCP:$(MONGO_PORT) -sTCP:LISTEN >/dev/null 2>&1; then \
-		printf "  $(GREEN)MongoDB$(RESET)  listening on :$(MONGO_PORT)\n"; \
+check-health: ## Non-blocking: ping MongoDB via .env.local and check whether the app listens on PORT
+	@if OUT="$$($(NPM) run -s check:db 2>&1)"; then \
+		printf "  $(GREEN)MongoDB$(RESET)  %s\n" "$$OUT"; \
 	else \
-		printf "  $(YELLOW)MongoDB$(RESET)  nothing on :$(MONGO_PORT) — start it (e.g. your MongoStart alias)\n"; \
+		printf "  $(YELLOW)MongoDB$(RESET)  %s\n" "$$OUT"; \
+		printf "           → check MONGODB_URI in .env.local and Atlas Database/Network Access\n"; \
 	fi
 	@if lsof -nP -iTCP:$(PORT) -sTCP:LISTEN >/dev/null 2>&1; then \
 		printf "  $(GREEN)Next.js$(RESET)  listening on :$(PORT)\n"; \
