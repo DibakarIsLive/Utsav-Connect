@@ -74,3 +74,11 @@ Status vocabulary: **ACCEPTED** · **IMPLEMENTED** · **PROPOSED** · **SUPERSED
 - Date: 2026-11-03 · Status: ACCEPTED
 - Context: `LICENSE` contains MIT (2026, Dibakar Is Live); an earlier README draft called the project proprietary.
 - Decision: keep MIT as the committed license and state it in the README. If the owner intends the project to be proprietary, the `LICENSE` file must change explicitly — not silently via README text.
+
+## ADR-012 — MongoDB Atlas is the project database for development and tests
+
+- Date: 2026-11-03 · Status: IMPLEMENTED (development + tests); production tier/backup plan OPEN
+- Context: Stage 1 was verified against a developer-started local `mongod`. A hosted cluster was needed so that every contributor and future deployment use the same database service, and so transactions (replica-set only) are available before Stage 3.
+- Decision: use the MongoDB Atlas cluster `main` (`mongodb+srv://`). Development uses database `utsav_connect`, integration tests use `utsav_connect_test` on the same cluster. Connection strings always carry the database name and `retryWrites=true&w=majority`. Credentials live in `.env.local` only; `.env.example` ships Atlas-shaped placeholders. The Makefile no longer probes a local port — `check-db`/`check-health` ping whatever `MONGODB_URI` points at and never start or stop a server.
+- Consequences: no local MongoDB process is required (a local `mongodb://` URI still works offline); each connection costs ≈ 600 ms from India, so health checks and integration tests are slower; the free tier has no automatic backups, so a manual `mongodump` procedure is documented until a production tier is chosen; Atlas Network Access must be restricted to known IPs.
+- Follow-ups: decide the production tier, region and backup schedule (Stage 7); scope the database user to `readWrite` on the two project databases.

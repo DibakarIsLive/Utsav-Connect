@@ -15,6 +15,8 @@ tests/
 
 Vitest configuration lives in `vitest.config.mjs` (Node environment, `@/` alias, 20 s timeouts for database cases).
 
+Integration suites talk to the **MongoDB Atlas** cluster through `MONGODB_URI_TEST` in `.env.local` (database `utsav_connect_test`). Each connection to Atlas costs roughly 600 ms from the developer machine, so the integration run takes about 13 s in total; this is network latency, not a test problem.
+
 ## Commands
 
 | Command                                              | Needs MongoDB | Notes                                               |

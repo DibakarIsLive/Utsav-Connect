@@ -6,7 +6,7 @@ Last updated: 2026-11-03. Lists the controls that exist in the code today and th
 
 | Area                | Control                                                                                                                                                                                                                     | Where                                                  |
 | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| Secrets             | Only `.env.example` (placeholders) is committed; `.env*.local` and `.env` are git-ignored                                                                                                                                   | `.gitignore`                                           |
+| Secrets             | Only `.env.example` (placeholders) is committed; `.env*.local`, `.env` and `.local/` are git-ignored                                                                                                                        | `.gitignore`                                           |
 | Env validation      | Zod schema; failures report the variable name, never the value                                                                                                                                                              | `api/lib/env/env.js`                                   |
 | Server/client split | `server-only` on env, database and logging modules; Next refuses to bundle them client-side                                                                                                                                 | `api/lib/**`                                           |
 | Response headers    | `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera, microphone, payment, usb off), HSTS (production only), `X-Powered-By` removed | `next.config.mjs`                                      |
@@ -14,6 +14,14 @@ Last updated: 2026-11-03. Lists the controls that exist in the code today and th
 | Logging             | JSON lines; keys named like `password`, `token`, `secret`, `authorization`, `cookie`, `mongodb_uri` are redacted; stacks omitted in production                                                                              | `api/lib/logging/logger.js`                            |
 | Database timeouts   | Bounded connection/selection timeouts (5 s) so an outage degrades the health endpoint instead of hanging requests                                                                                                           | `api/lib/mongodb/connection.js`                        |
 | Health endpoint     | Never cached (`no-store`); exposes only status, latency and app version                                                                                                                                                     | `app/api/health/route.js`                              |
+| Database transport  | Atlas `mongodb+srv://` connections are TLS-encrypted by default                                                                                                                                                             | Atlas                                                  |
+
+## Database credentials (Atlas)
+
+- The Atlas database user's password exists in exactly one place on a developer machine: `.env.local`. It is never printed by scripts (`check:db` logs host and database only), never logged by the app (`mongodb_uri` keys are redacted), and never committed.
+- **Incident record — 2026-11-03:** the initial Atlas connection string, including the password, was pasted into an AI chat during setup. The password was rotated the same day (new value generated locally and written straight into `.env.local`). Treat any credential that has appeared in a chat, screenshot, issue, or log as compromised and rotate it.
+- Network Access in Atlas should list specific IPs only; `0.0.0.0/0` is not acceptable beyond the first-day setup.
+- The application user should hold `readWrite` on the two project databases only (see `database.md`).
 
 ## Not implemented yet (do not assume)
 
@@ -24,9 +32,11 @@ Last updated: 2026-11-03. Lists the controls that exist in the code today and th
 - CSRF protection for mutating routes (none exist yet).
 - Audit logging collection, security event logging.
 - Dependency vulnerability scanning in CI (`npm audit` is not yet part of `make ci`).
+- Automatic database backups (free tier has none — see `database.md`).
 
 ## Operating rules
 
 - Never commit `.env.local`, database dumps, API keys, or anything under `.local/`.
+- Never paste connection strings or keys into chats or issues; share them through a password manager.
 - Review `git diff` for secrets before every commit.
 - Google Maps: use a browser-restricted public key (`NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`) and a separate server key (`GOOGLE_MAPS_SERVER_API_KEY`) with API restrictions and billing alerts (roadmap 6.3–6.4). Neither is read by the code yet.

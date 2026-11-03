@@ -2,7 +2,24 @@
 
 Last updated: 2026-11-03.
 
-## Connection
+## Where the data lives
+
+The project database is a **MongoDB Atlas** cluster (ADR-012):
+
+| Purpose     | Variable           | Database name        | Notes                                                                |
+| ----------- | ------------------ | -------------------- | -------------------------------------------------------------------- |
+| Development | `MONGODB_URI`      | `utsav_connect`      | Atlas cluster `main`; created on first write                         |
+| Tests       | `MONGODB_URI_TEST` | `utsav_connect_test` | same cluster; name **must** end in `_test` (enforced by the tests)   |
+| Production  | `MONGODB_URI`      | open                 | tier, region, backup plan and whether it shares the cluster are open |
+
+Connection strings are `mongodb+srv://<user>:<password>@<cluster-host>/<database>?retryWrites=true&w=majority&appName=<cluster>`.
+**Always include the database name** — an Atlas string that ends in `/` makes the driver default to a database called `test`.
+
+Credentials live only in `.env.local` (git-ignored). The application never starts, stops, or configures the cluster; `npm run check:db` / `make check-db` verifies reachability and prints only host and database name.
+
+A local `mongod` still works for offline development (`mongodb://127.0.0.1:27017/utsav_connect`); the code does not care which one is used.
+
+## Connection module
 
 `api/lib/mongodb/connection.js` (server-only):
 
@@ -13,15 +30,7 @@ Last updated: 2026-11-03.
 
 `api/lib/mongodb/health.js` → `checkDatabaseHealth()` pings the `admin` database and returns `{ status: "ok" | "unavailable", latencyMs, message? }`.
 
-## Databases used
-
-| Purpose     | Variable           | Database name         | Notes                                      |
-| ----------- | ------------------ | --------------------- | ------------------------------------------ |
-| Development | `MONGODB_URI`      | `utsav_connect`       | created on first write                     |
-| Tests       | `MONGODB_URI_TEST` | `utsav_connect_test`  | name **must** end in `_test` (enforced)    |
-| Production  | `MONGODB_URI`      | decided at deployment | hosted vs self-managed is still open (3.1) |
-
-Local development uses a `mongod` started by the developer (any data directory); the application never starts or stops a database process. `npm run check:db` verifies connectivity.
+Measured from the developer machine (India) to the cluster: first connection ≈ 600 ms, subsequent pings ≈ 100–300 ms. Expect the health endpoint and integration tests to be slower than against a local server.
 
 ## Collections
 
@@ -33,17 +42,28 @@ Conventions to apply when they arrive (roadmap 3.3–3.10):
 - `_id` ObjectId everywhere; human-readable `slug` with a unique index where users see identifiers (areas).
 - GeoJSON `Polygon`/`MultiPolygon`/`Point` fields with `2dsphere` indexes.
 - Pagination by cursor on `_id` (or `createdAt,_id`), default page size 25, max 100.
-- Multi-document writes (approve proposal → create area → write audit log) in a transaction; requires a replica set, so development `mongod` should be run as a single-node replica set before Stage 3.
+- Multi-document writes (approve proposal → create area → write audit log) in a transaction. Atlas clusters are replica sets, so transactions are available without extra setup.
 
-## Backup and restore (procedure, not yet rehearsed)
+## Access control (Atlas)
+
+- One database user for the application; grant it `readWrite` on `utsav_connect` and `utsav_connect_test` only — not the built-in `atlasAdmin` role — once the free-tier defaults are reviewed.
+- Network Access: allow only the developer IP(s). Do not leave `0.0.0.0/0` enabled.
+- Rotate the database password if it is ever pasted into a chat, ticket, or log (see `security.md`).
+
+## Backup and restore
+
+The Atlas free tier (M0) has **no automatic backups**; paid tiers do. Until the production tier is chosen, back up manually:
 
 ```bash
-# backup
-mongodump --uri="$MONGODB_URI" --gzip --archive="backup-$(date +%Y%m%d-%H%M).archive.gz"
+# backup (uses the URI from .env.local; run from the repo root)
+set -a; . ./.env.local; set +a
+mongodump --uri="$MONGODB_URI" --gzip --archive=".local/backup-$(date +%Y%m%d-%H%M).archive.gz"
 
 # restore into a scratch database first, inspect, then promote
-mongorestore --uri="mongodb://127.0.0.1:27017" --gzip --archive=backup-….archive.gz \
+mongorestore --uri="$MONGODB_URI" --gzip --archive=.local/backup-….archive.gz \
   --nsFrom='utsav_connect.*' --nsTo='utsav_connect_restore_check.*'
 ```
 
-Before launch (Stage 7): schedule backups, store them off-host, and rehearse a full restore on a copy.
+`mongodump`/`mongorestore` come from MongoDB Database Tools (`brew install mongodb-database-tools`). Backups go under the git-ignored `.local/` and must be moved off the machine.
+
+This procedure has **not yet been rehearsed**. Before launch (Stage 7): pick a tier with automatic backups or schedule the dump, store copies off-host, and rehearse a full restore.

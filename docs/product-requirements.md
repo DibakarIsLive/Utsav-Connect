@@ -51,13 +51,13 @@ Implemented today: Home, About, Map (placeholder state). Everything else: planne
 
 ## Open decisions
 
-| #   | Question                                                                      | Impact                        | Status                                   |
-| --- | ----------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------- |
-| 1   | Authentication library and session model                                      | Stage 2 design                | OPEN (ADR-010)                           |
-| 2   | Registration policy: open sign-up vs invitation; email verification required? | Needs email provider if yes   | OPEN                                     |
-| 3   | Production MongoDB: hosted cluster vs self-managed                            | Backups, transactions, cost   | OPEN                                     |
-| 4   | Hosting platform for Next.js                                                  | Deployment docs, env handling | OPEN                                     |
-| 5   | Which Google Maps APIs are enabled and billing limits                         | Stage 3 scope and cost        | OPEN                                     |
-| 6   | Population estimate sources and update cadence                                | Coverage accuracy             | OPEN                                     |
-| 7   | Leaderboard privacy (public names vs opt-in)                                  | Privacy policy                | OPEN                                     |
-| 8   | License intent: MIT (current `LICENSE`) vs proprietary                        | Legal                         | ACCEPTED as MIT unless changed (ADR-011) |
+| #   | Question                                                                                | Impact                        | Status                                   |
+| --- | --------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------- |
+| 1   | Authentication library and session model                                                | Stage 2 design                | OPEN (ADR-010)                           |
+| 2   | Registration policy: open sign-up vs invitation; email verification required?           | Needs email provider if yes   | OPEN                                     |
+| 3   | Production MongoDB tier, region and backup plan (Atlas chosen for development, ADR-012) | Backups, cost                 | PARTLY DECIDED                           |
+| 4   | Hosting platform for Next.js                                                            | Deployment docs, env handling | OPEN                                     |
+| 5   | Which Google Maps APIs are enabled and billing limits                                   | Stage 3 scope and cost        | OPEN                                     |
+| 6   | Population estimate sources and update cadence                                          | Coverage accuracy             | OPEN                                     |
+| 7   | Leaderboard privacy (public names vs opt-in)                                            | Privacy policy                | OPEN                                     |
+| 8   | License intent: MIT (current `LICENSE`) vs proprietary                                  | Legal                         | ACCEPTED as MIT unless changed (ADR-011) |

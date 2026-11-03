@@ -4,6 +4,14 @@ All notable changes to Utsav-Connect are recorded here. Format follows [Keep a C
 
 ## [Unreleased]
 
+### Changed
+
+- Development and test databases moved to the MongoDB Atlas cluster `main` (ADR-012). `.env.example` now shows `mongodb+srv://` placeholders; the Makefile's `check-health` pings `MONGODB_URI` instead of probing local port 27017; docs and README describe the Atlas setup.
+
+### Security
+
+- Atlas database password rotated after the initial connection string was shared in a chat; incident and rules recorded in `docs/security.md`.
+
 ## [0.1.0] — 2026-11-03
 
 Stage 1 foundation (roadmap Phases 0–3, partial).
