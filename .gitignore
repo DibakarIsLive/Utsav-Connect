@@ -34,3 +34,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local scratch (temporary MongoDB data, test fixtures) — never committed
+/.local/
