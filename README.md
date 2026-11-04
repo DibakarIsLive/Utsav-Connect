@@ -45,20 +45,20 @@ The venue is a single point of interest; the campaign itself has **no single-tow
 
 ## 📍 Current Status
 
-> **Stage 1 — Foundation: implementation complete; formal closure blocked** (re-checked 2026-11-04) · Database: **MongoDB Atlas** cluster `main` · **Not deployed yet**
+> **Stage 1 — Foundation: formally closed** (verified 2026-11-04) · Database: **MongoDB Atlas** cluster `main` · **Not deployed yet**
 
-| Area                         | State                                                                                                            |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Project setup                | ✅ Next.js 16 App Router, JavaScript/JSX only, Tailwind 4, ESLint 9, Prettier 3                                  |
-| Database                     | ⚠️ Atlas configuration and isolation guard are in place; live authentication currently returns `bad auth`        |
-| App shell                    | ✅ Accessible header/nav/footer, Home, About, Map (explicit "not available yet" state), 404, error boundary      |
-| API                          | ✅ `GET /api/health` (200 / 503 `SERVICE_DEGRADED`, never cached), JSON envelope + error mapping                 |
-| Hardening                    | ✅ Security headers, redacting JSON logger, env validation, `server-only` boundary                               |
-| Tests                        | ✅ 47 unit tests and a 6-test integration suite; ⏸ full `make ci` is blocked until Atlas authentication succeeds |
-| Authentication & roles       | ⏳ Stage 2 — not started                                                                                         |
-| Areas, map, invitations      | ⏳ Stages 3–4 — not started                                                                                      |
-| Admin tools, analytics       | ⏳ Stages 5–6 — not started                                                                                      |
-| Deployment, backups, go-live | ⏳ Stage 7 — not started                                                                                         |
+| Area                         | State                                                                                                                   |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Project setup                | ✅ Next.js 16 App Router, JavaScript/JSX only, Tailwind 4, ESLint 9, Prettier 3                                         |
+| Database                     | ✅ Atlas cluster `main`; live authentication verified, with separate `utsav_connect` and `utsav_connect_test` databases |
+| App shell                    | ✅ Accessible header/nav/footer, Home, About, Map (explicit "not available yet" state), 404, error boundary             |
+| API                          | ✅ `GET /api/health` (200 / 503 `SERVICE_DEGRADED`, never cached), JSON envelope + error mapping                        |
+| Hardening                    | ✅ Security headers, redacting JSON logger, env validation, `server-only` boundary                                      |
+| Tests                        | ✅ 47 unit tests and 6 Atlas-backed integration tests pass; full `make ci` and production build verified                |
+| Authentication & roles       | ⏳ Stage 2 — not started                                                                                                |
+| Areas, map, invitations      | ⏳ Stages 3–4 — not started                                                                                             |
+| Admin tools, analytics       | ⏳ Stages 5–6 — not started                                                                                             |
+| Deployment, backups, go-live | ⏳ Stage 7 — not started                                                                                                |
 
 Full verification record (exact commands, results, what was **not** verified): [`docs/project-status.md`](docs/project-status.md).
 

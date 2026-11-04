@@ -1,6 +1,6 @@
 # Database
 
-Last updated: 2026-11-03.
+Last updated: 2026-11-04.
 
 ## Where the data lives
 
@@ -15,7 +15,7 @@ The project database is a **MongoDB Atlas** cluster (ADR-012):
 Connection strings are `mongodb+srv://<user>:<password>@<cluster-host>/<database>?retryWrites=true&w=majority&appName=<cluster>`.
 **Always include the database name** — an Atlas string that ends in `/` makes the driver default to a database called `test`.
 
-Credentials live only in `.env.local` (git-ignored). The application never starts, stops, or configures the cluster; `npm run check:db` / `make check-db` verifies reachability and prints only host and database name.
+Credentials live only in `.env.local` (git-ignored). The application never starts, stops, or configures the cluster; `npm run check:db` / `make check-db` verifies reachability and prints only host and database name. Live authentication and the isolated test database were verified on 2026-11-04 by `make check-db` and the six-test integration suite in `make ci`.
 
 A local `mongod` still works for offline development (`mongodb://127.0.0.1:27017/utsav_connect`); the code does not care which one is used.
 

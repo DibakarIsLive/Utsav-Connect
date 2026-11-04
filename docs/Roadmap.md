@@ -1587,19 +1587,19 @@ The full roadmap is extensive, but we don't need to build everything simultaneou
 
 Here's the order I recommend for actually executing it.
 
-## Stage 1 — Establish the foundation
+## Stage 1 — Establish the foundation (closed 2026-11-04)
 
 Progress checkpoint (2026-11-04; evidence in `project-status.md`):
 
-- [ ] Product requirements baseline — documented, but Phase 0 remains partial and open decisions are recorded.
+- [ ] Product requirements baseline — documented, but Phase 0 remains partial and open decisions are recorded. This is not a Stage 1 release-gate failure; the open decisions carry into Stage 2 planning.
 - [x] Project setup.
 - [x] JavaScript-only enforcement.
-- [ ] MongoDB Atlas connection — implementation, URI separation, and safety guard are complete; live authentication currently fails, so final verification is blocked.
+- [x] MongoDB Atlas connection — live authentication verified; `make check-db` passed and the isolated test database passed the integration suite.
 - [x] Basic layouts and navigation.
-- [x] Initial unit-test setup; integration suite exists but cannot currently authenticate to Atlas.
+- [x] Initial unit-test setup; 47 unit tests and 6 Atlas-backed integration tests pass.
 - [x] Project documentation, including the Stage 1 closure procedure.
 
-**Current result:** Foundation implementation is complete, but Stage 1 is not formally closed until Atlas connectivity is verified and `make ci` passes.
+**Current result:** Stage 1 is formally closed. `make check-db` and the complete `make ci` pipeline passed on 2026-11-04, and the production build was served and checked over HTTP. Product requirements remain PARTIAL, and Stage 2 has not been started; it requires explicit authorization and the ADR-010 decisions.
 
 ## Stage 2 — Secure the application
 

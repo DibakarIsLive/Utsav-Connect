@@ -6,7 +6,7 @@ Last updated: 2026-11-04. This is an environment-configuration record, **not** e
 
 - Development and integration testing are intended to use MongoDB Atlas cluster `main` (ADR-012).
 - No application deployment exists yet.
-- The 2026-11-04 Stage 1 closure attempt is **blocked**: Atlas returned `MongoServerError: bad auth : authentication failed` for both the application and test URIs. See `project-status.md`.
+- The 2026-11-04 Stage 1 closure gate **passed** after the Atlas database-user password was aligned: `make check-db`, `make ci`, and production runtime checks succeeded. See `project-status.md`.
 
 ## Atlas configuration requirements
 
@@ -25,7 +25,7 @@ Requirements:
 4. Keep the default TLS-enabled Atlas connection. The URI must include each database name; otherwise the driver defaults to `test`.
 5. Treat `utsav_connect_test` as disposable test-only data. `tests/helpers/database.js` rejects a test URI whose database name does not end in `_test`.
 
-The owner reported the intended `readWrite` grants and active IP access entries on 2026-11-04. Those settings cannot be considered verified until the live authentication check succeeds.
+The owner reported the intended `readWrite` grants and active IP access entries on 2026-11-04. Live authentication now succeeds; the exact role grants and allow-list entries have not been independently audited from inside the application.
 
 ## Verification procedure
 
@@ -43,9 +43,9 @@ Expected sequence:
 3. The integration suite connects only to `MONGODB_URI_TEST`. Its current tests only connect and ping; they create, modify, and delete no records.
 4. On failure, preserve the sanitized error output. Do not substitute a local MongoDB server, skip tests, or weaken the `_test` guard to close the gate.
 
-## Current diagnosis
+## Resolved issue (2026-11-04)
 
-On 2026-11-04 the client resolved the Atlas SRV/TXT records and reached the cluster. The returned `bad auth` error occurs after that connection path, so the remaining likely external issue is password alignment for the Atlas database user. After correcting it in Atlas, rerun the two commands above before any Stage 2 work starts.
+An earlier attempt that day resolved the Atlas SRV/TXT records and reached the cluster but returned `bad auth`, indicating a credential mismatch rather than a network or TLS problem. After the database-user password was reset and both local URIs were updated, the verification procedure above passed in full: `make check-db` reached `utsav_connect`, `make ci` passed all six Atlas-backed integration tests and the production build, and a served production build returned 200 from the pages and health endpoint. No credentials were printed during verification.
 
 ## Future production checklist
 

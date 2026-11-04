@@ -14,7 +14,8 @@ All notable changes to Utsav-Connect are recorded here. Format follows [Keep a C
 
 ### Documentation
 
-- Recorded the 2026-11-04 Stage 1 closure attempt: production build passed, but Atlas returned `bad auth` for both isolated database URIs, so the required `make ci` gate remains blocked pending external credential alignment.
+- Recorded the earlier 2026-11-04 Stage 1 closure attempt: production build passed, but Atlas returned `bad auth` for both isolated database URIs, so `make ci` was not run.
+- Closed Stage 1 on 2026-11-04 after Atlas credential alignment: `make check-db` and the full `make ci` pipeline passed (47 unit tests, 6 Atlas-backed integration tests, production build), and served-build smoke checks verified routes, health, security headers, and the 503 degraded path. No credentials were recorded.
 
 ## [0.1.0] — 2026-11-03
 

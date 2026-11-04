@@ -1,6 +1,6 @@
 # Security
 
-Last updated: 2026-11-03. Lists the controls that exist in the code today and the ones still planned. Nothing here claims protection that is not implemented.
+Last updated: 2026-11-04. Lists the controls that exist in the code today and the ones still planned. Nothing here claims protection that is not implemented.
 
 ## Implemented
 
@@ -20,6 +20,7 @@ Last updated: 2026-11-03. Lists the controls that exist in the code today and th
 
 - The Atlas database user's password exists in exactly one place on a developer machine: `.env.local`. It is never printed by scripts (`check:db` logs host and database only), never logged by the app (`mongodb_uri` keys are redacted), and never committed.
 - **Incident record — 2026-11-03:** the initial Atlas connection string, including the password, was pasted into an AI chat during setup. The password was rotated the same day (new value generated locally and written straight into `.env.local`). Treat any credential that has appeared in a chat, screenshot, issue, or log as compromised and rotate it.
+- **Resolution — 2026-11-04:** after the Atlas database-user password was reset and both ignored local URIs were updated, `make check-db` and `make ci` passed. Verification output contained only host, database name, and latency; no URI, username, or password was printed or committed.
 - Network Access in Atlas should list specific IPs only; `0.0.0.0/0` is not acceptable beyond the first-day setup.
 - The application user should hold `readWrite` on the two project databases only (see `database.md`).
 

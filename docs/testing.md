@@ -1,6 +1,6 @@
 # Testing
 
-Last updated: 2026-11-03.
+Last updated: 2026-11-04.
 
 ## Layout
 
@@ -64,18 +64,23 @@ curl -s -D - http://localhost:3001/api/health      # expect HTTP/1.1 503 + SERVI
 kill $(lsof -nP -iTCP:3001 -sTCP:LISTEN -t)
 ```
 
-## Stage 1 closure re-verification — 2026-11-04
+## Stage 1 closure verification — 2026-11-04
 
-`make check-db` and a direct, credential-safe `MONGODB_URI_TEST` ping both reached Atlas but returned `MongoServerError: bad auth : authentication failed`. The test URI still targets `utsav_connect_test` and passes the `_test` suffix guard; no test data was created, changed, or removed.
-
-`make ci` was deliberately **not run** because it sets `UTSAV_TEST_REQUIRE_DB=1` and the database prerequisite failed. Do not bypass that gate or change tests to make it pass. After the Atlas password matches `.env.local`, run:
+An earlier attempt that day failed with `bad auth`; after the Atlas database-user password was aligned with the ignored `.env.local` value, the full gate was rerun without changing or skipping any test:
 
 ```bash
 make check-db
 make ci
 ```
 
-The production build was run independently and passed on 2026-11-04. See `project-status.md` for its route list and the closure record.
+Results:
+
+- `make check-db`: **passed** — Atlas reachable, `database=utsav_connect`, latency 621 ms; only host and database name printed.
+- `make ci`: **passed** — JS-only guard, ESLint, Prettier, 47 unit tests, 6 integration tests with `UTSAV_TEST_REQUIRE_DB=1` (2 files; 8.54 s on the closure run, 7.65 s on the final rerun), and the production build.
+- Integration suites used `MONGODB_URI_TEST` (`utsav_connect_test`) and the `_test` suffix guard remained active. The suites only connect and ping; they created, changed, and removed no records.
+- Production build: Next.js 16.4.4 compiled with 6 routes. Served with `next start`, `/`, `/about`, and `/map` returned 200, `/api/health` returned 200 `status: ok`, an unknown path returned 404, and the security headers listed in `security.md` were present. With an unreachable `MONGODB_URI`, pages still returned 200 while `/api/health` returned 503 `SERVICE_DEGRADED` after the bounded 5 s timeout.
+
+No real-browser check was repeated during the closure run. See `project-status.md` for the complete record and the distinction between automated, process, and browser evidence.
 
 ## Planned
 
