@@ -1589,17 +1589,17 @@ Here's the order I recommend for actually executing it.
 
 ## Stage 1 — Establish the foundation
 
-Complete:
+Progress checkpoint (2026-11-04; evidence in `project-status.md`):
 
-- Product requirements.
-- Project setup.
-- JavaScript-only enforcement.
-- MongoDB connection.
-- Basic layouts and navigation.
-- Initial testing setup.
-- Project documentation.
+- [ ] Product requirements baseline — documented, but Phase 0 remains partial and open decisions are recorded.
+- [x] Project setup.
+- [x] JavaScript-only enforcement.
+- [ ] MongoDB Atlas connection — implementation, URI separation, and safety guard are complete; live authentication currently fails, so final verification is blocked.
+- [x] Basic layouts and navigation.
+- [x] Initial unit-test setup; integration suite exists but cannot currently authenticate to Atlas.
+- [x] Project documentation, including the Stage 1 closure procedure.
 
-**Result:** A clean, maintainable application foundation.
+**Current result:** Foundation implementation is complete, but Stage 1 is not formally closed until Atlas connectivity is verified and `make ci` passes.
 
 ## Stage 2 — Secure the application
 

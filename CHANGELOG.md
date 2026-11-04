@@ -12,6 +12,10 @@ All notable changes to Utsav-Connect are recorded here. Format follows [Keep a C
 
 - Atlas database password rotated after the initial connection string was shared in a chat; incident and rules recorded in `docs/security.md`.
 
+### Documentation
+
+- Recorded the 2026-11-04 Stage 1 closure attempt: production build passed, but Atlas returned `bad auth` for both isolated database URIs, so the required `make ci` gate remains blocked pending external credential alignment.
+
 ## [0.1.0] — 2026-11-03
 
 Stage 1 foundation (roadmap Phases 0–3, partial).

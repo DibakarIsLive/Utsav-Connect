@@ -64,6 +64,19 @@ curl -s -D - http://localhost:3001/api/health      # expect HTTP/1.1 503 + SERVI
 kill $(lsof -nP -iTCP:3001 -sTCP:LISTEN -t)
 ```
 
+## Stage 1 closure re-verification — 2026-11-04
+
+`make check-db` and a direct, credential-safe `MONGODB_URI_TEST` ping both reached Atlas but returned `MongoServerError: bad auth : authentication failed`. The test URI still targets `utsav_connect_test` and passes the `_test` suffix guard; no test data was created, changed, or removed.
+
+`make ci` was deliberately **not run** because it sets `UTSAV_TEST_REQUIRE_DB=1` and the database prerequisite failed. Do not bypass that gate or change tests to make it pass. After the Atlas password matches `.env.local`, run:
+
+```bash
+make check-db
+make ci
+```
+
+The production build was run independently and passed on 2026-11-04. See `project-status.md` for its route list and the closure record.
+
 ## Planned
 
 - Playwright end-to-end tests once interactive flows exist (Stage 2).
