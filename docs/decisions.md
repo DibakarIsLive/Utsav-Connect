@@ -64,10 +64,10 @@ Status vocabulary: **ACCEPTED** · **IMPLEMENTED** · **PROPOSED** · **SUPERSED
 
 ## ADR-010 — Authentication approach
 
-- Date: 2026-11-03 · Status: OPEN (blocks Stage 2)
+- Date: 2026-11-03 · Status: OPEN (blocks Stage 2) — decision report and proposed architecture prepared 2026-11-04; owner approval pending (ADR-014).
 - Options: (a) Auth.js v5 (`next-auth@5` beta, App Router native, MongoDB adapter available; beta status is a risk); (b) `next-auth@4` (stable but Pages-Router-era API); (c) hand-rolled session cookies with `users` collection, Argon2/bcrypt hashing, and CSRF handling (full control, more code to secure).
 - Needs from the owner: registration policy (open vs invite), whether email verification is required at launch (needs an email provider), password-based vs magic-link/OAuth.
-- Decision: deferred until the owner answers; no auth code exists in the repository.
+- Decision: deferred until the owner answers; no auth code exists in the repository. The structured analysis and recommended option set are in [`stage-2-decision-report.md`](stage-2-decision-report.md); the proposed implementation is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md). Neither document authorizes implementation.
 
 ## ADR-011 — License
 
@@ -89,3 +89,11 @@ Status vocabulary: **ACCEPTED** · **IMPLEMENTED** · **PROPOSED** · **SUPERSED
 - Context: Stage 1 was blocked when Atlas rejected the configured credentials. The fix was an external credential reset in Atlas plus updated ignored local URIs, not a code or test change.
 - Decision: close Stage 1 only after `make check-db` succeeds, `make ci` runs the database-required integration suite and production build without skipping, and the built app is served for route/health/header checks. Record exact results in `project-status.md`, `testing.md`, `deployment.md`, and the changelog.
 - Consequences: Stage 1 is closed as of 2026-11-04. The product-requirements baseline remains PARTIAL and ADR-010 decisions remain open; Stage 2 is not authorized or started. Future credential incidents use the same rule: rotate first, then re-run the full gate.
+
+## ADR-014 — Proposed Stage 2 authentication baseline
+
+- Date: 2026-11-04 · Status: **PROPOSED** — awaiting owner approval; does not authorize implementation.
+- Context: ADR-010 leaves the authentication approach and three product questions open. Stage 2 needs a concrete design that fits the JavaScript-only Next.js App Router application, MongoDB Atlas, server-side authorization, immediate session revocation, and the existing HTTP envelope. The full option analysis is in `stage-2-decision-report.md`.
+- Proposed decision: use a small first-party authentication layer with opaque database-backed sessions rather than Auth.js v5 beta or `next-auth@4`. Use email + password at launch, Argon2id password hashing, hashed single-use tokens for email verification and password reset, a `__Host-` secure cookie in production, MongoDB-backed rate limiting, and append-only audit logs. Registration is configuration-driven (`open` or `closed`); open registration requires email verification before login. Roles are visitor (anonymous), devotee, and administrator. Account deletion is deferred; suspension/reactivation is in scope. The production email provider, registration mode, and retention period remain owner decisions in the report.
+- Rejected for now: (a) Auth.js v5 beta — beta dependency, and the Credentials provider still requires custom user/password/session logic for database-session revocation; (b) `next-auth@4` — Pages-Router-era API and migration risk; (c) JWT-only sessions — revocation and suspension would be delayed or require a denylist; (d) OAuth/magic-link at launch — adds provider dependencies before the core account model is proven.
+- Consequences: the application owns CSRF, rate limiting, token handling, and session revocation, so the security test matrix in `stage-2-authentication-spec.md` is mandatory. Native Argon2 support must be verified on the deployment target; Node `crypto.scrypt` is the documented fallback. No code, collection, dependency, or environment variable has been added by this ADR.

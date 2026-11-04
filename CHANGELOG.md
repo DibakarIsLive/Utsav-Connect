@@ -4,8 +4,14 @@ All notable changes to Utsav-Connect are recorded here. Format follows [Keep a C
 
 ## [Unreleased]
 
+### Added
+
+- Stage 2 preparation documents: `docs/stage-2-decision-report.md` (all open ADR-010 decisions, options, recommendations, security/privacy impact, owner questions) and `docs/stage-2-authentication-spec.md` (proposed architecture, models/indexes, API contracts, validation, error handling, audit logging, testing strategy, acceptance criteria, implementation batches).
+- Proposed ADR-014 for a first-party authentication layer with opaque MongoDB sessions, Argon2id, email + password, and email verification; status **PROPOSED**, not implemented.
+
 ### Changed
 
+- Synchronized README, architecture, security, database, testing, deployment, roadmap, product-requirements, and project-status documentation with the Stage 2 preparation. No authentication code, model, dependency, collection, or environment variable was added.
 - Development and test databases moved to the MongoDB Atlas cluster `main` (ADR-012). `.env.example` now shows `mongodb+srv://` placeholders; the Makefile's `check-health` pings `MONGODB_URI` instead of probing local port 27017; docs and README describe the Atlas setup.
 
 ### Security

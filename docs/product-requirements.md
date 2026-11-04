@@ -1,6 +1,6 @@
 # Product requirements (working document)
 
-Last updated: 2026-11-03. Condensed from `Roadmap.md` §1–§2 and Phases 0–4 into one reference. Items marked **OPEN** need an owner decision before implementation.
+Last updated: 2026-11-04. Condensed from `Roadmap.md` §1–§2 and Phases 0–4 into one reference. Items marked **OPEN** need an owner decision before implementation.
 
 ## Purpose
 
@@ -51,13 +51,22 @@ Implemented today: Home, About, Map (placeholder state). Everything else: planne
 
 ## Open decisions
 
-| #   | Question                                                                                | Impact                        | Status                                   |
-| --- | --------------------------------------------------------------------------------------- | ----------------------------- | ---------------------------------------- |
-| 1   | Authentication library and session model                                                | Stage 2 design                | OPEN (ADR-010)                           |
-| 2   | Registration policy: open sign-up vs invitation; email verification required?           | Needs email provider if yes   | OPEN                                     |
-| 3   | Production MongoDB tier, region and backup plan (Atlas chosen for development, ADR-012) | Backups, cost                 | PARTLY DECIDED                           |
-| 4   | Hosting platform for Next.js                                                            | Deployment docs, env handling | OPEN                                     |
-| 5   | Which Google Maps APIs are enabled and billing limits                                   | Stage 3 scope and cost        | OPEN                                     |
-| 6   | Population estimate sources and update cadence                                          | Coverage accuracy             | OPEN                                     |
-| 7   | Leaderboard privacy (public names vs opt-in)                                            | Privacy policy                | OPEN                                     |
-| 8   | License intent: MIT (current `LICENSE`) vs proprietary                                  | Legal                         | ACCEPTED as MIT unless changed (ADR-011) |
+| #   | Question                                                                                | Impact                        | Status                                                              |
+| --- | --------------------------------------------------------------------------------------- | ----------------------------- | ------------------------------------------------------------------- |
+| 1   | Authentication library and session model                                                | Stage 2 design                | PROPOSED — first-party opaque sessions (ADR-014), owner approval    |
+| 2   | Registration policy: open sign-up vs invitation; email verification required?           | Needs email provider if yes   | OWNER INPUT REQUIRED — see D-02/D-03 in the Stage 2 decision report |
+| 3   | Production MongoDB tier, region and backup plan (Atlas chosen for development, ADR-012) | Backups, cost                 | DEFERRED to Stage 7                                                 |
+| 4   | Hosting platform for Next.js                                                            | Deployment docs, env handling | DEFERRED to Stage 7                                                 |
+| 5   | Which Google Maps APIs are enabled and billing limits                                   | Stage 3 scope and cost        | DEFERRED to Stage 3                                                 |
+| 6   | Population estimate sources and update cadence                                          | Coverage accuracy             | DEFERRED to Stage 4                                                 |
+| 7   | Leaderboard privacy (public names vs opt-in)                                            | Privacy policy                | DEFERRED to Stages 5–6; Stage 2 exposes aggregated counts only      |
+| 8   | License intent: MIT (current `LICENSE`) vs proprietary                                  | Legal                         | ACCEPTED as MIT unless changed (ADR-011)                            |
+
+## Stage 2 preparation (2026-11-04)
+
+The authentication design is prepared but **not implemented**. Two documents carry the detail:
+
+- [`stage-2-decision-report.md`](stage-2-decision-report.md) — every unresolved ADR-010 decision, options, recommendation, and the questions that need owner input.
+- [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) — proposed roles, models, API contracts, security controls, tests, and acceptance criteria.
+
+The recommended Stage 2 baseline is: first-party authentication with opaque MongoDB sessions; email + password; Argon2id; email verification before login for self-registered accounts; configurable open/closed registration; administrator-created pilot accounts; suspension/reactivation; append-only audit logs. None of this is active until the owner approves the decision report.

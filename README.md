@@ -46,6 +46,8 @@ The venue is a single point of interest; the campaign itself has **no single-tow
 ## 📍 Current Status
 
 > **Stage 1 — Foundation: formally closed** (verified 2026-11-04) · Database: **MongoDB Atlas** cluster `main` · **Not deployed yet**
+>
+> **Stage 2 — Authentication: specification prepared, awaiting owner approval; no code written.**
 
 | Area                         | State                                                                                                                   |
 | ---------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
@@ -55,10 +57,12 @@ The venue is a single point of interest; the campaign itself has **no single-tow
 | API                          | ✅ `GET /api/health` (200 / 503 `SERVICE_DEGRADED`, never cached), JSON envelope + error mapping                        |
 | Hardening                    | ✅ Security headers, redacting JSON logger, env validation, `server-only` boundary                                      |
 | Tests                        | ✅ 47 unit tests and 6 Atlas-backed integration tests pass; full `make ci` and production build verified                |
-| Authentication & roles       | ⏳ Stage 2 — not started                                                                                                |
+| Authentication & roles       | 📝 Stage 2 design complete; implementation not authorized                                                               |
 | Areas, map, invitations      | ⏳ Stages 3–4 — not started                                                                                             |
 | Admin tools, analytics       | ⏳ Stages 5–6 — not started                                                                                             |
 | Deployment, backups, go-live | ⏳ Stage 7 — not started                                                                                                |
+
+Stage 2 preparation is documentation-only: [`docs/stage-2-decision-report.md`](docs/stage-2-decision-report.md) records every open ADR-010 decision and the questions needing an owner answer; [`docs/stage-2-authentication-spec.md`](docs/stage-2-authentication-spec.md) contains the proposed architecture, data models, API contracts, security controls, tests, and acceptance criteria. No auth code, model, dependency, collection, or environment variable has been added.
 
 Full verification record (exact commands, results, what was **not** verified): [`docs/project-status.md`](docs/project-status.md).
 
@@ -66,18 +70,19 @@ Full verification record (exact commands, results, what was **not** verified): [
 
 ## 🛠️ Tech Stack
 
-| Layer      | Choice                                                                         | Why                                                                                      |
-| ---------- | ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| Framework  | **Next.js 16** (App Router, Turbopack) · **React 19**                          | One runtime for pages and API; Server Components by default                              |
-| Language   | **JavaScript + JSX only** — no TypeScript, enforced by `npm run check:js-only` | Project rule; the check runs in every quality gate                                       |
-| Database   | **MongoDB Atlas** via **Mongoose 9**                                           | Hosted replica set (transactions available), GeoJSON + `2dsphere` indexes for boundaries |
-| Validation | **Zod 4**                                                                      | Environment variables today; every request body from Stage 2 on                          |
-| Styling    | **Tailwind CSS 4** (`@theme` tokens, Turbopack loader)                         | Design tokens in CSS, no runtime cost                                                    |
-| Testing    | **Vitest 4**                                                                   | Unit suites with no network; integration suites against a dedicated `_test` database     |
-| Tooling    | ESLint 9 + `eslint-config-next`, Prettier 3 + Tailwind plugin, GNU Make        | Same commands locally and in CI                                                          |
-| Planned    | Google Maps Platform (Places, Geocoding), Recharts, Auth.js _or_ equivalent    | Introduced in the stage that needs them — not installed yet                              |
+| Layer           | Choice                                                                                          | Why                                                                                      |
+| --------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Framework       | **Next.js 16** (App Router, Turbopack) · **React 19**                                           | One runtime for pages and API; Server Components by default                              |
+| Language        | **JavaScript + JSX only** — no TypeScript, enforced by `npm run check:js-only`                  | Project rule; the check runs in every quality gate                                       |
+| Database        | **MongoDB Atlas** via **Mongoose 9**                                                            | Hosted replica set (transactions available), GeoJSON + `2dsphere` indexes for boundaries |
+| Validation      | **Zod 4**                                                                                       | Environment variables today; every request body from Stage 2 on                          |
+| Styling         | **Tailwind CSS 4** (`@theme` tokens, Turbopack loader)                                          | Design tokens in CSS, no runtime cost                                                    |
+| Testing         | **Vitest 4**                                                                                    | Unit suites with no network; integration suites against a dedicated `_test` database     |
+| Tooling         | ESLint 9 + `eslint-config-next`, Prettier 3 + Tailwind plugin, GNU Make                         | Same commands locally and in CI                                                          |
+| Planned         | Google Maps Platform (Places, Geocoding), Recharts; Stage 2 auth is specified but not installed | Introduced in the stage that needs them — not implemented yet                            |
+| Auth (proposed) | First-party opaque MongoDB sessions, Argon2id, email + password, email verification             | See `docs/stage-2-authentication-spec.md`; awaiting owner approval                       |
 
-Decisions and rejected alternatives are logged in [`docs/decisions.md`](docs/decisions.md) (ADR-001 … ADR-012).
+Decisions and rejected alternatives are logged in [`docs/decisions.md`](docs/decisions.md) (ADR-001 … ADR-014; ADR-014 is **PROPOSED**).
 
 ---
 
@@ -222,7 +227,7 @@ Validated on first server use by `api/lib/env/env.js`. Failures name the variabl
 | `LOG_LEVEL`        | no        | `info`                  | `debug` · `info` · `warn` · `error`                                       |
 | `NODE_ENV`         | no        | `development`           | Set by Next.js                                                            |
 
-Reserved for later stages and **not read yet**: `AUTH_SECRET`, `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, `GOOGLE_MAPS_SERVER_API_KEY`.
+Reserved for later stages and **not read yet**: `AUTH_SECRET`, `REGISTRATION_MODE`, `REQUIRE_EMAIL_VERIFICATION`, `EMAIL_PROVIDER`, `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`, `GOOGLE_MAPS_SERVER_API_KEY`. The Stage 2 authentication specification defines the proposed auth/email variables; they are not active.
 
 `.env.local` is git-ignored. Never paste connection strings into chats, issues or screenshots — if one leaks, rotate it in Atlas (see [`docs/security.md`](docs/security.md)).
 
@@ -264,15 +269,15 @@ Integration tests connect to Atlas, so expect ≈ 600 ms per connection and ≈ 
 
 The authoritative plan is [`docs/Roadmap.md`](docs/Roadmap.md) (36 phases, 7 governing rules, release gates). Execution order:
 
-| Stage | Scope                                                                          | Status      |
-| ----- | ------------------------------------------------------------------------------ | ----------- |
-| 1     | Requirements, project setup, JS-only enforcement, database, shell, tests, docs | ✅ Complete |
-| 2     | Authentication, roles, server-side permissions                                 | ⏳ Next     |
-| 3     | Geographic hierarchy, Google Maps, area details, locality proposals            | ⏳          |
-| 4     | Invitation reporting and coverage statistics                                   | ⏳          |
-| 5     | Administrator tools and audit history                                          | ⏳          |
-| 6     | Analytics, contributor statistics, leaderboard                                 | ⏳          |
-| 7     | Hardening, backups, deployment, go-live and maintenance                        | ⏳          |
+| Stage | Scope                                                                          | Status                               |
+| ----- | ------------------------------------------------------------------------------ | ------------------------------------ |
+| 1     | Requirements, project setup, JS-only enforcement, database, shell, tests, docs | ✅ Complete                          |
+| 2     | Authentication, roles, server-side permissions                                 | 📝 Spec prepared — awaiting approval |
+| 3     | Geographic hierarchy, Google Maps, area details, locality proposals            | ⏳                                   |
+| 4     | Invitation reporting and coverage statistics                                   | ⏳                                   |
+| 5     | Administrator tools and audit history                                          | ⏳                                   |
+| 6     | Analytics, contributor statistics, leaderboard                                 | ⏳                                   |
+| 7     | Hardening, backups, deployment, go-live and maintenance                        | ⏳                                   |
 
 Progress per milestone (what was built, verified, and left open) is kept in [`docs/project-status.md`](docs/project-status.md).
 
@@ -280,20 +285,22 @@ Progress per milestone (what was built, verified, and left open) is kept in [`do
 
 ## 📚 Documentation
 
-| Document                                                       | Contents                                                             |
-| -------------------------------------------------------------- | -------------------------------------------------------------------- |
-| [`docs/project-status.md`](docs/project-status.md)             | Real state per roadmap task, verification record, limitations        |
-| [`docs/architecture.md`](docs/architecture.md)                 | Layers, request flow, module responsibilities                        |
-| [`docs/decisions.md`](docs/decisions.md)                       | ADR-001 … ADR-012 with context, decision, consequences               |
-| [`docs/product-requirements.md`](docs/product-requirements.md) | Roles, pages, data rules, open decisions                             |
-| [`docs/database.md`](docs/database.md)                         | Atlas setup, connection module, collection plan, backup/restore      |
-| [`docs/deployment.md`](docs/deployment.md)                     | Atlas prerequisites, verification procedure, deployment limits       |
-| [`docs/testing.md`](docs/testing.md)                           | Suites, commands, safety rules, verification policy                  |
-| [`docs/security.md`](docs/security.md)                         | Implemented controls, credential handling, what is **not** there yet |
-| [`docs/conventions.md`](docs/conventions.md)                   | Naming, imports, git and code style                                  |
-| [`docs/Roadmap.md`](docs/Roadmap.md)                           | The full product roadmap                                             |
-| [`AGENTS.md`](AGENTS.md)                                       | Operating rules for contributors and AI assistants                   |
-| [`CHANGELOG.md`](CHANGELOG.md)                                 | Release notes                                                        |
+| Document                                                                     | Contents                                                                      |
+| ---------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| [`docs/project-status.md`](docs/project-status.md)                           | Real state per roadmap task, verification record, limitations                 |
+| [`docs/architecture.md`](docs/architecture.md)                               | Layers, request flow, module responsibilities                                 |
+| [`docs/decisions.md`](docs/decisions.md)                                     | ADR-001 … ADR-014 with context, decision, consequences                        |
+| [`docs/product-requirements.md`](docs/product-requirements.md)               | Roles, pages, data rules, open decisions                                      |
+| [`docs/stage-2-decision-report.md`](docs/stage-2-decision-report.md)         | Stage 2 open decisions, options, recommendations, owner questions             |
+| [`docs/stage-2-authentication-spec.md`](docs/stage-2-authentication-spec.md) | Proposed auth architecture, models, API contracts, tests, acceptance criteria |
+| [`docs/database.md`](docs/database.md)                                       | Atlas setup, connection module, collection plan, backup/restore               |
+| [`docs/deployment.md`](docs/deployment.md)                                   | Atlas prerequisites, verification procedure, deployment limits                |
+| [`docs/testing.md`](docs/testing.md)                                         | Suites, commands, safety rules, verification policy                           |
+| [`docs/security.md`](docs/security.md)                                       | Implemented controls, credential handling, what is **not** there yet          |
+| [`docs/conventions.md`](docs/conventions.md)                                 | Naming, imports, git and code style                                           |
+| [`docs/Roadmap.md`](docs/Roadmap.md)                                         | The full product roadmap                                                      |
+| [`AGENTS.md`](AGENTS.md)                                                     | Operating rules for contributors and AI assistants                            |
+| [`CHANGELOG.md`](CHANGELOG.md)                                               | Release notes                                                                 |
 
 ---
 

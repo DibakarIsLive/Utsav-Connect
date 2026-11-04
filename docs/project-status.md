@@ -8,7 +8,33 @@ Status vocabulary: **IMPLEMENTED** (code + tests + verified), **PARTIAL**, **UNV
 
 Stage 1 is formally closed. After the Atlas database user's password was reset and both local connection strings were updated, `make check-db` reached Atlas, the complete `make ci` pipeline passed (including the six Atlas-backed integration tests with `UTSAV_TEST_REQUIRE_DB=1`), and the production build was served and checked over HTTP. No check was skipped or weakened.
 
-The product-requirements baseline remains PARTIAL (Phase 0 open decisions are recorded in `product-requirements.md` and ADR-010), but that is not a Stage 1 release-gate failure. **Stage 2 has not been started** and requires explicit authorization.
+The product-requirements baseline remains PARTIAL (Phase 0 open decisions are recorded in `product-requirements.md` and ADR-010), but that is not a Stage 1 release-gate failure. **Stage 2 implementation has not been started** and requires explicit authorization.
+
+## Stage 2 preparation — COMPLETE (2026-11-04, documentation only)
+
+Stage 2 preparation is complete, but **no Stage 2 code exists**. The following artifacts were added for owner review:
+
+| Artifact                                                           | Status   | Contents                                                                                                 |
+| ------------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------- |
+| [`stage-2-decision-report.md`](stage-2-decision-report.md)         | COMPLETE | Every unresolved ADR-010 decision, options, recommendation, security/privacy impact, and owner questions |
+| [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) | PROPOSED | Auth architecture, models/indexes, API contracts, validation, errors, audit, tests, acceptance criteria  |
+| `architecture.md` §8                                               | UPDATED  | Planned auth module shape and boundaries                                                                 |
+| `security.md` “Stage 2 security design”                            | UPDATED  | Proposed controls, explicitly marked not implemented                                                     |
+| `database.md` “Stage 2 auth collections”                           | UPDATED  | Proposed collections/indexes, explicitly marked not created                                              |
+| `testing.md` “Stage 2 authentication test plan”                    | UPDATED  | Planned unit/integration/E2E/security matrix                                                             |
+| `deployment.md` “Stage 2 authentication configuration”             | UPDATED  | Proposed environment, email, index, bootstrap, and cookie requirements                                   |
+
+**Decisions still open (ADR-010 / decision report):** authentication approach (first-party opaque sessions recommended), registration policy, email verification, credential method, email provider, account deletion/retention. The recommended approval package is in §6 of the decision report; the six owner questions are in §7.
+
+**Preparation verification (2026-11-04):** this was a documentation-only change; no auth code, model, dependency, collection, or environment variable was added.
+
+| Command         | Result                                                                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `make check-db` | **PASSED** — Atlas reachable, `database=utsav_connect`, latency 743 ms; host and database only, no URI or credential printed               |
+| `make check`    | **PASSED** — JS-only guard, ESLint, Prettier, 5 unit files / 47 tests                                                                      |
+| `make ci`       | **PASSED** — the above plus 2 integration files / 6 Atlas-backed tests with `UTSAV_TEST_REQUIRE_DB=1`, and the production build (6 routes) |
+
+This confirms the documentation change did not break the existing Stage 1 gates. It does **not** verify any Stage 2 behaviour. No new browser check was run because no UI changed; the prior Stage 1 browser record remains the latest browser evidence.
 
 ## Stage 1 — Foundation
 
@@ -38,14 +64,14 @@ The product-requirements baseline remains PARTIAL (Phase 0 open decisions are re
 
 ## Stages 2–7
 
-| Stage | Scope (roadmap)                                          | Status                                                                    |
-| ----- | -------------------------------------------------------- | ------------------------------------------------------------------------- |
-| 2     | Authentication, roles, protected routes (Phase 4)        | PLANNED — separate checkpoint; open decisions in `decisions.md` (ADR-010) |
-| 3     | Geographic hierarchy, Google Maps, boundaries, proposals | PLANNED                                                                   |
-| 4     | Population records, invitation reports, coverage         | PLANNED                                                                   |
-| 5     | Dashboards, administration, analytics                    | PLANNED                                                                   |
-| 6     | Notifications, leaderboard, exports                      | PLANNED                                                                   |
-| 7     | Deployment, monitoring, backups, launch                  | PLANNED                                                                   |
+| Stage | Scope (roadmap)                                          | Status                                                                                               |
+| ----- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 2     | Authentication, roles, protected routes (Phase 4)        | PREPARED — decision report + authentication spec complete (docs only); implementation not authorized |
+| 3     | Geographic hierarchy, Google Maps, boundaries, proposals | PLANNED                                                                                              |
+| 4     | Population records, invitation reports, coverage         | PLANNED                                                                                              |
+| 5     | Dashboards, administration, analytics                    | PLANNED                                                                                              |
+| 6     | Notifications, leaderboard, exports                      | PLANNED                                                                                              |
+| 7     | Deployment, monitoring, backups, launch                  | PLANNED                                                                                              |
 
 ## Verification record (2026-11-03)
 
@@ -97,4 +123,17 @@ An earlier attempt on the same day failed with `MongoServerError: bad auth : aut
 
 ## Next batch
 
-Stage 1 is closed; no implementation work is in progress. Stage 2 authentication requires explicit owner authorization and decisions on the open questions in ADR-010 (registration policy, email verification, password versus magic-link/OAuth). Until those decisions are made, no authentication code should be written.
+Stage 1 is closed and Stage 2 **implementation has not started**. The preparation documents are complete, but ADR-010 remains open pending owner approval.
+
+**Exact next implementation batch (only after approval): Stage 2 Batch 0 — decision lock and foundation.**
+
+- Accept the decision report answers and record them in `docs/decisions.md` (ADR-014 moves from PROPOSED to ACCEPTED).
+- Add auth/email environment variables to `.env.example` and `api/lib/env/env.js`.
+- Add the `users`, `sessions`, `authTokens`, `rateLimits`, and `auditLogs` Mongoose models with indexes and safe projections.
+- Add password, token, session-cookie, permission, CSRF, and rate-limit primitives with unit tests.
+- Add `scripts/create-admin.js`, `scripts/create-user.js`, and `scripts/sync-indexes.js`.
+- Add integration tests for model constraints/indexes and the bootstrap script.
+- Do **not** add login UI, registration UI, or public auth Route Handlers in Batch 0.
+- Gate: `make check`, `make ci` (Atlas `_test` database, no skips), production build, documentation update.
+
+The six owner questions that must be answered first are in `stage-2-decision-report.md` §7. Until then, no authentication code, model, dependency, collection, or environment variable should be added.

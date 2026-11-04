@@ -82,6 +82,28 @@ Results:
 
 No real-browser check was repeated during the closure run. See `project-status.md` for the complete record and the distinction between automated, process, and browser evidence.
 
+## Stage 2 authentication test plan (PROPOSED — no tests written yet)
+
+The full matrix is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §18. It is summarized here so the testing document remains the operational index.
+
+On 2026-11-04 the documentation-only Stage 2 preparation was checked with `make check-db`, `make check`, and `make ci`; all passed at the Stage 1 baseline (47 unit tests, 6 Atlas-backed integration tests, production build). No authentication test exists yet, so those runs do not verify Stage 2 behaviour.
+
+| Layer       | Planned suites                                                                                                                                                                     | Database | Gate                         |
+| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------- |
+| Unit        | password hash/verify/rehash, token shape/expiry, cookie flags, permission matrix, CSRF origin rules, rate-limit windows, validation schemas, safe-user projection, audit redaction | no       | `make check`                 |
+| Integration | registration, login, sessions, verification, recovery, rate limits, admin user management, audit writes, IDOR                                                                      | yes      | `make ci`                    |
+| E2E         | visitor redirect, register/verify/login, wrong password, devotee denied admin, logout, suspension revocation, password reset, keyboard navigation                                  | yes      | `make test-e2e` (new target) |
+| Security    | enumeration, CSRF, NoSQL injection, mass assignment, session fixation, cookie attributes, last-admin/self-action guards                                                            | yes      | integration + review         |
+| Browser     | desktop and mobile login/register/recovery, focus/labels, admin dialogs                                                                                                            | yes      | manual record                |
+
+Rules that carry over:
+
+- Integration suites use `MONGODB_URI_TEST` only; the `_test` suffix guard is never weakened.
+- Auth tests delete only their own collections in `utsav_connect_test`; they never touch `utsav_connect`.
+- Tests use a development mailbox or stub, never a real email provider.
+- Any browser or E2E check that cannot run is recorded as **unverified**, not assumed.
+- `UTSAV_TEST_REQUIRE_DB=1` remains mandatory in `make ci`; auth tests must not silently skip in CI.
+
 ## Planned
 
 - Playwright end-to-end tests once interactive flows exist (Stage 2).

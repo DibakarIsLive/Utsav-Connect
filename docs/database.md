@@ -36,6 +36,27 @@ Measured from the developer machine (India) to the cluster: first connection ≈
 
 None are defined yet. Per roadmap Phase 3, each collection is introduced with its first real use and tests. The planned set: `users`, `areas`, `localityProposals`, `invitationReports`, `populationRecords`, `auditLogs`, `areaAssignments`, `notifications`, `systemSettings`.
 
+### Stage 2 auth collections (PROPOSED — not created)
+
+The authentication specification introduces five collections before the geographic ones. They are designed but **not present in any database** and no model file exists yet. Full field and index definitions: [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §4.
+
+| Collection   | Purpose                                                       | Key indexes                                                                                       |
+| ------------ | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
+| `users`      | Account, role, status, password hash, verification timestamps | `email` unique; `role + status`; `status + createdAt`; `createdAt`                                |
+| `sessions`   | Opaque session hash, expiry, revocation                       | `tokenHash` unique; `userId + revokedAt`; TTL on `expiresAt`, `absoluteExpiresAt`                 |
+| `authTokens` | Single-use email-verification and password-reset token hashes | `tokenHash` unique; `userId + purpose + usedAt`; TTL on `expiresAt`                               |
+| `rateLimits` | MongoDB-backed fixed-window counters for sensitive endpoints  | `_id` HMAC key; TTL on `expiresAt`                                                                |
+| `auditLogs`  | Append-only authentication and admin action history           | `createdAt`; `actorUserId + createdAt`; `action + createdAt`; `targetType + targetId + createdAt` |
+
+Rules for these collections:
+
+- Store only SHA-256 hashes of session and auth tokens; the raw value exists only in the cookie or email link.
+- Store `passwordHash` with `select: false`; no API projection includes it.
+- Hash IP addresses with `AUTH_SECRET` (HMAC-SHA-256); never store raw IPs in sessions or audit logs.
+- Create indexes with `scripts/sync-indexes.js` in deployed environments; do not rely on implicit production index creation.
+- No TTL on `auditLogs` until the owner approves a retention period (D-10).
+- Integration tests may create and drop these collections only in `utsav_connect_test`.
+
 Conventions to apply when they arrive (roadmap 3.3–3.10):
 
 - Mongoose schemas with `timestamps: true`; audit metadata (`createdBy`, `updatedBy`) on administrative records.

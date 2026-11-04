@@ -26,7 +26,7 @@ Last updated: 2026-11-04. Lists the controls that exist in the code today and th
 
 ## Not implemented yet (do not assume)
 
-- Authentication, sessions, password hashing, email verification, account lifecycle (Stage 2, ADR-010).
+- Authentication, sessions, password hashing, email verification, account lifecycle (Stage 2, ADR-010). The proposed design is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md); no code exists.
 - Authorization / role checks on the server (`api/lib/permissions.js`) — no protected routes exist because no protected data exists.
 - Rate limiting on sensitive endpoints.
 - Content-Security-Policy — deferred until the Google Maps scripts/styles are known so the policy can be written correctly instead of permissively.
@@ -34,6 +34,26 @@ Last updated: 2026-11-04. Lists the controls that exist in the code today and th
 - Audit logging collection, security event logging.
 - Dependency vulnerability scanning in CI (`npm audit` is not yet part of `make ci`).
 - Automatic database backups (free tier has none — see `database.md`).
+
+## Stage 2 security design (PROPOSED — not implemented)
+
+The following controls are specified but not active. They must not be described as implemented until the Stage 2 acceptance criteria in the specification are verified.
+
+| Area                | Proposed control                                                                                                                                      |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sessions            | Opaque 256-bit token in an `HttpOnly`, `SameSite=Lax` cookie; `Secure` and `__Host-` prefix in production; SHA-256 hash stored in MongoDB             |
+| Revocation          | Logout, password reset, suspension, and role change revoke sessions immediately; 7-day idle and 30-day absolute lifetime                              |
+| Passwords           | Argon2id (19 MiB, 2 iterations, 1 lane) via `@node-rs/argon2`; Node `scrypt` documented fallback; versioned hash format; rehash on login              |
+| Email verification  | Single-use, 24-hour token; token in URL fragment; resend rate-limited; login blocked until verified for self-registered accounts                      |
+| Password recovery   | Single-use, 30-minute token; generic `202` response; all sessions revoked; no account enumeration                                                     |
+| CSRF                | Origin check on every mutating request; JSON content type required; `SameSite=Lax`; no permissive CORS                                                |
+| Rate limiting       | MongoDB fixed-window counters keyed by HMAC of IP/email; login, registration, verification, recovery, and admin policies                              |
+| Enumeration         | Generic login/forgot/reset/registration responses; dummy password verification for unknown emails; account-state errors only after a correct password |
+| Authorization       | Server-side role/permission map; page guards and API guards; ownership checks; middleware is not the authority                                        |
+| Audit               | Append-only `auditLogs`; admin-only viewer; HMAC-hashed IPs; no passwords, tokens, cookies, or raw emails                                             |
+| Administrator rules | No public admin registration; CLI bootstrap with hidden prompt; no self-suspension/demotion; last active admin protected                              |
+
+Full detail, API contracts, and tests: [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md). Decision status: [`stage-2-decision-report.md`](stage-2-decision-report.md).
 
 ## Operating rules
 

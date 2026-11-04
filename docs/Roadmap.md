@@ -1603,16 +1603,19 @@ Progress checkpoint (2026-11-04; evidence in `project-status.md`):
 
 ## Stage 2 — Secure the application
 
-Complete:
+Preparation checkpoint (2026-11-04; no implementation):
 
-- Registration.
-- Login and logout.
-- Sessions.
-- Roles and permissions.
-- Protected API routes.
-- Account-management basics.
+- [x] Decision report prepared — ADR-010 options, recommendations, security/privacy impact, and owner questions are in `stage-2-decision-report.md`.
+- [x] Authentication specification prepared — architecture, models, API contracts, validation, audit, testing, and acceptance criteria are in `stage-2-authentication-spec.md`.
+- [ ] Owner decisions approved — authentication approach, registration policy, email verification, credential method, email provider, deletion/retention.
+- [ ] Batch 0 — decision lock, models/indexes, auth primitives, bootstrap scripts, tests.
+- [ ] Registration, login, logout, sessions.
+- [ ] Email verification and password recovery.
+- [ ] Roles, permissions, protected API routes, protected administrator pages.
+- [ ] Account suspension/reactivation and audit history.
+- [ ] Browser/E2E verification and Stage 2 closure record.
 
-**Result:** A reliable authentication foundation.
+**Current result:** Stage 2 is designed but not implemented. No auth code, collection, dependency, or environment variable exists. Implementation begins only after the owner answers the six questions in the decision report.
 
 ## Stage 3 — Build the geographic core
 

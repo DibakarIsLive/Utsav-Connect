@@ -1,6 +1,6 @@
 # Architecture
 
-Last updated: 2026-11-03. Describes what exists in the repository today; planned pieces are marked as such.
+Last updated: 2026-11-04. Describes what exists in the repository today; planned pieces are marked as such.
 
 ## 1. Shape of the system
 
@@ -81,6 +81,39 @@ Tailwind CSS 4 is wired through `@tailwindcss/turbopack` (the loader `create-nex
 ## 7. Planned extensions (not implemented)
 
 - `api/models/*` Mongoose schemas with indexes (2dsphere for GeoJSON) — Stage 3/4.
-- `api/lib/auth.js`, `api/lib/permissions.js` — Stage 2.
+- `api/lib/auth/*`, `api/lib/permissions.js` — Stage 2, proposed in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md).
 - `ui/components/maps/*` around Google Maps JavaScript API — Stage 3.
-- `api/lib/http/handler.js` route wrapper (validation + error mapping) once the first validated POST route exists.
+- `api/lib/http/handler.js` route wrapper (validation + error mapping) once the first validated POST route exists — Stage 2.
+
+## 8. Planned Stage 2 authentication shape
+
+This section describes the **proposed** design; no auth module exists yet. The full contract is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md).
+
+```text
+browser
+  │  HttpOnly session cookie (opaque token)
+  ▼
+app/api/auth/**/route.js ──▶ api/lib/http/handler.js
+                               ├─ origin/CSRF check
+                               ├─ Zod body validation
+                               ├─ rate limit (MongoDB counters)
+                               ├─ session lookup (hashed token)
+                               ├─ role / permission checks
+                               └─ service call
+                                    ├─ api/models/user.js
+                                    ├─ api/models/session.js
+                                    ├─ api/models/auth-token.js
+                                    ├─ api/models/audit-log.js
+                                    └─ api/lib/email/mailer.js
+```
+
+Key boundaries:
+
+- `app/api/auth/**/route.js` stays thin: parse, delegate, return the envelope.
+- `api/lib/auth/session.js` owns cookie reading/writing and session validation.
+- `api/lib/auth/permissions.js` owns the role → permission map; route handlers never hard-code `if (role === "admin")`.
+- `api/models/*` own schema/index definitions; `api/services/*` own multi-step workflows such as registration and password reset.
+- `ui/` receives a safe user projection only; it never sees password hashes, session hashes, or audit metadata.
+- `middleware.js`, if added, may only perform cookie-presence redirects. Server Components and Route Handlers remain the authorization boundary.
+
+The design deliberately keeps MongoDB as the only stateful dependency in Stage 2. Email is an external adapter, not a source of truth; a failed email must not create a false success or a half-written account.
