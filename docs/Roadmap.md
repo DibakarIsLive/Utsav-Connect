@@ -35,17 +35,18 @@ We'll use the Next.js App Router unless the project's existing setup gives us a 
 The finished website must support these core goals:
 
 1. Let visitors explore approved geographic areas and public campaign statistics.
-2. Let registered devotees submit invitation reports.
-3. Display invitation coverage across geographic areas.
-4. Let administrators manage areas, boundaries, population estimates, and reports.
-5. Support localities across a large and expandable geographic region.
-6. Suggest places through Google Maps.
-7. Support custom area boundaries using polygons and coordinates.
-8. Maintain a visible history of locality proposals for registered devotees.
-9. Allow only authorized administrators to create and approve official localities.
-10. Provide accurate analytics, contributor statistics, and eventually a leaderboard.
-11. Protect accounts, data, and administrative actions.
-12. Remain maintainable after launch, with a documented process for updates and incident response.
+2. Let visitors apply to become devotees, and let authorized administrators approve or reject applications before granting access.
+3. Let registered devotees submit invitation reports.
+4. Display invitation coverage across geographic areas.
+5. Let administrators manage areas, boundaries, population estimates, and reports.
+6. Support localities across a large and expandable geographic region.
+7. Suggest places through Google Maps.
+8. Support custom area boundaries using polygons and coordinates.
+9. Maintain a visible history of locality proposals for registered devotees.
+10. Allow only authorized administrators to create and approve official localities.
+11. Provide accurate analytics, contributor statistics, and eventually a leaderboard.
+12. Protect accounts, data, applicant privacy, and administrative actions.
+13. Remain maintainable after launch, with a documented process for updates and incident response.
 
 We'll treat the physical Mahotsav venue as a **separate geographic point of interest**. The outreach campaign itself can span as many geographic areas as necessary.
 
@@ -67,7 +68,7 @@ Proposed boundaries and area-change requests are stored separately from the offi
 
 The interface can hide buttons, but the backend must enforce permissions independently.
 
-A devotee must never be able to edit another person's submission by changing an ID in a request.
+A devotee must never be able to edit another person's submission by changing an ID in a request. The same applies to applicant PII and administrator permissions: ownership and role checks are repeated on the server, and no client-supplied role, status, or permission value is trusted.
 
 ### Rule 3: Historical records are preserved
 
@@ -114,13 +115,13 @@ Database backups, tested restoration procedures, environment configuration, depl
 
 - [ ] 0.1 Document all confirmed requirements.
 - [ ] 0.2 Establish the JavaScript-only rule.
-- [ ] 0.3 Define visitor, devotee, administrator, and any future coordinator roles.
+- [ ] 0.3 Define visitor, applicant, devotee, administrator, Super Admin, and any future coordinator roles.
 - [ ] 0.4 Define every page and navigation item.
 - [ ] 0.5 Define every database collection and its purpose.
 - [ ] 0.6 Define the geographic hierarchy and area lifecycle.
 - [ ] 0.7 Define invitation reporting and coverage calculations.
-- [ ] 0.8 Define the locality proposal, editing, withdrawal, and approval workflows.
-- [ ] 0.9 Define privacy, security, and data-retention requirements.
+- [ ] 0.8 Define the devotee application, review, and reapplication workflows, plus locality proposal editing, withdrawal, and approval.
+- [ ] 0.9 Define privacy, security, and data-retention requirements, including private applicant PII and invitation-report contributor identity.
 - [ ] 0.10 Define the testing strategy and release criteria.
 - [ ] 0.11 Record decisions that remain open rather than silently inventing answers.
 - [ ] 0.12 Maintain a feature inventory so nothing disappears between coding sessions.
@@ -167,17 +168,23 @@ No major feature should enter implementation without a defined purpose, user wor
 - Interactive Map.
 - Area Details.
 - Login.
-- Registration.
+- Devotee Application (six approved fields; no date of birth).
+- Application Status (limited applicant view).
+- Email Verification.
+- Password Recovery.
 - Devotee Dashboard.
 - Add Invitations.
 - My Reports.
 - Locality Proposals.
+- Account and own application summary.
 - Administrator Dashboard.
 - Area Management.
 - Population Management.
 - Invitation Report Management.
 - Analytics.
 - Devotee Management.
+- Administrator Management (Super Admin only).
+- Security Settings (Super Admin only).
 - Audit History.
 
 ### Completion gate
@@ -280,19 +287,24 @@ This is a starting structure. We can adapt it as the architecture becomes cleare
 
 ### Core collections
 
-| Collection          | Purpose                                                |
-| ------------------- | ------------------------------------------------------ |
-| `users`             | Accounts, roles, and profile information               |
-| `areas`             | Official geographic areas and boundaries               |
-| `localityProposals` | Proposed areas and boundary changes                    |
-| `invitationReports` | Submitted invitation counts                            |
-| `populationRecords` | Population estimates and their sources                 |
-| `auditLogs`         | Traceable administrative and security-relevant actions |
-| `areaAssignments`   | Optional coordinator or devotee-area assignments       |
-| `notifications`     | In-app notifications, if implemented                   |
-| `systemSettings`    | Controlled application settings                        |
+| Collection                 | Purpose                                                                 |
+| -------------------------- | ----------------------------------------------------------------------- |
+| `users`                    | Account identity, role, status, and authentication metadata             |
+| `devoteeApplications`      | Application snapshot, private applicant PII, and review decision         |
+| `devoteeApplicationNotes`  | Append-only internal review notes                                       |
+| `sessions`                 | Opaque session hashes, expiry, and revocation                           |
+| `authTokens`               | Single-use verification, reset, and administrator-invitation tokens     |
+| `rateLimits`               | Shared fixed-window counters for sensitive endpoints                    |
+| `areas`                    | Official geographic areas and boundaries                                |
+| `localityProposals`        | Proposed areas and boundary changes                                     |
+| `invitationReports`        | Submitted invitation counts and report submitter                        |
+| `populationRecords`        | Population estimates and their sources                                  |
+| `auditLogs`                | Traceable administrative and security-relevant actions                  |
+| `areaAssignments`          | Optional coordinator or devotee-area assignments                        |
+| `notifications`            | In-app notifications, if implemented                                    |
+| `systemSettings`           | Controlled application settings                                         |
 
-We should not create every collection just because it appears in this list. Each one should be introduced with its actual use and appropriate tests.
+We should not create every collection just because it appears in this list. Each one should be introduced with its actual use and appropriate tests. Applicant gender, phone, and custom message belong only on `devoteeApplications`, never on `users` or public projections. Date of birth is not collected at all. Invitation reports must not store individual invitee names, phone numbers, or email addresses by default.
 
 ### Acceptance criteria
 
@@ -304,49 +316,103 @@ We should not create every collection just because it appears in this list. Each
 
 ---
 
-## Phase 4 — Authentication and authorization
+## Phase 4 — Authentication, devotee applications, and authorization
 
-**Goal:** Secure the application before introducing sensitive write operations.
+**Goal:** Secure the application before introducing sensitive write operations. Public registration must create a reviewable devotee application, never an immediately usable devotee account.
 
 ### Tasks
 
 - [ ] 4.1 Choose the authentication approach.
-- [ ] 4.2 Implement registration.
-- [ ] 4.3 Implement login and logout.
-- [ ] 4.4 Implement secure session handling.
-- [ ] 4.5 Implement password recovery if password-based authentication is selected.
-- [ ] 4.6 Implement email verification if required by the registration policy.
-- [ ] 4.7 Implement the user profile.
-- [ ] 4.8 Define the account lifecycle.
-- [ ] 4.9 Define account suspension and reactivation.
-- [ ] 4.10 Implement role-based permissions.
-- [ ] 4.11 Protect server-side API routes.
-- [ ] 4.12 Protect administrator pages.
-- [ ] 4.13 Test unauthorized and forbidden requests.
-- [ ] 4.14 Add rate limiting to sensitive authentication endpoints.
-- [ ] 4.15 Add security logging without recording passwords, tokens, or other secrets.
+- [ ] 4.2 Implement the devotee application form with the six approved fields only: full name, email, password, phone, gender (Male/Female), and an optional custom message. Do not collect date of birth.
+- [ ] 4.3 Require email verification before an application can be approved.
+- [ ] 4.4 Implement login and logout for active accounts.
+- [ ] 4.5 Implement secure, revocable session handling.
+- [ ] 4.6 Implement password recovery.
+- [ ] 4.7 Implement the user profile and the owner-only application summary.
+- [ ] 4.8 Define the account and application lifecycle: pending verification, pending approval, active, rejected, expired, suspended, invited, and deleted.
+- [ ] 4.9 Build the `/admin/devotees` application review and devotee management dashboard.
+- [ ] 4.10 Implement approval, rejection, internal notes, and review history.
+- [ ] 4.11 Implement devotee suspension and reactivation with immediate session revocation.
+- [ ] 4.12 Implement devotee, administrator, and Super Admin roles with server-enforced permissions.
+- [ ] 4.13 Implement Super Admin-only administrator creation, invitation, permission changes, and suspension.
+- [ ] 4.14 Protect server-side API routes and administrator pages.
+- [ ] 4.15 Prevent privilege escalation through request bodies, query strings, headers, or client-side role manipulation.
+- [ ] 4.16 Add rate limiting to sensitive authentication, application, and administrative endpoints.
+- [ ] 4.17 Add audit logging without recording passwords, tokens, applicant PII, or internal note text.
+- [ ] 4.18 Test unauthorized and forbidden requests, including IDOR and self-promotion attempts.
 
 ### Roles
 
 **Visitor**
 
 - Can access approved public information.
-- Cannot submit invitation reports.
-- Cannot view devotee-only proposal history.
+- Can submit a devotee application.
+- Cannot submit invitation reports or use devotee features.
+- Cannot see applicant or devotee PII.
+
+**Applicant (verified, pending or rejected)**
+
+- Can submit the six-field application and verify their email while pending.
+- May sign in to a limited `application` session that shows only `/application-status` and their own application summary.
+- Cannot use devotee features, edit their profile, change their password, or access administrator data until approved.
+- Receives status updates by email. Rejection notices are generic and never reveal internal notes or reviewer-only information.
 
 **Registered devotee**
 
+- Must have a verified email and an approved application.
 - Can submit invitation reports.
 - Can view locality proposal history.
-- Can view their own reports and profile.
+- Can view their own reports, profile, and application summary.
 - Can submit and manage their own locality proposals, subject to the final authorization rules.
+- Cannot see another contributor's identity, applicant PII, or administrative data.
 
 **Administrator**
 
-- Can create and edit official areas.
-- Can review, approve, reject, or request corrections to proposals.
-- Can manage population data and invitation reports.
-- Can manage accounts and authorized administrative settings.
+- Is created by a Super Admin through a single-use invitation and receives only the permissions assigned to them.
+- Can review devotee applications, manage devotees, access private invitation reports, read audit history, or manage other authorized data only when the corresponding permission is granted.
+- Can create and edit official areas or review proposals only when those later-stage permissions exist and are granted.
+- Cannot create administrators, change Super Admin privileges, or change critical security settings.
+
+**Super Admin**
+
+- Is the owner-level account, created through the controlled bootstrap/recovery path.
+- Has full platform authority and can create, invite, suspend, and reactivate administrative accounts.
+- Assigns granular administrator permissions from a closed allow-list.
+- Super Admin capabilities cannot be granted through an ordinary permission update. Critical security settings are deployment-level controls in Stage 2, not an in-app grant.
+- Cannot self-demote or remove the last active Super Admin; recovery uses the documented and tested CLI procedure.
+
+There is one stored `admin` role. "Moderator" is a responsibility/permission profile with granular permissions, not a separate role. The server must not rely on a label; it enforces the role and granted permissions.
+
+### Devotee application and approval workflow
+
+1. A visitor submits the six-field form. The account starts `pending_verification` and the application starts `pending`.
+2. No session is created. The applicant verifies their email and the account moves to `pending_approval`.
+3. The verified applicant whose application is pending approval may sign in to a limited `application` session that reads only their own status/summary. The reserved `expired` state cannot log in or hold a session.
+4. An authorized administrator reviews the application at `/admin/devotees`.
+5. Approval requires a verified email and moves the application to `approved` and the account to `active` in one transaction; all sessions are revoked and the user logs in fresh.
+6. Rejection moves the application to `rejected` and the account to `rejected`, revokes sessions, and sends only a generic notice. A verified rejected applicant may sign in only to the limited summary.
+7. Pending, rejected, expired, and suspended accounts cannot call devotee APIs. No automatic expiry/purge job runs in Stage 2.
+8. Reapplication is not automatic in Stage 2; any Super Admin reopen is audited.
+
+### Devotee management dashboard
+
+`/admin/devotees` must provide:
+
+- Overview counts for total, pending, approved, rejected, suspended, and awaiting-verification records.
+- Server-side search by name, email, and phone, plus status/date filters and indexed sorting.
+- Cursor pagination with a default page size of 25 and a maximum of 100.
+- Applicant details, review history, append-only internal notes, and approve/reject actions.
+- Devotee search, status management, suspension/reactivation, and audit history.
+- Masked email and phone in list views; full applicant PII only in permission-gated, audited detail views.
+- No password, password hash, or internal note ever shown to an applicant.
+
+### Privacy rules
+
+- Date of birth, gender, phone number, email, and the custom message are private applicant data.
+- They must never appear in public APIs, public pages, devotee-other profiles, aggregate analytics, logs, or audit metadata.
+- Internal notes are administrator-only and are never included in a rejection notice or applicant-facing response.
+- Invitation reports store the submitter separately from the participant count, contain no invitee PII by default, and expose contributor identities only to administrators with the report permission.
+- Purpose, access, and retention rules must be documented before production collection. Retention periods require owner/privacy approval.
 
 ### Important clarification for our implementation
 
@@ -356,11 +422,20 @@ These are different actions and must have different permissions.
 
 ### Acceptance criteria
 
+- A public submission creates a pending application and never an active devotee session.
+- No application can be approved without a verified email.
+- Approve and reject decisions are atomic with the account status change.
+- Rejection notices are generic and never contain internal notes, reviewer identity, or a reason code that reveals them.
 - Visitors cannot bypass login requirements by calling APIs directly.
-- Devotees cannot access administrator-only operations.
-- Devotees cannot modify another person's proposal.
-- Sessions and credentials are handled securely.
-- Permission tests cover both allowed and denied actions.
+- Pending, rejected, expired, and suspended accounts cannot use devotee APIs.
+- Devotees cannot access administrator-only operations or modify another person's proposal.
+- Administrators cannot create administrators, change permissions, or change Super Admin privileges.
+- The last active Super Admin cannot be suspended or demoted.
+- Applicant PII is absent from public, devotee-other, aggregate, log, and audit outputs.
+- Sessions and credentials are handled securely, and suspension or permission changes revoke access immediately.
+- Permission tests cover both allowed and denied actions, including IDOR and privilege-escalation attempts.
+- `/admin/devotees` list counts match the filtered totals, and search/filter/sort/pagination operate server-side.
+- Dashboard and application workflows are verified in a real browser, or the gap is recorded as **unverified**.
 
 ---
 
@@ -578,7 +653,7 @@ The system needs to understand whether figures describe a complete parent area o
 - [ ] 10.4 Capture the reporting date.
 - [ ] 10.5 Optionally capture invitation method and notes.
 - [ ] 10.6 Validate the count and reject invalid values.
-- [ ] 10.7 Save the report with its submitter and locality.
+- [ ] 10.7 Save the report with its submitter and reporting locality, storing the submitter separately from any participating-devotee count.
 - [ ] 10.8 Prevent accidental duplicate submissions where possible.
 - [ ] 10.9 Show a clear success confirmation.
 - [ ] 10.10 Build the devotee's My Reports page.
@@ -587,6 +662,9 @@ The system needs to understand whether figures describe a complete parent area o
 - [ ] 10.13 Allow administrators to review suspicious reports.
 - [ ] 10.14 Add report filters and pagination.
 - [ ] 10.15 Test simultaneous submissions and repeated requests.
+- [ ] 10.16 Do not collect individual invitee names, phone numbers, or email addresses by default.
+- [ ] 10.17 Restrict contributor identities to authorized administrators and the contributor's own reports; devotees receive aggregates only.
+- [ ] 10.18 Audit sensitive report detail access and every report change.
 
 ### Example report
 
@@ -741,21 +819,26 @@ The dashboard displays the correct account's data and never leaks another devote
 - [ ] 14.4 Add area creation and editing.
 - [ ] 14.5 Add boundary import and editing.
 - [ ] 14.6 Add population management.
-- [ ] 14.7 Add devotee management.
+- [ ] 14.7 Build `/admin/devotees` with application review, devotee search, status management, and review history.
 - [ ] 14.8 Add report correction and moderation tools.
-- [ ] 14.9 Add filters and search to administrative tables.
+- [ ] 14.9 Add filters, search, sorting, and cursor pagination to administrative tables.
 - [ ] 14.10 Add confirmation dialogs for destructive actions.
 - [ ] 14.11 Add audit-history views.
 - [ ] 14.12 Add export functionality where authorized.
-- [ ] 14.13 Add pagination and bulk operations where useful.
+- [ ] 14.13 Add bulk operations where useful.
 - [ ] 14.14 Add clear success and failure messages.
 - [ ] 14.15 Test administrator actions against realistic data.
+- [ ] 14.16 Add administrator account management and granular permission assignment for Super Admin only.
+- [ ] 14.17 Mask email and phone in list views; audit permission-gated detail views.
+- [ ] 14.18 Prevent administrators from creating administrators, changing permissions, or changing Super Admin privileges.
 
 ### Acceptance criteria
 
-Administrators can manage approved areas, proposals, reports, population data, and user accounts through the UI.
+Administrators can review applications and manage approved areas, proposals, reports, population data, and devotee accounts through the UI, limited to their granted permissions.
 
-No normal administrative workflow should require editing database records manually or changing source code.
+Super Admins can create and manage administrator accounts through single-use invitations and change granular permissions. No administrator can escalate their own privileges.
+
+No normal administrative workflow should require editing database records manually or changing source code. Applicant PII is never shown in a list without masking, and every sensitive detail view is auditable.
 
 ---
 
@@ -833,14 +916,17 @@ The final ranking rules should be transparent and should not reward duplicate or
 - [ ] 17.10 Avoid leaking database errors or internal stack traces.
 - [ ] 17.11 Protect administrator accounts with stronger authentication where feasible.
 - [ ] 17.12 Review password recovery and account-recovery flows.
-- [ ] 17.13 Minimize personal information collected.
-- [ ] 17.14 Define who can see devotee names, profiles, and contribution details.
-- [ ] 17.15 Define data retention and deletion policies.
-- [ ] 17.16 Test common authorization and input-validation failures.
+- [ ] 17.13 Minimize personal information collected; the devotee application uses only the six approved fields and does not collect date of birth.
+- [ ] 17.14 Define who can see devotee names, profiles, application data, and contribution details.
+- [ ] 17.15 Define and approve data retention, purge, and deletion policies before any job runs.
+- [ ] 17.16 Test common authorization and input-validation failures, including role/permission injection.
 - [ ] 17.17 Review dependencies for known vulnerabilities.
 - [ ] 17.18 Ensure secrets never appear in source code, logs, or client bundles.
+- [ ] 17.19 Restrict applicant gender, phone, email, and custom messages to the owner and authorized administrators. No DOB exists to restrict.
+- [ ] 17.20 Mask contact data in administrative lists and audit sensitive detail access.
+- [ ] 17.21 Store invitation-report submitters separately from participant counts and collect no invitee PII by default.
 
-### Privacy decisions
+### Privacy rules
 
 We should not collect exact home addresses or precise personal locations unless a feature genuinely requires them.
 
@@ -848,7 +934,11 @@ For geographic submissions, the system needs the proposed area boundary, not the
 
 The public map can display aggregated statistics without exposing private account information.
 
-We should also decide whether contributor names are public, visible only to registered devotees, or visible only to administrators. Until that decision is made, the safer default is to expose aggregated contributor counts publicly and restrict identifiable contributor details.
+Applicant gender, phone number, email, and the custom message are private applicant data. They must never appear in public APIs, public pages, another devotee's profile, aggregate analytics, logs, or audit metadata. Only the authenticated owner and administrators with the applicable permission may read them, and administrative detail views are audited. Date of birth is not collected and no age-based eligibility check exists.
+
+Contributor identities on invitation reports are visible only to authorized administrators (including moderator-profile staff with the report permission) and to the contributor for their own report. Ordinary devotees receive aggregate campaign statistics and their own reports, never another contributor's identity. The report model stores no individual invitee names, phone numbers, or email addresses by default. Sensitive administrative access and changes are auditable.
+
+Retention periods are deferred; no automatic purge, expiry, or deletion job may run until explicitly approved. There is no age policy because DOB is not collected.
 
 ---
 
@@ -1603,19 +1693,34 @@ Progress checkpoint (2026-11-04; evidence in `project-status.md`):
 
 ## Stage 2 — Secure the application
 
-Preparation checkpoint (2026-11-04; no implementation):
+Revised preparation checkpoint (2026-11-05; no implementation):
 
-- [x] Decision report prepared — ADR-010 options, recommendations, security/privacy impact, and owner questions are in `stage-2-decision-report.md`.
-- [x] Authentication specification prepared — architecture, models, API contracts, validation, audit, testing, and acceptance criteria are in `stage-2-authentication-spec.md`.
-- [ ] Owner decisions approved — authentication approach, registration policy, email verification, credential method, email provider, deletion/retention.
-- [ ] Batch 0 — decision lock, models/indexes, auth primitives, bootstrap scripts, tests.
-- [ ] Registration, login, logout, sessions.
-- [ ] Email verification and password recovery.
-- [ ] Roles, permissions, protected API routes, protected administrator pages.
-- [ ] Account suspension/reactivation and audit history.
-- [ ] Browser/E2E verification and Stage 2 closure record.
+- [x] Decision report revised — ADR-010/ADR-014, the mandatory application workflow, one-admin-role model, email dependency, privacy controls, and D-01–D-27 are in `stage-2-decision-report.md`.
+- [x] Authentication and administration specification revised — application workflow, limited applicant session, roles, models/indexes, one effective session TTL, dashboard structure, API contracts, validation, audit, privacy, testing, acceptance criteria, and batches are in `stage-2-authentication-spec.md`.
+- [x] Supporting documentation synchronized — architecture, database, security, testing, deployment, product requirements, project status, README, changelog, and ADR-010/ADR-014. No implementation is authorized.
+- [x] Owner decisions accepted — D-01, D-08, D-17, D-18, D-19, D-20, D-21, D-22, D-24, D-25, D-26; DOB removed entirely; one effective session TTL.
+- [ ] Owner explicitly approves Batch 0 (D-25 is accepted).
+- [ ] Batch 0 — decision implementation, seven auth/application models and indexes, security primitives, Super Admin bootstrap/recovery, index script, tests.
+- [ ] Batch 1 — application submission, email verification, login/logout/sessions, password recovery.
+- [ ] Batch 2 — application review and devotee management APIs.
+- [ ] Batch 3 — administrator hierarchy and `/admin/devotees` UI.
+- [ ] Batch 4 — privacy boundaries and invitation-report integration.
+- [ ] Batch 5 — hardening, browser/E2E verification, and Stage 2 closure record.
 
-**Current result:** Stage 2 is designed but not implemented. No auth code, collection, dependency, or environment variable exists. Implementation begins only after the owner answers the six questions in the decision report.
+**Current result:** Stage 2 is designed and accepted but not implemented. No Stage 2 code is present on `main` or in repository history, and no authentication collection, dependency, or environment variable is active. Batch 0 begins only after the owner explicitly approves the Batch 0 checklist in `stage-2-decision-report.md`; D-25 is already accepted.
+
+**Revision summary (2026-11-05):**
+
+- Public registration is a **devotee application**, not immediate account access. Every application starts pending and requires email verification plus administrator approval.
+- The form collects only full name, email, password, phone, gender (Male/Female), and an optional custom message. **DOB is removed completely; no age eligibility check exists.**
+- A verified applicant whose application is `pending_approval` or `rejected` may sign in to a limited `application` session that reads only `/application-status` and their own summary. The reserved `expired` state cannot log in or hold any session. It grants no devotee or administrator access.
+- `/admin/devotees` covers overview counts, application search/filter/sort/pagination, applicant detail, approve/reject, internal notes, review history, devotee search/status management, suspension/reactivation, and audit history.
+- Roles are visitor, devotee, administrator, and Super Admin. There is one stored `admin` role; "Moderator" is a permission profile. Administrator creation and permission changes are Super Admin-only; Super Admin capabilities cannot be granted through ordinary permission updates.
+- Applicant PII is private by default. It is absent from public APIs, devotee-other profiles, public pages, aggregate analytics, logs, and audit metadata. No DOB exists.
+- Invitation reports store the submitter separately from the participant count, contain no invitee PII by default, and expose contributor identities only to administrators with the report permission. Ordinary devotees never see another contributor's identity.
+- Sessions use one effective TTL index on `expiresAt`; absolute expiry is enforced during validation and `absoluteExpiresAt` is not TTL-indexed.
+- No automatic applicant-PII purge or expiry job runs in Stage 2. Retention/deletion remain deferred.
+- The proposed Batch 0 models are `user`, `session`, `auth-token`, `rate-limit`, `audit-log`, `devotee-application`, and `devotee-application-note`. The bootstrap scripts are `create-super-admin.js` (including tested recovery) and `sync-indexes.js`.
 
 ## Stage 3 — Build the geographic core
 

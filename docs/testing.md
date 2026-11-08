@@ -1,6 +1,6 @@
 # Testing
 
-Last updated: 2026-11-04.
+Last updated: 2026-11-05.
 
 ## Layout
 
@@ -82,27 +82,28 @@ Results:
 
 No real-browser check was repeated during the closure run. See `project-status.md` for the complete record and the distinction between automated, process, and browser evidence.
 
-## Stage 2 authentication test plan (PROPOSED — no tests written yet)
+## Stage 2 authentication and application test plan (ACCEPTED DESIGN — no tests written yet)
 
-The full matrix is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §18. It is summarized here so the testing document remains the operational index.
+The full matrix is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §21. It is summarized here so the testing document remains the operational index.
 
-On 2026-11-04 the documentation-only Stage 2 preparation was checked with `make check-db`, `make check`, and `make ci`; all passed at the Stage 1 baseline (47 unit tests, 6 Atlas-backed integration tests, production build). No authentication test exists yet, so those runs do not verify Stage 2 behaviour.
+On 2026-11-05 the documentation-only revision passed `make check` (JS-only guard, ESLint, Prettier, 5 unit files / 47 tests). No authentication or application test exists yet, so the run does not verify Stage 2 behaviour.
 
-| Layer       | Planned suites                                                                                                                                                                     | Database | Gate                         |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------- |
-| Unit        | password hash/verify/rehash, token shape/expiry, cookie flags, permission matrix, CSRF origin rules, rate-limit windows, validation schemas, safe-user projection, audit redaction | no       | `make check`                 |
-| Integration | registration, login, sessions, verification, recovery, rate limits, admin user management, audit writes, IDOR                                                                      | yes      | `make ci`                    |
-| E2E         | visitor redirect, register/verify/login, wrong password, devotee denied admin, logout, suspension revocation, password reset, keyboard navigation                                  | yes      | `make test-e2e` (new target) |
-| Security    | enumeration, CSRF, NoSQL injection, mass assignment, session fixation, cookie attributes, last-admin/self-action guards                                                            | yes      | integration + review         |
-| Browser     | desktop and mobile login/register/recovery, focus/labels, admin dialogs                                                                                                            | yes      | manual record                |
+| Layer       | Planned suites                                                                                                                                                                                                                                                                                                        | Database | Gate                         |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------- |
+| Unit        | password hash/verify/rehash, token shape/expiry, cookie flags, session scope, single-TTL calculation, permission matrix, application state machine, CSRF origin rules, rate-limit windows, six-field validation with strict unknown-key rejection, safe-user/PII projection, audit redaction, admin-permission grants | no       | `make check`                 |
+| Integration | application submission, duplicate handling, verification, approve/reject atomicity, notes access, active login, limited applicant login, sessions, recovery, rate limits, devotee management, administrator hierarchy/invitation, IDOR, PII projections, audit                                                        | yes      | `make ci`                    |
+| E2E         | apply/verify/limited applicant summary, admin review/approve, approved login, generic rejection, devotee denied admin, suspension revocation, administrator invitation/permissions, invitation-report privacy, keyboard navigation                                                                                    | yes      | `make test-e2e` (new target) |
+| Security    | enumeration, CSRF, NoSQL injection, mass assignment, role/permission injection, Super Admin capability injection, session fixation, cookie attributes, scope escalation, self-promotion, last-Super-Admin guard, PII leakage, unapproved-field injection                                                              | yes      | integration + review         |
+| Browser     | desktop/mobile application, login, recovery, admin review, notes, permission dialogs, masking, focus/labels                                                                                                                                                                                                           | yes      | manual record                |
 
 Rules that carry over:
 
 - Integration suites use `MONGODB_URI_TEST` only; the `_test` suffix guard is never weakened.
-- Auth tests delete only their own collections in `utsav_connect_test`; they never touch `utsav_connect`.
-- Tests use a development mailbox or stub, never a real email provider.
+- Auth/application tests delete only their own collections in `utsav_connect_test`; they never touch `utsav_connect`.
+- Tests use synthetic applicant data and a development mailbox or stub, never a real email provider or real person's PII.
+- Never snapshot full applicant documents, tokens, or PII in test output.
 - Any browser or E2E check that cannot run is recorded as **unverified**, not assumed.
-- `UTSAV_TEST_REQUIRE_DB=1` remains mandatory in `make ci`; auth tests must not silently skip in CI.
+- `UTSAV_TEST_REQUIRE_DB=1` remains mandatory in `make ci`; auth/application tests must not silently skip in CI.
 
 ## Planned
 

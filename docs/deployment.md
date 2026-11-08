@@ -1,6 +1,6 @@
 # Deployment and environment verification
 
-Last updated: 2026-11-04. This is an environment-configuration record, **not** evidence that Utsav-Connect has been deployed. Production hosting, domain, monitoring, rollback, backup rehearsal, and release approval are all Stage 7 work.
+Last updated: 2026-11-05. This is an environment-configuration record, **not** evidence that Utsav-Connect has been deployed. Production hosting, domain, monitoring, rollback, backup rehearsal, and release approval are all Stage 7 work.
 
 ## Current status
 
@@ -47,24 +47,30 @@ Expected sequence:
 
 An earlier attempt that day resolved the Atlas SRV/TXT records and reached the cluster but returned `bad auth`, indicating a credential mismatch rather than a network or TLS problem. After the database-user password was reset and both local URIs were updated, the verification procedure above passed in full: `make check-db` reached `utsav_connect`, `make ci` passed all six Atlas-backed integration tests and the production build, and a served production build returned 200 from the pages and health endpoint. No credentials were printed during verification.
 
-## Stage 2 authentication configuration (PROPOSED — not deployed)
+## Stage 2 authentication and application configuration (ACCEPTED DESIGN — not deployed)
 
-When Stage 2 is approved and implemented, the following configuration and operational steps will be required **before** enabling authentication in any shared environment. None are active today.
+When Batch 0 is explicitly approved and implemented, the following configuration and operational steps will be required **before** enabling the application workflow in any shared environment. None are active today.
 
-| Item                | Requirement                                                                                                                                    |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AUTH_SECRET`       | At least 32 random bytes, unique per environment, server-only. Generate with `openssl rand -base64 48`; never reuse across environments.       |
-| `REGISTRATION_MODE` | `closed` for pilot; `open` only after the email provider, verification flow, and abuse monitoring are verified.                                |
-| Email provider      | Select the vendor and sender domain (D-08); configure SPF, DKIM, and DMARC; keep API keys in the hosting secret store.                         |
-| Cookie domain       | Production uses `Secure` + `__Host-` cookie semantics, so the app must be served over HTTPS on the final host.                                 |
-| Proxy trust         | Set `TRUST_PROXY=1` only when a trusted reverse proxy supplies `X-Forwarded-For`; otherwise rate limiting uses a conservative key.             |
-| Indexes             | Run `node scripts/sync-indexes.js` after the first deployment of the auth models and verify the expected indexes exist.                        |
-| Admin bootstrap     | Run `node scripts/create-admin.js` once, interactively, with production `MONGODB_URI`; no default credentials exist.                           |
-| Email test          | Send a verification and reset message to a controlled mailbox before opening registration.                                                     |
-| Cookie/header check | Verify `Set-Cookie` flags, `Cache-Control: no-store`, and the existing security headers through the production host.                           |
-| Rollback            | Know how to disable registration (`REGISTRATION_MODE=closed`) and revoke sessions (admin action or database operation) without deploying code. |
+| Item                   | Requirement                                                                                                                                                                                                          |
+| ---------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AUTH_SECRET`          | At least 32 random bytes, unique per environment, server-only. Generate with `openssl rand -base64 48`; never reuse across environments.                                                                             |
+| `REGISTRATION_MODE`    | `closed` until the workflow is verified; `applications` only after email, review staffing, and the privacy/deletion policy are ready. No mode grants immediate devotee access.                                       |
+| Email provider         | Required for verification, approval/rejection notices, password recovery, and administrator invitations (D-08). Configure SPF, DKIM, DMARC; keep API keys in the hosting secret store.                               |
+| Email templates        | Review approval and rejection templates before launch. Rejection must be generic and must not include internal notes.                                                                                                |
+| Cookie domain          | Production uses `Secure` + `__Host-` cookie semantics, so the app must be served over HTTPS on the final host.                                                                                                       |
+| Proxy trust            | Set `TRUST_PROXY=1` only when a trusted reverse proxy supplies `X-Forwarded-For`; otherwise rate limiting uses a conservative key.                                                                                   |
+| Indexes                | Run `node scripts/sync-indexes.js` after the first deployment of the auth/application models and verify exactly one session TTL index on `expiresAt`, no TTL on `absoluteExpiresAt`, and the expected other indexes. |
+| Super Admin bootstrap  | Run `node scripts/create-super-admin.js` once, interactively, with production `MONGODB_URI`; exactly one active Super Admin initially. No default credentials exist.                                                 |
+| Super Admin recovery   | Follow the documented CLI recovery procedure; test it against `utsav_connect_test` before launch. It must not silently create a second active Super Admin.                                                           |
+| Administrator accounts | Create administrators from the Super Admin UI/API via single-use 7-day invitations. One stored `admin` role; "Moderator" is a permission profile. Never set or share an administrator's password manually.           |
+| Application retention  | No automatic purge or expiry job in Stage 2. Retention/deletion remain deferred (D-19/D-10); do not add an operational job or environment variable before explicit approval.                                         |
+| Applicant access       | Verify that a verified pending/rejected applicant can read only `/application-status` and their own summary, never devotee/admin routes, internal notes, or reviewer identity.                                       |
+| PII access             | Verify that no public/devotee-other response contains gender, phone, email, or the custom message, and that no DOB field exists. Check list masking and detail auditing.                                             |
+| Email test             | Send verification, approval, rejection, reset, and administrator-invitation messages to controlled mailboxes before opening applications.                                                                            |
+| Cookie/header check    | Verify `Set-Cookie` flags, `Cache-Control: no-store`, and the existing security headers through the production host.                                                                                                 |
+| Rollback               | Know how to disable applications (`REGISTRATION_MODE=closed`) and revoke sessions (admin action or database operation) without deploying code.                                                                       |
 
-Do not enable open registration until the Stage 2 acceptance criteria and the email-provider checks are recorded. Development email must write to the git-ignored `.local/mail/` mailbox, never to a real recipient.
+Do not enable public applications until the Stage 2 acceptance criteria, the email-provider checks, and the application-review runbook are recorded. Retention/deletion is deferred: no automatic purge runs, so applicant data is retained until an explicitly approved policy exists. Development email must write to the git-ignored `.local/mail/` mailbox, never to a real recipient.
 
 ## Future production checklist
 

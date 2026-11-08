@@ -1,6 +1,6 @@
 # Security
 
-Last updated: 2026-11-04. Lists the controls that exist in the code today and the ones still planned. Nothing here claims protection that is not implemented.
+Last updated: 2026-11-05. Lists the controls that exist in the code today and the ones still planned. Nothing here claims protection that is not implemented.
 
 ## Implemented
 
@@ -26,32 +26,60 @@ Last updated: 2026-11-04. Lists the controls that exist in the code today and th
 
 ## Not implemented yet (do not assume)
 
-- Authentication, sessions, password hashing, email verification, account lifecycle (Stage 2, ADR-010). The proposed design is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md); no code exists.
-- Authorization / role checks on the server (`api/lib/permissions.js`) — no protected routes exist because no protected data exists.
+- Authentication, sessions, password hashing, email verification, application approval, account lifecycle (Stage 2, ADR-010/ADR-014). The proposed design is in [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md); no code exists on `main` or in repository history.
+- Authorization / role checks on the server (`api/lib/auth/permissions.js`) — no protected routes exist because no protected data exists.
+- The `/admin/devotees` application review and devotee management dashboard.
 - Rate limiting on sensitive endpoints.
 - Content-Security-Policy — deferred until the Google Maps scripts/styles are known so the policy can be written correctly instead of permissively.
 - CSRF protection for mutating routes (none exist yet).
-- Audit logging collection, security event logging.
+- Audit logging collection, security event logging, sensitive-access auditing.
+- Applicant-PII access controls; no automatic retention, expiry, or deletion job is implemented or approved.
+- Invitation-report privacy enforcement (the feature is Stage 4).
 - Dependency vulnerability scanning in CI (`npm audit` is not yet part of `make ci`).
 - Automatic database backups (free tier has none — see `database.md`).
 
-## Stage 2 security design (PROPOSED — not implemented)
+## Stage 2 security design (ACCEPTED — not implemented)
 
-The following controls are specified but not active. They must not be described as implemented until the Stage 2 acceptance criteria in the specification are verified.
+The following controls are specified and accepted but not active. They must not be described as implemented until the Stage 2 acceptance criteria in the specification are verified and Batch 0 is authorized.
 
-| Area                | Proposed control                                                                                                                                      |
-| ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Sessions            | Opaque 256-bit token in an `HttpOnly`, `SameSite=Lax` cookie; `Secure` and `__Host-` prefix in production; SHA-256 hash stored in MongoDB             |
-| Revocation          | Logout, password reset, suspension, and role change revoke sessions immediately; 7-day idle and 30-day absolute lifetime                              |
-| Passwords           | Argon2id (19 MiB, 2 iterations, 1 lane) via `@node-rs/argon2`; Node `scrypt` documented fallback; versioned hash format; rehash on login              |
-| Email verification  | Single-use, 24-hour token; token in URL fragment; resend rate-limited; login blocked until verified for self-registered accounts                      |
-| Password recovery   | Single-use, 30-minute token; generic `202` response; all sessions revoked; no account enumeration                                                     |
-| CSRF                | Origin check on every mutating request; JSON content type required; `SameSite=Lax`; no permissive CORS                                                |
-| Rate limiting       | MongoDB fixed-window counters keyed by HMAC of IP/email; login, registration, verification, recovery, and admin policies                              |
-| Enumeration         | Generic login/forgot/reset/registration responses; dummy password verification for unknown emails; account-state errors only after a correct password |
-| Authorization       | Server-side role/permission map; page guards and API guards; ownership checks; middleware is not the authority                                        |
-| Audit               | Append-only `auditLogs`; admin-only viewer; HMAC-hashed IPs; no passwords, tokens, cookies, or raw emails                                             |
-| Administrator rules | No public admin registration; CLI bootstrap with hidden prompt; no self-suspension/demotion; last active admin protected                              |
+| Area                      | Proposed control                                                                                                                                                                                                                                                                                                                    |
+| ------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Sessions                  | Opaque 256-bit token in an `HttpOnly`, `SameSite=Lax` cookie; `Secure` and `__Host-` prefix in production; SHA-256 hash stored in MongoDB                                                                                                                                                                                           |
+| Revocation                | Logout, password reset, suspension, rejection, and role/permission changes revoke sessions immediately; approval revokes the limited applicant session; 7-day idle and 30-day absolute lifetime                                                                                                                                     |
+| Passwords                 | Argon2id (19 MiB, 2 iterations, 1 lane) via `@node-rs/argon2`; Node `scrypt` documented fallback; versioned hash format; rehash on login                                                                                                                                                                                            |
+| Application approval      | Public registration creates a `pending` application; no session; approval requires verified email; pending/rejected/expired accounts cannot use devotee APIs                                                                                                                                                                        |
+| Applicant access          | A verified applicant whose application is `pending_approval` or `rejected` may hold only an `application`-scope session for `/application-status` and their own `GET /api/account/application`; all other account/devotee/admin APIs require a full active session. The reserved `expired` state cannot log in or hold any session. |
+| Application decisions     | Atomic conditional updates; approval/rejection + user status + audit in a transaction; generic rejection notice; internal notes never disclosed                                                                                                                                                                                     |
+| Administrator hierarchy   | `devotee`/`admin`/`super_admin`; one stored `admin` role; "Moderator" is a permission profile; granular `adminPermissions`; Super Admin-only administrator creation and permission changes                                                                                                                                          |
+| Privilege escalation      | Strict schemas; server-derived role/status; closed permission allow-list; reserved capabilities rejected; self-promotion/demotion blocked; Super Admin capabilities never granted through ordinary permission updates                                                                                                               |
+| Session TTL               | One effective TTL index on `expiresAt`, capped at `absoluteExpiresAt`; `absoluteExpiresAt` enforced during validation and never TTL-indexed                                                                                                                                                                                         |
+| PII access                | Gender/phone/message only in the application record; no DOB collected; admin list masking; audited detail views; no public/devotee-other/aggregate exposure                                                                                                                                                                         |
+| Invitation-report privacy | Submitter stored separately from participant count; no invitee PII by default; admin-only contributor identity; devotee aggregates and own reports only                                                                                                                                                                             |
+| Audit                     | Append-only `auditLogs`; administrator-only viewer; HMAC-hashed IPs; no passwords, tokens, cookies, emails, phone numbers, gender, message, or notes                                                                                                                                                                                |
+| CSRF                      | Origin check on every mutating request; JSON content type required; `SameSite=Lax`; no permissive CORS                                                                                                                                                                                                                              |
+| Rate limiting             | MongoDB fixed-window counters keyed by HMAC of IP/email; login, application, verification, recovery, invitation, and admin policies                                                                                                                                                                                                 |
+| Enumeration               | Generic login/forgot/reset/application responses; dummy password verification for unknown emails; account-state errors only after a correct password                                                                                                                                                                                |
+| Authorization             | Server-side role/permission map; page guards and API guards; ownership checks; middleware is not the authority                                                                                                                                                                                                                      |
+| Administrator rules       | No public admin registration; CLI Super Admin bootstrap; invitation-only admin setup; no self-suspension/demotion; last Super Admin protected                                                                                                                                                                                       |
+
+## Applicant privacy rules (ACCEPTED DESIGN)
+
+- The registration form collects only full name, email, password, phone, gender (Male/Female), and an optional message. No date of birth, occupation, address, or other personal information.
+- Date of birth is not collected, stored, validated, displayed, or tested. No age eligibility or guardian-consent rule exists (D-22).
+- Gender, phone number, email, and the custom message are private applicant data.
+- They must never appear in public APIs, public pages, another devotee's profile, aggregate analytics, audit metadata, or logs.
+- Administrators see full values only through permission-gated, audited detail views. List views mask email and phone. Authorized administrators and moderator-profile staff may see all private invitation reports and contributor identities; ordinary devotees cannot see another contributor's identity.
+- The authenticated owner may read their own application summary through the limited applicant route, never internal notes or reviewer-only information.
+- Purpose and access policy are documented in the specification §17. No retention period is approved and no automatic purge job runs in Stage 2; retention/deletion remain deferred (D-10/D-19).
+
+## Invitation-report privacy rules (ACCEPTED DESIGN)
+
+- Administrators and authorized moderators can view all private invitation reports and contributor identities.
+- Ordinary devotees never see other contributors' names, email addresses, profiles, or user IDs.
+- Devotees see only approved aggregate campaign statistics and their own reports.
+- Store `submittedByUserId` separately from `participatingDevoteeCount`.
+- Do not collect individual invitee names, phone numbers, or email addresses by default.
+- All sensitive administrative access and modifications are auditable.
 
 Full detail, API contracts, and tests: [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md). Decision status: [`stage-2-decision-report.md`](stage-2-decision-report.md).
 

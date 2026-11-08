@@ -1,6 +1,6 @@
 # Project status
 
-Last updated: 2026-11-04 · Branch `main` · Source of scope: [`Roadmap.md`](Roadmap.md)
+Last updated: 2026-11-05 · Branch `main` · Source of scope: [`Roadmap.md`](Roadmap.md)
 
 Status vocabulary: **IMPLEMENTED** (code + tests + verified), **PARTIAL**, **UNVERIFIED** (exists, not proven), **PLANNED**, **BLOCKED**.
 
@@ -10,31 +10,35 @@ Stage 1 is formally closed. After the Atlas database user's password was reset a
 
 The product-requirements baseline remains PARTIAL (Phase 0 open decisions are recorded in `product-requirements.md` and ADR-010), but that is not a Stage 1 release-gate failure. **Stage 2 implementation has not been started** and requires explicit authorization.
 
-## Stage 2 preparation — COMPLETE (2026-11-04, documentation only)
+## Stage 2 preparation — ACCEPTED DESIGN (2026-11-05, documentation only)
 
-Stage 2 preparation is complete, but **no Stage 2 code exists**. The following artifacts were added for owner review:
+Stage 2 design was revised to require a **devotee application and approval workflow**, a limited applicant session for own status/summary, one stored `admin` role with granular permissions, a `/admin/devotees` management dashboard, stricter applicant-PII rules, no DOB, and invitation-report privacy. The owner accepted D-01, D-08, D-17, D-18, D-19, D-20, D-21, D-22, D-24, D-25, and D-26. **No Stage 2 code is present on `main` or in repository history**, and nothing in this revision authorizes implementation.
 
-| Artifact                                                           | Status   | Contents                                                                                                 |
-| ------------------------------------------------------------------ | -------- | -------------------------------------------------------------------------------------------------------- |
-| [`stage-2-decision-report.md`](stage-2-decision-report.md)         | COMPLETE | Every unresolved ADR-010 decision, options, recommendation, security/privacy impact, and owner questions |
-| [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) | PROPOSED | Auth architecture, models/indexes, API contracts, validation, errors, audit, tests, acceptance criteria  |
-| `architecture.md` §8                                               | UPDATED  | Planned auth module shape and boundaries                                                                 |
-| `security.md` “Stage 2 security design”                            | UPDATED  | Proposed controls, explicitly marked not implemented                                                     |
-| `database.md` “Stage 2 auth collections”                           | UPDATED  | Proposed collections/indexes, explicitly marked not created                                              |
-| `testing.md` “Stage 2 authentication test plan”                    | UPDATED  | Planned unit/integration/E2E/security matrix                                                             |
-| `deployment.md` “Stage 2 authentication configuration”             | UPDATED  | Proposed environment, email, index, bootstrap, and cookie requirements                                   |
+| Artifact                                                           | Status            | Contents                                                                                                                                                                   |
+| ------------------------------------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`stage-2-decision-report.md`](stage-2-decision-report.md)         | DECISIONS LOCKED  | D-01–D-27 register, accepted decisions, deferred policy items, and Batch 0 checklist                                                                                       |
+| [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) | ACCEPTED DESIGN   | Application-first workflow, limited applicant session, roles/permissions, seven models and indexes, one session TTL, dashboard, API contracts, privacy, tests, and batches |
+| [`decisions.md`](decisions.md) ADR-010 / ADR-014                   | RESOLVED/ACCEPTED | ADR-010 resolved (design); ADR-014 accepted as the design baseline; implementation still unauthorized                                                                      |
+| [`architecture.md`](architecture.md) §8                            | UPDATED           | Accepted application-first flow, limited session, role hierarchy, dashboard boundaries, PII and invitation-report boundaries                                               |
+| [`database.md`](database.md) Stage 2 collections                   | UPDATED           | Seven proposed auth/application collections, one session TTL index, no retention job, and report privacy shape                                                             |
+| [`security.md`](security.md) Stage 2 design                        | UPDATED           | Accepted controls, applicant privacy rules, privilege-escalation defences, and invitation-report privacy                                                                   |
+| [`testing.md`](testing.md) Stage 2 plan                            | UPDATED           | Planned unit/integration/E2E/security matrix for applications, limited sessions, approval, roles, PII, and reports                                                         |
+| [`deployment.md`](deployment.md) Stage 2 configuration             | UPDATED           | Accepted email, application-mode, index, Super Admin bootstrap/recovery, and rollback requirements; no retention job                                                       |
+| [`Roadmap.md`](Roadmap.md) Phase 4 / Stage 2                       | UPDATED           | Application workflow, limited applicant session, roles, dashboard, privacy rules, acceptance criteria, and revised batches                                                 |
+| [`product-requirements.md`](product-requirements.md)               | UPDATED           | Roles, pages, six application fields, report privacy, and resolved/deferred decisions                                                                                      |
+| `README.md`, `CHANGELOG.md`                                        | UPDATED           | Status, accepted auth/application scope, roadmap, docs index, and change record                                                                                            |
 
-**Decisions still open (ADR-010 / decision report):** authentication approach (first-party opaque sessions recommended), registration policy, email verification, credential method, email provider, account deletion/retention. The recommended approval package is in §6 of the decision report; the six owner questions are in §7.
+**Accepted:** D-01, D-08, D-17, D-18, D-19, D-20, D-21, D-22, D-24, D-25, D-26. **DOB is removed completely**; the six fields are full name, email, password, phone, gender (Male/Female), and optional custom message. **Deferred:** D-10 audit retention, D-19 applicant-PII retention periods, D-07 account deletion, and D-16 Stage 3–7 platform choices. No automatic purge/expiry job runs in Stage 2.
 
-**Preparation verification (2026-11-04):** this was a documentation-only change; no auth code, model, dependency, collection, or environment variable was added.
+**D-25 accepted:** Option A is approved. A verified applicant whose application is `pending_approval` or `rejected` may hold an `application`-scope session for `/application-status` and `GET /api/account/application` only. The reserved `expired` state cannot log in or hold any session. Batch 0 still requires explicit implementation approval.
 
-| Command         | Result                                                                                                                                     |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `make check-db` | **PASSED** — Atlas reachable, `database=utsav_connect`, latency 743 ms; host and database only, no URI or credential printed               |
-| `make check`    | **PASSED** — JS-only guard, ESLint, Prettier, 5 unit files / 47 tests                                                                      |
-| `make ci`       | **PASSED** — the above plus 2 integration files / 6 Atlas-backed tests with `UTSAV_TEST_REQUIRE_DB=1`, and the production build (6 routes) |
+**Preparation verification (2026-11-05):** this was a documentation-only change; no authentication code, model, dependency, collection, or environment variable was added. `make check` passed after the final edits (JavaScript-only guard, ESLint, Prettier, 5 unit files / 47 tests). `git diff --check` passed, and every relative link in the 13 edited Markdown files resolved (56 links). No Stage 2 integration, build, or browser check can exist because no Stage 2 feature or code changed.
 
-This confirms the documentation change did not break the existing Stage 1 gates. It does **not** verify any Stage 2 behaviour. No new browser check was run because no UI changed; the prior Stage 1 browser record remains the latest browser evidence.
+| Command      | Result                                                                                            |
+| ------------ | ------------------------------------------------------------------------------------------------- |
+| `make check` | **PASSED** — JS-only guard, ESLint, Prettier, 5 unit files / 47 tests; no Stage 2 test exists yet |
+
+This confirms the documentation change does not introduce TypeScript or break the static/unit gate. It does **not** verify any Stage 2 behaviour. No new browser check was run because no UI changed; the prior Stage 1 browser record remains the latest browser evidence.
 
 ## Stage 1 — Foundation
 
@@ -64,14 +68,14 @@ This confirms the documentation change did not break the existing Stage 1 gates.
 
 ## Stages 2–7
 
-| Stage | Scope (roadmap)                                          | Status                                                                                               |
-| ----- | -------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
-| 2     | Authentication, roles, protected routes (Phase 4)        | PREPARED — decision report + authentication spec complete (docs only); implementation not authorized |
-| 3     | Geographic hierarchy, Google Maps, boundaries, proposals | PLANNED                                                                                              |
-| 4     | Population records, invitation reports, coverage         | PLANNED                                                                                              |
-| 5     | Dashboards, administration, analytics                    | PLANNED                                                                                              |
-| 6     | Notifications, leaderboard, exports                      | PLANNED                                                                                              |
-| 7     | Deployment, monitoring, backups, launch                  | PLANNED                                                                                              |
+| Stage | Scope (roadmap)                                                   | Status                                                            |
+| ----- | ----------------------------------------------------------------- | ----------------------------------------------------------------- |
+| 2     | Devotee applications, approval, roles, protected routes (Phase 4) | ACCEPTED DESIGN — docs complete; Batch 0 awaits explicit approval |
+| 3     | Geographic hierarchy, Google Maps, boundaries, proposals          | PLANNED                                                           |
+| 4     | Population records, invitation reports, coverage                  | PLANNED                                                           |
+| 5     | Dashboards, administration, analytics                             | PLANNED                                                           |
+| 6     | Notifications, leaderboard, exports                               | PLANNED                                                           |
+| 7     | Deployment, monitoring, backups, launch                           | PLANNED                                                           |
 
 ## Verification record (2026-11-03)
 
@@ -123,17 +127,17 @@ An earlier attempt on the same day failed with `MongoServerError: bad auth : aut
 
 ## Next batch
 
-Stage 1 is closed and Stage 2 **implementation has not started**. The preparation documents are complete, but ADR-010 remains open pending owner approval.
+Stage 1 is closed and Stage 2 **implementation has not started**. The design decisions are accepted (ADR-010 resolved, ADR-014 accepted, D-25 accepted), but Batch 0 requires explicit owner approval.
 
-**Exact next implementation batch (only after approval): Stage 2 Batch 0 — decision lock and foundation.**
+**Exact next implementation batch (only after approval): Stage 2 Batch 0 — foundation.**
 
-- Accept the decision report answers and record them in `docs/decisions.md` (ADR-014 moves from PROPOSED to ACCEPTED).
-- Add auth/email environment variables to `.env.example` and `api/lib/env/env.js`.
-- Add the `users`, `sessions`, `authTokens`, `rateLimits`, and `auditLogs` Mongoose models with indexes and safe projections.
-- Add password, token, session-cookie, permission, CSRF, and rate-limit primitives with unit tests.
-- Add `scripts/create-admin.js`, `scripts/create-user.js`, and `scripts/sync-indexes.js`.
-- Add integration tests for model constraints/indexes and the bootstrap script.
-- Do **not** add login UI, registration UI, or public auth Route Handlers in Batch 0.
+- Implement the already-recorded decisions in `docs/decisions.md`; do not reopen them.
+- Add auth/application/email environment variables to `.env.example` and `api/lib/env/env.js`. No retention or purge variables.
+- Add seven Mongoose models with indexes and safe projections: `user`, `session`, `auth-token`, `rate-limit`, `audit-log`, `devotee-application`, and `devotee-application-note`.
+- Add password, token, session-cookie (with scope), permission, application-state, CSRF, rate-limit, validation, and audit primitives with unit tests.
+- Add `scripts/create-super-admin.js` (including documented recovery) and `scripts/sync-indexes.js`. Do **not** add a `create-user` or `create-admin` script; either would bypass the mandatory application/invitation workflow.
+- Add integration tests for model constraints/indexes, application-state transitions, permission grants, the limited applicant session, and the Super Admin bootstrap/recovery.
+- Do **not** add login UI, application UI, administrator UI, or public auth Route Handlers in Batch 0.
 - Gate: `make check`, `make ci` (Atlas `_test` database, no skips), production build, documentation update.
 
-The six owner questions that must be answered first are in `stage-2-decision-report.md` §7. Until then, no authentication code, model, dependency, collection, or environment variable should be added.
+The final decision checklist is in `stage-2-decision-report.md` §8. Until the owner explicitly approves it, no authentication code, model, dependency, collection, environment variable, or database bootstrap should be added. D-10, D-19 retention, D-07 deletion, and D-16 remain deferred and must not be implemented by assumption.

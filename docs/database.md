@@ -1,6 +1,6 @@
 # Database
 
-Last updated: 2026-11-04.
+Last updated: 2026-11-05.
 
 ## Where the data lives
 
@@ -34,28 +34,48 @@ Measured from the developer machine (India) to the cluster: first connection ≈
 
 ## Collections
 
-None are defined yet. Per roadmap Phase 3, each collection is introduced with its first real use and tests. The planned set: `users`, `areas`, `localityProposals`, `invitationReports`, `populationRecords`, `auditLogs`, `areaAssignments`, `notifications`, `systemSettings`.
+None are defined yet. Per roadmap Phase 3, each collection is introduced with its first real use and tests. The planned set: `users`, `devoteeApplications`, `devoteeApplicationNotes`, `sessions`, `authTokens`, `rateLimits`, `areas`, `localityProposals`, `invitationReports`, `populationRecords`, `auditLogs`, `areaAssignments`, `notifications`, `systemSettings`.
 
-### Stage 2 auth collections (PROPOSED — not created)
+### Stage 2 auth and application collections (ACCEPTED DESIGN — not created)
 
-The authentication specification introduces five collections before the geographic ones. They are designed but **not present in any database** and no model file exists yet. Full field and index definitions: [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §4.
+The authentication specification introduces seven collections before the geographic ones. They are designed but **not present in any database** and no model file exists yet. Full field and index definitions: [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §4.
 
-| Collection   | Purpose                                                       | Key indexes                                                                                       |
-| ------------ | ------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `users`      | Account, role, status, password hash, verification timestamps | `email` unique; `role + status`; `status + createdAt`; `createdAt`                                |
-| `sessions`   | Opaque session hash, expiry, revocation                       | `tokenHash` unique; `userId + revokedAt`; TTL on `expiresAt`, `absoluteExpiresAt`                 |
-| `authTokens` | Single-use email-verification and password-reset token hashes | `tokenHash` unique; `userId + purpose + usedAt`; TTL on `expiresAt`                               |
-| `rateLimits` | MongoDB-backed fixed-window counters for sensitive endpoints  | `_id` HMAC key; TTL on `expiresAt`                                                                |
-| `auditLogs`  | Append-only authentication and admin action history           | `createdAt`; `actorUserId + createdAt`; `action + createdAt`; `targetType + targetId + createdAt` |
+| Collection                | Purpose                                                                    | Key indexes                                                                                                                                                                        |
+| ------------------------- | -------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `users`                   | Account identity, role, status, password hash, verification timestamps     | `email` unique; `role + status`; `status + createdAt`; `role + createdAt`; `applicationId`                                                                                         |
+| `devoteeApplications`     | Application snapshot, private applicant PII, review decision               | `userId` unique partial (`isCurrent`); `status + submittedAt`; `submittedAt`; `applicantEmail`; `applicantPhoneNormalized`; `applicantNameSearch`; `reviewedByUserId + reviewedAt` |
+| `devoteeApplicationNotes` | Append-only internal notes                                                 | `applicationId + createdAt`; `authorUserId + createdAt`                                                                                                                            |
+| `sessions`                | Opaque session hash, scope, expiry, revocation                             | `tokenHash` unique; `userId + revokedAt`; one TTL on effective `expiresAt`; `absoluteExpiresAt` validated but not TTL-indexed                                                      |
+| `authTokens`              | Single-use verification, reset, and admin-invitation token hashes          | `tokenHash` unique; `userId + purpose + usedAt`; TTL on `expiresAt`                                                                                                                |
+| `rateLimits`              | MongoDB-backed fixed-window counters for sensitive endpoints               | `_id` HMAC key; TTL on `expiresAt`                                                                                                                                                 |
+| `auditLogs`               | Append-only authentication, application, administrator, and access history | `createdAt`; `actorUserId + createdAt`; `action + createdAt`; `targetType + targetId + createdAt`                                                                                  |
 
 Rules for these collections:
 
 - Store only SHA-256 hashes of session and auth tokens; the raw value exists only in the cookie or email link.
 - Store `passwordHash` with `select: false`; no API projection includes it.
+- Do **not** store gender, phone, or the custom message on `users`. They live only on `devoteeApplications` and are never copied into public projections. **Date of birth is not collected or stored anywhere.**
+- Applicant name/email snapshots on the application are immutable; the current account name/email on `users` may change later.
 - Hash IP addresses with `AUTH_SECRET` (HMAC-SHA-256); never store raw IPs in sessions or audit logs.
 - Create indexes with `scripts/sync-indexes.js` in deployed environments; do not rely on implicit production index creation.
-- No TTL on `auditLogs` until the owner approves a retention period (D-10).
+- No TTL on `auditLogs` or application PII until the owner approves retention (D-10/D-19).
 - Integration tests may create and drop these collections only in `utsav_connect_test`.
+
+### Application retention (DEFERRED — no automatic purge)
+
+No applicant-PII retention period, automatic expiry, anonymisation, or purge job is approved for Stage 2. No TTL index exists on `devoteeApplications`, `devoteeApplicationNotes`, or `auditLogs`. The `expired` state is reserved and is not set by a Stage 2 job. A future policy must be explicitly approved before implementation; see [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §4.9 and D-19/D-10 in [`decisions.md`](decisions.md).
+
+### Invitation-report collection (Stage 4 — PROPOSED)
+
+`invitationReports` is not part of Batch 0. Its privacy shape is fixed now:
+
+- `submittedByUserId` is stored separately from `participatingDevoteeCount`.
+- No invitee names, phone numbers, or email addresses are collected by default.
+- Contributor identity is resolved from `users` only for administrators with `invitation-report:read:all`.
+- Devotees receive aggregate statistics and their own reports only.
+- Indexes: `areaId + reportDate`, `submittedByUserId + createdAt`, `status + reportDate`.
+
+Full field list: [`stage-2-authentication-spec.md`](stage-2-authentication-spec.md) §4.8.
 
 Conventions to apply when they arrive (roadmap 3.3–3.10):
 
@@ -63,7 +83,7 @@ Conventions to apply when they arrive (roadmap 3.3–3.10):
 - `_id` ObjectId everywhere; human-readable `slug` with a unique index where users see identifiers (areas).
 - GeoJSON `Polygon`/`MultiPolygon`/`Point` fields with `2dsphere` indexes.
 - Pagination by cursor on `_id` (or `createdAt,_id`), default page size 25, max 100.
-- Multi-document writes (approve proposal → create area → write audit log) in a transaction. Atlas clusters are replica sets, so transactions are available without extra setup.
+- Multi-document writes (approve application → update user → write audit log) in a transaction. Atlas clusters are replica sets, so transactions are available without extra setup.
 
 ## Access control (Atlas)
 
