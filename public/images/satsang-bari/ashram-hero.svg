@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fff4e0"/>
+      <stop offset="60%" stop-color="#ffdba5"/>
+      <stop offset="100%" stop-color="#f4ebd0"/>
+    </linearGradient>
+    <linearGradient id="roofGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#7a1c1c"/>
+      <stop offset="50%" stop-color="#983809"/>
+      <stop offset="100%" stop-color="#581111"/>
+    </linearGradient>
+  </defs>
+  <!-- Warm Atmospheric Sky -->
+  <rect width="1200" height="630" fill="url(#skyGrad)"/>
+  <!-- Sun / Aura Glow -->
+  <circle cx="600" cy="250" r="180" fill="#ffc06d" opacity="0.3" filter="blur(40px)"/>
+  <!-- Satsang Ashram & Temple Silhouette -->
+  <path d="M150 520 L1050 520 L1050 530 L150 530 Z" fill="#431604"/>
+  <!-- Main Temple Structure -->
+  <rect x="450" y="320" width="300" height="200" fill="#fcf9f2" stroke="#431604" stroke-width="4"/>
+  <path d="M420 320 L600 160 L780 320 Z" fill="url(#roofGrad)" stroke="#431604" stroke-width="4"/>
+  <!-- Spire / Pinnacle -->
+  <path d="M570 160 L600 80 L630 160 Z" fill="#d4af37" stroke="#431604" stroke-width="3"/>
+  <circle cx="600" cy="74" r="8" fill="#d4af37"/>
+  <!-- Temple Pillars & Arch -->
+  <rect x="490" y="380" width="40" height="140" fill="#d4af37" opacity="0.8"/>
+  <rect x="580" y="380" width="40" height="140" fill="#d4af37" opacity="0.8"/>
+  <rect x="670" y="380" width="40" height="140" fill="#d4af37" opacity="0.8"/>
+  <path d="M530 420 Q600 340 670 420 Z" fill="#7a1c1c"/>
+  <!-- Foreground Sacred Trees / Greenery -->
+  <circle cx="250" cy="480" r="70" fill="#365314" opacity="0.9"/>
+  <circle cx="200" cy="500" r="50" fill="#1e293b" opacity="0.8"/>
+  <circle cx="950" cy="480" r="70" fill="#365314" opacity="0.9"/>
+  <circle cx="1000" cy="500" r="50" fill="#1e293b" opacity="0.8"/>
+  <!-- Decorative Text Overlay Banner -->
+  <rect x="300" y="550" width="600" height="50" rx="8" fill="#581111" stroke="#d4af37" stroke-width="2"/>
+  <text x="600" y="581" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="16" fill="#ffdba5" text-anchor="middle" letter-spacing="3">SATSANG ASHRAM · DEOGHAR · SANCTUARY OF LOVE &amp; DEVOTION</text>
+</svg>

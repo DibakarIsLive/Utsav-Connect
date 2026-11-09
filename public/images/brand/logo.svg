@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 80" width="320" height="80">
+  <defs>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffdba5"/>
+      <stop offset="50%" stop-color="#e86000"/>
+      <stop offset="100%" stop-color="#983809"/>
+    </linearGradient>
+    <linearGradient id="satsangRed" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7a1c1c"/>
+      <stop offset="100%" stop-color="#431604"/>
+    </linearGradient>
+  </defs>
+  <!-- Background Shield -->
+  <rect width="80" height="80" rx="16" fill="url(#satsangRed)" />
+  <!-- Sacred Flame / Lotus Motif -->
+  <path d="M40 15 C45 30, 60 40, 60 52 C60 63, 51 70, 40 70 C29 70, 20 63, 20 52 C20 40, 35 30, 40 15 Z" fill="url(#goldGrad)" opacity="0.95"/>
+  <path d="M40 25 C43 35, 52 42, 52 50 C52 57, 47 62, 40 62 C33 62, 28 57, 28 50 C28 42, 37 35, 40 25 Z" fill="#fff8ed" opacity="0.4"/>
+  <!-- Typography -->
+  <text x="96" y="38" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="24" fill="#431604" letter-spacing="-0.5">Utsav-Connect</text>
+  <text x="96" y="56" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="11" fill="#c04702" letter-spacing="2">SATSANG COMMUNE &amp; OUTREACH</text>
+</svg>

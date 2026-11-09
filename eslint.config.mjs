@@ -11,6 +11,7 @@ const eslintConfig = defineConfig([
   ...nextVitals,
   globalIgnores([
     ".next/**",
+    ".local/**",
     "out/**",
     "build/**",
     "coverage/**",
@@ -20,6 +21,11 @@ const eslintConfig = defineConfig([
   {
     files: ["**/*.{js,jsx,mjs,cjs}"],
     rules: {
+      // The app fetches live data in client effects and resets modal drafts when
+      // an editor opens. Those are valid synchronisation patterns; this newer
+      // rule flags them all as cascading renders, so it is disabled deliberately
+      // rather than suppressed file by file.
+      "react-hooks/set-state-in-effect": "off",
       // Server-only modules under api/ must never be imported by client components.
       // The boundary is enforced at build time by the `server-only` package; this
       // rule documents the intent and catches accidental relative imports.

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600">
+  <defs>
+    <radialGradient id="portraitGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffdba5"/>
+      <stop offset="70%" stop-color="#e86000"/>
+      <stop offset="100%" stop-color="#7a1c1c"/>
+    </radialGradient>
+  </defs>
+  <rect width="600" height="600" rx="24" fill="url(#portraitGlow)"/>
+  <!-- Decorative Mandala Ring -->
+  <circle cx="300" cy="300" r="240" fill="none" stroke="#fff8ed" stroke-width="2" opacity="0.3" stroke-dasharray="8 8"/>
+  <circle cx="300" cy="300" r="220" fill="none" stroke="#fff8ed" stroke-width="4" opacity="0.4"/>
+  <!-- Reverent Silhouette & Symbol of Divine Light -->
+  <circle cx="300" cy="220" r="75" fill="#fcf9f2" opacity="0.95"/>
+  <path d="M180 480 C180 370, 230 340, 300 340 C370 340, 420 370, 420 480 Z" fill="#fcf9f2" opacity="0.95"/>
+  <!-- Sacred Lotus Base -->
+  <path d="M220 520 Q300 460 380 520 Q300 550 220 520 Z" fill="#d4af37"/>
+  <text x="300" y="580" font-family="system-ui, -apple-system, sans-serif" font-weight="700" font-size="14" fill="#fff8ed" text-anchor="middle" letter-spacing="4">SHREE SHREE THAKUR ANUKULCHANDRA</text>
+</svg>

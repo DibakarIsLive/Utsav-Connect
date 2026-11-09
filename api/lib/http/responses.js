@@ -53,6 +53,9 @@ export function formatZodIssues(error) {
  *
  * - ZodError                 → 400 VALIDATION_ERROR with field issues
  * - AppError                 → its own status/code/message
+ * - plain {code,message,status} → used as given (route-level guards)
+ * - Mongoose validation/cast → 400 VALIDATION_ERROR / INVALID_IDENTIFIER
+ * - Duplicate key (11000)    → 409 CONFLICT
  * - DatabaseUnavailableError → 503 SERVICE_UNAVAILABLE
  * - anything else            → 500 INTERNAL_ERROR with a generic message
  *
@@ -80,6 +83,46 @@ export function errorToResponse(error) {
       status: 503,
       code: "SERVICE_UNAVAILABLE",
       message: error.message,
+    });
+  }
+  if (
+    error &&
+    typeof error === "object" &&
+    typeof error.code === "string" &&
+    typeof error.message === "string" &&
+    Number.isInteger(error.status)
+  ) {
+    return jsonError({
+      status: error.status,
+      code: error.code,
+      message: error.message,
+      details: error.details,
+    });
+  }
+  if (error?.name === "CastError") {
+    return jsonError({
+      status: 400,
+      code: "INVALID_IDENTIFIER",
+      message: "The identifier in the request is not valid.",
+    });
+  }
+  if (error?.name === "ValidationError") {
+    const details = Object.entries(error.errors ?? {}).map(([path, issue]) => ({
+      path,
+      message: issue?.message ?? "Invalid value",
+    }));
+    return jsonError({
+      status: 400,
+      code: "VALIDATION_ERROR",
+      message: "The request contains invalid data.",
+      details,
+    });
+  }
+  if (error?.code === 11000) {
+    return jsonError({
+      status: 409,
+      code: "CONFLICT",
+      message: "A record with these details already exists.",
     });
   }
   return jsonError({

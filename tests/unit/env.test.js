@@ -13,6 +13,13 @@ const VALID = {
   APP_BASE_URL: "http://localhost:3000",
   LOG_LEVEL: "debug",
   NODE_ENV: "test",
+  AUTH_SECRET: "a".repeat(32), // 32+ characters required
+  REGISTRATION_MODE: "closed",
+  // Schema coerces these to numbers, so validate against expected output
+  SESSION_IDLE_DAYS: 7, // coerced from "7"
+  SESSION_ABSOLUTE_DAYS: 30, // coerced from "30"
+  EMAIL_PROVIDER: "dev",
+  EMAIL_FROM: "test@example.com",
 };
 
 describe("parseEnv", () => {
@@ -23,22 +30,29 @@ describe("parseEnv", () => {
   });
 
   it("applies defaults for optional values", () => {
-    const result = parseEnv({ MONGODB_URI: VALID.MONGODB_URI });
+    const result = parseEnv({ MONGODB_URI: VALID.MONGODB_URI, AUTH_SECRET: VALID.AUTH_SECRET });
     expect(result.ok).toBe(true);
     expect(result.env.APP_BASE_URL).toBe("http://localhost:3000");
     expect(result.env.LOG_LEVEL).toBe("info");
     expect(result.env.NODE_ENV).toBe("development");
     expect(result.env.MONGODB_URI_TEST).toBeUndefined();
+    expect(result.env.REGISTRATION_MODE).toBe("closed");
+    expect(result.env.SESSION_IDLE_DAYS).toBe(7);
+    expect(result.env.SESSION_ABSOLUTE_DAYS).toBe(30);
+    expect(result.env.EMAIL_PROVIDER).toBe("dev");
   });
 
   it("rejects a missing MONGODB_URI and names the variable", () => {
-    const result = parseEnv({});
+    const result = parseEnv({ AUTH_SECRET: VALID.AUTH_SECRET });
     expect(result.ok).toBe(false);
     expect(result.issues.map((issue) => issue.variable)).toContain("MONGODB_URI");
   });
 
   it("rejects a MongoDB URI with the wrong scheme", () => {
-    const result = parseEnv({ MONGODB_URI: "postgres://localhost/db" });
+    const result = parseEnv({
+      MONGODB_URI: "postgres://localhost/db",
+      AUTH_SECRET: VALID.AUTH_SECRET,
+    });
     expect(result.ok).toBe(false);
     expect(result.issues[0]).toEqual({
       variable: "MONGODB_URI",
@@ -47,18 +61,29 @@ describe("parseEnv", () => {
   });
 
   it("accepts mongodb+srv URIs", () => {
-    const result = parseEnv({ MONGODB_URI: "mongodb+srv://cluster.example.net/db" });
+    const result = parseEnv({
+      MONGODB_URI: "mongodb+srv://cluster.example.net/db",
+      AUTH_SECRET: VALID.AUTH_SECRET,
+    });
     expect(result.ok).toBe(true);
   });
 
   it("rejects an APP_BASE_URL that is not an http(s) URL", () => {
-    const result = parseEnv({ MONGODB_URI: VALID.MONGODB_URI, APP_BASE_URL: "ftp://x" });
+    const result = parseEnv({
+      MONGODB_URI: VALID.MONGODB_URI,
+      AUTH_SECRET: VALID.AUTH_SECRET,
+      APP_BASE_URL: "ftp://x",
+    });
     expect(result.ok).toBe(false);
     expect(result.issues.map((issue) => issue.variable)).toContain("APP_BASE_URL");
   });
 
   it("rejects an unknown LOG_LEVEL", () => {
-    const result = parseEnv({ MONGODB_URI: VALID.MONGODB_URI, LOG_LEVEL: "verbose" });
+    const result = parseEnv({
+      MONGODB_URI: VALID.MONGODB_URI,
+      AUTH_SECRET: VALID.AUTH_SECRET,
+      LOG_LEVEL: "verbose",
+    });
     expect(result.ok).toBe(false);
     expect(result.issues.map((issue) => issue.variable)).toContain("LOG_LEVEL");
   });

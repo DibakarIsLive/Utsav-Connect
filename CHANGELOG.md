@@ -6,11 +6,26 @@ All notable changes to Utsav-Connect are recorded here. Format follows [Keep a C
 
 ### Added
 
-- Accepted Stage 2 design (2026-11-05): mandatory devotee application and approval workflow; one stored `admin` role with granular permissions and "Moderator" as a permission profile; `/admin/devotees` management dashboard; limited applicant session for own status/summary; applicant-PII restrictions; invitation-report privacy; one effective session TTL. Documentation-only; implementation not authorized.
-- Stage 2 decision records D-01–D-27, with D-01, D-08, D-17, D-18, D-19, D-20, D-21, D-22, D-24, and D-26 accepted; D-10, D-19 retention periods, D-07 deletion, and D-16 remain deferred.
-- **D-22:** removed date of birth completely from the application design. Final fields are full name, email, password, phone, gender (Male/Female), and optional custom message; no age eligibility check, model field, schema, payload, UI field, or test fixture.
-- Initial Stage 2 preparation documents (2026-11-04): `docs/stage-2-decision-report.md` and `docs/stage-2-authentication-spec.md`.
-- ADR-014 for a first-party authentication layer with opaque MongoDB sessions, Argon2id, email + password, and email verification; status **ACCEPTED** as the design baseline, not implemented.
+- Complete frontend redesign of Utsav-Connect (2026-11-10): homepage, About, map, Apply/Sign In, verify-email, application-status, devotee dashboard, full admin workspace (overview, applications, areas, proposals, invitation reports, accounts & roles, audit log), admin shell, navigation model, forms, modals, tables, empty/loading/error states, responsive design, animations, and authentic imagery. Connected to existing real APIs end-to-end.
+- Product structure and access control (2026-11-10): public website restricted to venue + About + Apply; devotee portal at `/dashboard`; admin workspace at `/admin` with granular permissions; Super Admin controls at `/admin/users` and `/admin/audit`.
+- Official Mahotsav venue changed to Kulti Golf Ground, Kulti, using the verified Google Maps short link `https://maps.app.goo.gl/BcY87xSjA6iRtBY78`.
+- Get Directions button opens Google Maps directions to Kulti Golf Ground with current location as origin; Open in Google Maps button uses the official short link directly.
+- Satsang Ashram, Deoghar is no longer displayed as the Mahotsav venue; it is a separate sacred location and is never mixed with Kulti Golf Ground.
+- Public navigation simplified to: Logo, About, Apply. No Home, Map, or separate Sign In items.
+- Public homepage strictly public: hero, intro, Kulti Golf Ground venue, Get Directions, Apply, About link. Campaign geography sections removed.
+- `/map` repurposed as public venue finder (physical locations only; no campaign geography).
+- Campaign geography APIs protected server-side: `GET /api/areas` and `GET /api/analytics/coverage` require authentication.
+- All admin APIs protected with granular permissions (`area:manage`, `proposal:review`, `invitation-report:read:all`, `audit:read:all`, etc.).
+- Super Admin-only routes protected: `/admin/users`, `/admin/audit-logs`.
+- Playwright browser journey suite (72 tests) verifying public visitor, applicant, devotee, admin, and Super Admin journeys at desktop/tablet/mobile breakpoints against a local `_test` MongoDB.
+
+### Changed
+
+- Full rewrite of public pages (`app/page.jsx`, `app/about/page.jsx`, `app/map/page.jsx`), account pages (`app/apply/`, `app/login/`, `app/verify-email/`, `app/application-status/`), dashboard (`app/dashboard/`), and admin pages (`app/admin/**`) with server-side data fetching + client interactivity.
+- Navigation model rewritten (`ui/lib/navigation.js` + `ui/lib/admin-navigation.js`): permission-filtered admin nav, Super Admin section separated.
+- `eslint.config.mjs`: disabled `react-hooks/set-state-in-effect` for valid client-effect synchronisation patterns; `.local/` added to global ignores.
+- New Playwright config (`playwright.config.mjs`) and browser journey spec (`tests/playwright/browser-journeys.spec.js`).
+- New unit test `tests/unit/admin-navigation.test.js`; updated `tests/unit/navigation.test.js` to the Map/About/single-account model.
 
 ### Changed
 
