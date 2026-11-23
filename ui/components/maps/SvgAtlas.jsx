@@ -65,9 +65,7 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
 
   const plotted = useMemo(
     () =>
-      areas
-        .map((area) => ({ area, geometry: geometryOf(area) }))
-        .filter((entry) => entry.geometry),
+      areas.map((area) => ({ area, geometry: geometryOf(area) })).filter((entry) => entry.geometry),
     [areas],
   );
 
@@ -121,8 +119,7 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
     return { projected };
   }, [plotted]);
 
-  const selectedEntry =
-    selectedId && projection ? projection.projected.get(selectedId) : null;
+  const selectedEntry = selectedId && projection ? projection.projected.get(selectedId) : null;
   const center = selectedEntry?.center ?? { x: WIDTH / 2, y: HEIGHT / 2 };
   const viewWidth = WIDTH / zoom;
   const viewHeight = HEIGHT / zoom;
@@ -138,13 +135,13 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
 
   return (
     <div className="relative">
-      <div className="border-line relative overflow-hidden rounded-2xl border bg-[#f3ead9]">
+      <div className="relative overflow-hidden rounded-2xl border border-line bg-[#f3ead9]">
         <div className="absolute inset-0 opacity-[0.55]">
           <div className="pattern-contour h-full w-full" aria-hidden="true" />
         </div>
 
         <div className="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2">
-          <span className="border-line/80 text-ink-500 rounded-full border bg-white/85 px-3 py-1.5 text-[0.62rem] font-bold tracking-[0.1em] uppercase shadow-sm backdrop-blur">
+          <span className="rounded-full border border-line/80 bg-white/85 px-3 py-1.5 text-[0.62rem] font-bold tracking-[0.1em] text-ink-500 uppercase shadow-sm backdrop-blur">
             Approved areas only
           </span>
         </div>
@@ -155,7 +152,7 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
             onClick={() => setZoom((value) => Math.min(3, value + 0.5))}
             disabled={zoom >= 3}
             aria-label="Zoom in on atlas"
-            className="text-ink-600 hover:bg-cream hover:text-bark-900 flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold transition-colors disabled:opacity-35"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold text-ink-600 transition-colors hover:bg-cream hover:text-bark-900 disabled:opacity-35"
           >
             +
           </button>
@@ -164,25 +161,25 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
             onClick={() => setZoom((value) => Math.max(1, value - 0.5))}
             disabled={zoom <= 1}
             aria-label="Zoom out of atlas"
-            className="text-ink-600 hover:bg-cream hover:text-bark-900 flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold transition-colors disabled:opacity-35"
+            className="flex h-8 w-8 items-center justify-center rounded-lg text-lg font-semibold text-ink-600 transition-colors hover:bg-cream hover:text-bark-900 disabled:opacity-35"
           >
             −
           </button>
           <button
             type="button"
             onClick={() => setZoom(1)}
-            className="text-ink-500 hover:bg-cream hover:text-bark-900 border-line ml-0.5 rounded-lg border px-2.5 text-[0.62rem] font-bold tracking-[0.08em] uppercase transition-colors"
+            className="ml-0.5 rounded-lg border border-line px-2.5 text-[0.62rem] font-bold tracking-[0.08em] text-ink-500 uppercase transition-colors hover:bg-cream hover:text-bark-900"
           >
             Fit
           </button>
-          <span className="text-ink-400 px-1.5 text-[0.62rem] font-semibold tabular-nums">
+          <span className="px-1.5 text-[0.62rem] font-semibold text-ink-400 tabular-nums">
             {zoom.toFixed(1)}×
           </span>
         </div>
 
         {plotted.length === 0 ? (
           <div className="relative flex min-h-[420px] flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[520px]">
-            <span className="bg-saffron-50 text-saffron-700 flex h-12 w-12 items-center justify-center rounded-2xl">
+            <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-saffron-50 text-saffron-700">
               <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" aria-hidden="true">
                 <path
                   d="M9 3 3.8 5.1v15.4L9 18.4l6 2.1 5.2-2.1V3.1L15 5.2 9 3Zm0 0v15.4m6-13.2v15.3"
@@ -192,10 +189,10 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
                 />
               </svg>
             </span>
-            <h3 className="text-bark-900 font-display mt-5 text-xl font-semibold">
+            <h3 className="mt-5 font-display text-xl font-semibold text-bark-900">
               Coordinates have not been recorded yet
             </h3>
-            <p className="text-ink-500 mt-2 max-w-sm text-sm leading-relaxed">
+            <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-500">
               Approved localities appear in the directory even when no boundary or point is
               available. The atlas never invents a position to fill the gap.
             </p>
@@ -209,7 +206,13 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
           >
             <defs>
               <pattern id="atlas-grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                <path d="M50 0H0V50" fill="none" stroke="#d8c6aa" strokeWidth="0.6" opacity="0.55" />
+                <path
+                  d="M50 0H0V50"
+                  fill="none"
+                  stroke="#d8c6aa"
+                  strokeWidth="0.6"
+                  opacity="0.55"
+                />
               </pattern>
               <linearGradient id="atlas-selected-fill" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stopColor="#e85b00" stopOpacity="0.3" />
@@ -250,20 +253,20 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
                   onKeyDown={(event) => handleKey(event, area._id)}
                   className="cursor-pointer outline-none"
                 >
-                  {hasPolygon ? (
-                    shape.rings.map((ring, index) => (
-                      <polygon
-                        key={index}
-                        points={ring.map((point) => `${point.x},${point.y}`).join(" ")}
-                        fill={selected ? "url(#atlas-selected-fill)" : "#e85b00"}
-                        fillOpacity={selected ? 1 : 0.14}
-                        stroke={selected ? "#9a3d06" : "#c04602"}
-                        strokeWidth={selected ? 2.4 : 1.4}
-                        strokeDasharray={selected ? undefined : "5 3"}
-                        className="transition-all duration-300"
-                      />
-                    ))
-                  ) : null}
+                  {hasPolygon
+                    ? shape.rings.map((ring, index) => (
+                        <polygon
+                          key={index}
+                          points={ring.map((point) => `${point.x},${point.y}`).join(" ")}
+                          fill={selected ? "url(#atlas-selected-fill)" : "#e85b00"}
+                          fillOpacity={selected ? 1 : 0.14}
+                          stroke={selected ? "#9a3d06" : "#c04602"}
+                          strokeWidth={selected ? 2.4 : 1.4}
+                          strokeDasharray={selected ? undefined : "5 3"}
+                          className="transition-all duration-300"
+                        />
+                      ))
+                    : null}
 
                   <circle
                     cx={shape.center.x}
@@ -314,18 +317,18 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
           </svg>
         )}
 
-        <div className="border-line/70 text-ink-500 relative flex flex-wrap items-center justify-between gap-2 border-t bg-white/70 px-4 py-2.5 text-[0.62rem] backdrop-blur">
+        <div className="relative flex flex-wrap items-center justify-between gap-2 border-t border-line/70 bg-white/70 px-4 py-2.5 text-[0.62rem] text-ink-500 backdrop-blur">
           <div className="flex flex-wrap items-center gap-4">
             <span className="inline-flex items-center gap-1.5">
-              <span className="border-saffron-700 bg-saffron-600/15 h-2.5 w-4 rounded-sm border" />
+              <span className="h-2.5 w-4 rounded-sm border border-saffron-700 bg-saffron-600/15" />
               Recorded boundary
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="border-saffron-700 h-2.5 w-2.5 rounded-full border-2 bg-white" />
+              <span className="h-2.5 w-2.5 rounded-full border-2 border-saffron-700 bg-white" />
               Recorded point
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <span className="bg-bark-900 h-2.5 w-2.5 rounded-full" />
+              <span className="h-2.5 w-2.5 rounded-full bg-bark-900" />
               Selected
             </span>
           </div>
@@ -334,14 +337,14 @@ export default function SvgAtlas({ areas = [], selectedId, onSelect }) {
       </div>
 
       {missingGeometry > 0 ? (
-        <p className="text-ink-400 mt-3 text-[0.72rem] leading-relaxed">
+        <p className="mt-3 text-[0.72rem] leading-relaxed text-ink-400">
           {missingGeometry} approved {missingGeometry === 1 ? "locality has" : "localities have"} no
           recorded coordinates yet. They remain available in the directory and are never placed by
           guesswork.
         </p>
       ) : null}
 
-      <p className="text-ink-400 mt-2 text-[0.68rem] leading-relaxed">
+      <p className="mt-2 text-[0.68rem] leading-relaxed text-ink-400">
         Atlas positions come only from stored GeoJSON points and boundaries. Panning is not enabled;
         use the zoom controls to inspect overlapping areas.
       </p>

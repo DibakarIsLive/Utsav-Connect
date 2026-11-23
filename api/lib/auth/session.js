@@ -3,7 +3,7 @@ import { generateToken, hashToken } from "./tokens.js";
 
 /**
  * Session management with MongoDB-backed opaque tokens.
- * 
+ *
  * Session scopes:
  * - "application": Limited access for verified pending/rejected applicants (D-25)
  * - "full": Complete access for approved devotees and administrators
@@ -39,17 +39,12 @@ export function generateSessionToken() {
  */
 export function generateSessionCookie(token) {
   const isProduction = process.env.NODE_ENV === "production";
-  const parts = [
-    `session=${token}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-  ];
-  
+  const parts = [`session=${token}`, "Path=/", "HttpOnly", "SameSite=Lax"];
+
   if (isProduction) {
     parts.push("Secure");
   }
-  
+
   return parts.join("; ");
 }
 
@@ -68,12 +63,12 @@ export function clearSessionCookie() {
  */
 export function parseSessionToken(cookieHeader) {
   if (!cookieHeader) return null;
-  
-  const cookies = cookieHeader.split(";").map(c => c.trim());
-  const sessionCookie = cookies.find(c => c.startsWith("session="));
-  
+
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const sessionCookie = cookies.find((c) => c.startsWith("session="));
+
   if (!sessionCookie) return null;
-  
+
   const token = sessionCookie.substring(8); // "session=".length
   return token || null;
 }

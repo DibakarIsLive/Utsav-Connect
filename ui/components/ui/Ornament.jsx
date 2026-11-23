@@ -74,16 +74,21 @@ export function CornerFlourish({ className = "", flip = false }) {
     <svg
       aria-hidden="true"
       viewBox="0 0 120 120"
-      className={cn("pointer-events-none absolute h-28 w-28 text-gold-500/30", flip && "-scale-x-100", className)}
+      className={cn(
+        "pointer-events-none absolute h-28 w-28 text-gold-500/30",
+        flip && "-scale-x-100",
+        className,
+      )}
       fill="none"
     >
       <path d="M2 118V60C2 28 28 2 60 2h58" stroke="currentColor" strokeWidth="1" />
-      <path d="M14 118V64c0-27 22-50 50-50h54" stroke="currentColor" strokeWidth="0.7" opacity="0.7" />
       <path
-        d="M34 34c10 2 17 8 20 18-10-2-17-8-20-18Z"
-        fill="currentColor"
-        opacity="0.5"
+        d="M14 118V64c0-27 22-50 50-50h54"
+        stroke="currentColor"
+        strokeWidth="0.7"
+        opacity="0.7"
       />
+      <path d="M34 34c10 2 17 8 20 18-10-2-17-8-20-18Z" fill="currentColor" opacity="0.5" />
     </svg>
   );
 }

@@ -4,14 +4,7 @@ import { cn } from "@/ui/lib/cn";
  * Dashboard statistic card. Values are always supplied by real API data;
  * the component never invents a fallback number.
  */
-export default function StatCard({
-  label,
-  value,
-  detail,
-  icon,
-  tone = "light",
-  className = "",
-}) {
+export default function StatCard({ label, value, detail, icon, tone = "light", className = "" }) {
   return (
     <div
       className={cn(
@@ -44,7 +37,7 @@ export default function StatCard({
       </div>
       <p
         className={cn(
-          "font-display mt-3 text-[2rem] leading-none font-semibold tracking-[-0.04em]",
+          "mt-3 font-display text-[2rem] leading-none font-semibold tracking-[-0.04em]",
           tone === "dark" ? "text-ivory" : "text-bark-900",
         )}
       >

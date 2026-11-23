@@ -17,8 +17,7 @@ export default async function AdminInvitationsPage() {
   const token = parseSessionToken(cookieStore.toString());
   const admin = token ? await validateSession(token) : null;
 
-  const canRead =
-    hasAdminPermission(admin, "invitation-report:read:all") || hasAdminPermission(admin, "area:manage");
+  const canRead = hasAdminPermission(admin, "invitation-report:read:all");
 
   if (!canRead) {
     return <AdminDenied permission="invitation-report:read:all" />;

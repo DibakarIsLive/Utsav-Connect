@@ -1,27 +1,20 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { updateArea, archiveArea, getAreaById } from "@/api/services/area-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
 import { updateAreaSchema } from "@/api/lib/validation/area-schemas";
-import { hasPermission } from "@/api/lib/auth/permissions";
+import { requireAdmin } from "@/api/lib/auth/guards";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { assertTrustedOrigin } from "@/api/lib/http/origin";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/areas/:id
- * Admin: Get area details.
+ * Admin: area details, including archived records.
  */
 export async function GET(request, { params }) {
   try {
+    await requireAdmin(request, ADMIN_PERMISSIONS.AREA_MANAGE);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin || admin.role === "devotee") {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin access required", status: 403 });
-    }
-
     const area = await getAreaById(id, { includeUnapproved: true });
     return jsonSuccess({ area });
   } catch (error) {
@@ -31,18 +24,13 @@ export async function GET(request, { params }) {
 
 /**
  * PATCH /api/admin/areas/:id
- * Admin: Update area details, parent hierarchy (prevents cycles), or boundary.
+ * Admin: update area details, parent hierarchy (cycles blocked) or boundary.
  */
 export async function PATCH(request, { params }) {
   try {
+    assertTrustedOrigin(request);
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.AREA_MANAGE);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin || admin.role === "devotee" || (!hasPermission(admin, "area:manage") && admin.role !== "super_admin")) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin area:manage access required", status: 403 });
-    }
 
     const body = await request.json();
     const validatedData = updateAreaSchema.parse(body);
@@ -56,18 +44,13 @@ export async function PATCH(request, { params }) {
 
 /**
  * DELETE /api/admin/areas/:id
- * Admin: Archive an area (soft archive, never hard deletes).
+ * Admin: archive an area (soft archive, never a hard delete).
  */
 export async function DELETE(request, { params }) {
   try {
+    assertTrustedOrigin(request);
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.AREA_MANAGE);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin || admin.role === "devotee" || (!hasPermission(admin, "area:manage") && admin.role !== "super_admin")) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin area:manage access required", status: 403 });
-    }
 
     const archived = await archiveArea(admin, id);
     return jsonSuccess({ area: archived, message: "Area successfully archived" });

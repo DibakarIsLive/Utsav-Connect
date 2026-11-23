@@ -39,7 +39,7 @@ export default function SiteHeader() {
         "fixed inset-x-0 top-0 z-40 transition-all duration-500",
         overHero
           ? "border-b border-white/10 bg-transparent"
-          : "border-line/80 bg-ivory/92 border-b shadow-[0_10px_40px_-30px_rgba(43,15,4,0.5)] backdrop-blur-xl",
+          : "border-b border-line/80 bg-ivory/92 shadow-[0_10px_40px_-30px_rgba(43,15,4,0.5)] backdrop-blur-xl",
       )}
     >
       <div className="shell flex h-[4.5rem] items-center justify-between gap-4">
@@ -54,12 +54,7 @@ export default function SiteHeader() {
           />
         </Link>
 
-        <MainNav
-          user={user}
-          loading={loading}
-          overHero={overHero}
-          onSignOut={signOut}
-        />
+        <MainNav user={user} loading={loading} overHero={overHero} onSignOut={signOut} />
       </div>
     </header>
   );

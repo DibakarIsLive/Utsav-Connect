@@ -80,8 +80,8 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
         }
       />
 
-      <div className="border-line shadow-soft rounded-2xl border bg-white">
-        <div className="border-line flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="rounded-2xl border border-line bg-white shadow-soft">
+        <div className="flex flex-col gap-3 border-b border-line p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-1 flex-col gap-2.5 sm:flex-row">
             <div className="relative flex-1 sm:max-w-sm">
               <label htmlFor="applicationSearch" className="sr-only">
@@ -90,7 +90,7 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
               <svg
                 aria-hidden="true"
                 viewBox="0 0 20 20"
-                className="text-ink-400 pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2"
+                className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-ink-400"
                 fill="none"
               >
                 <path
@@ -137,7 +137,12 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
                 Clear filters
               </Button>
             )}
-            <Button variant="secondary" size="sm" onClick={load} disabled={state.status === "loading"}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={load}
+              disabled={state.status === "loading"}
+            >
               {state.status === "loading" ? "Refreshing…" : "Refresh"}
             </Button>
           </div>
@@ -197,7 +202,7 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
           <>
             <div className="hidden overflow-x-auto md:block">
               <table className="w-full text-left text-sm">
-                <thead className="bg-cream/60 text-ink-400 border-line border-b text-[0.6rem] font-bold tracking-[0.12em] uppercase">
+                <thead className="border-b border-line bg-cream/60 text-[0.6rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
                   <tr>
                     <th scope="col" className="px-4 py-2.5 sm:px-5">
                       Applicant
@@ -213,21 +218,21 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-line divide-y">
+                <tbody className="divide-y divide-line">
                   {applications.map((application) => (
-                    <tr key={application.id} className="hover:bg-cream/40 transition-colors">
+                    <tr key={application.id} className="transition-colors hover:bg-cream/40">
                       <td className="px-4 py-3.5 sm:px-5">
                         <Link
                           href={`/admin/applications/${application.id}`}
-                          className="text-bark-900 hover:text-saffron-700 text-sm font-semibold"
+                          className="text-sm font-semibold text-bark-900 hover:text-saffron-700"
                         >
                           {application.applicantName}
                         </Link>
-                        <p className="text-ink-400 mt-0.5 text-[0.7rem]">
+                        <p className="mt-0.5 text-[0.7rem] text-ink-400">
                           {application.applicantEmail}
                         </p>
                       </td>
-                      <td className="text-ink-600 px-4 py-3.5 text-[0.78rem] whitespace-nowrap">
+                      <td className="px-4 py-3.5 text-[0.78rem] whitespace-nowrap text-ink-600">
                         {formatDate(application.createdAt)}
                       </td>
                       <td className="px-4 py-3.5">
@@ -236,7 +241,7 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
                       <td className="px-4 py-3.5 text-right sm:px-5">
                         <Link
                           href={`/admin/applications/${application.id}`}
-                          className="text-saffron-700 hover:text-saffron-800 inline-flex items-center gap-1 text-[0.74rem] font-semibold"
+                          className="inline-flex items-center gap-1 text-[0.74rem] font-semibold text-saffron-700 hover:text-saffron-800"
                         >
                           Review <ArrowRight className="h-3.5 w-3.5" />
                         </Link>
@@ -247,22 +252,22 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
               </table>
             </div>
 
-            <ul className="divide-line divide-y md:hidden">
+            <ul className="divide-y divide-line md:hidden">
               {applications.map((application) => (
                 <li key={application.id}>
                   <Link
                     href={`/admin/applications/${application.id}`}
-                    className="hover:bg-cream/40 block px-4 py-3.5 transition-colors"
+                    className="block px-4 py-3.5 transition-colors hover:bg-cream/40"
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-bark-900 truncate text-sm font-semibold">
+                        <p className="truncate text-sm font-semibold text-bark-900">
                           {application.applicantName}
                         </p>
-                        <p className="text-ink-400 mt-0.5 truncate text-[0.7rem]">
+                        <p className="mt-0.5 truncate text-[0.7rem] text-ink-400">
                           {application.applicantEmail}
                         </p>
-                        <p className="text-ink-400 mt-1 text-[0.68rem]">
+                        <p className="mt-1 text-[0.68rem] text-ink-400">
                           Applied {formatDate(application.createdAt)}
                         </p>
                       </div>
@@ -273,8 +278,8 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
               ))}
             </ul>
 
-            <div className="border-line flex flex-wrap items-center justify-between gap-3 border-t px-4 py-3 sm:px-5">
-              <p className="text-ink-400 text-[0.72rem]">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-4 py-3 sm:px-5">
+              <p className="text-[0.72rem] text-ink-400">
                 Page {pagination.page} of {Math.max(1, pagination.totalPages)} ·{" "}
                 {formatNumber(pagination.total)}{" "}
                 {pagination.total === 1 ? "application" : "applications"}
@@ -294,9 +299,7 @@ export default function AdminApplicationsClient({ initialStatus = "", canReview 
                   onClick={() =>
                     setPage((value) => Math.min(Math.max(1, pagination.totalPages), value + 1))
                   }
-                  disabled={
-                    pagination.page >= pagination.totalPages || state.status === "loading"
-                  }
+                  disabled={pagination.page >= pagination.totalPages || state.status === "loading"}
                 >
                   Next
                 </Button>

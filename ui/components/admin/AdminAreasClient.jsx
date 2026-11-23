@@ -147,9 +147,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
         eyebrow="Campaign geography"
         title="Official areas, kept deliberately."
         description="Create the approved places the outreach can report against, keep the hierarchy honest, and archive mistakes without erasing history."
-        actions={
-          <Button onClick={openCreate}>Create area</Button>
-        }
+        actions={<Button onClick={openCreate}>Create area</Button>}
       />
 
       <div className="mb-5 grid gap-4 sm:grid-cols-3">
@@ -160,7 +158,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
         ].map((item) => (
           <div key={item.label} className="admin-card px-5 py-4">
             <Badge tone={item.tone}>{item.label}</Badge>
-            <p className="font-display text-bark-900 mt-2.5 text-2xl font-semibold tabular-nums">
+            <p className="mt-2.5 font-display text-2xl font-semibold text-bark-900 tabular-nums">
               {formatNumber(item.value)}
             </p>
           </div>
@@ -181,13 +179,13 @@ export default function AdminAreasClient({ initialFocus = "" }) {
         <Notice tone="info" className="mb-4" title="Some approved areas have no recorded geometry">
           {approvedWithoutGeometry} approved{" "}
           {approvedWithoutGeometry === 1 ? "area is" : "areas are"} listed publicly but will not be
-          plotted on the atlas. Add verified coordinates or a boundary when they are available; never
-          guess a location.
+          plotted on the atlas. Add verified coordinates or a boundary when they are available;
+          never guess a location.
         </Notice>
       ) : null}
 
-      <div className="border-line shadow-soft rounded-2xl border bg-white">
-        <div className="border-line flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="rounded-2xl border border-line bg-white shadow-soft">
+        <div className="flex flex-col gap-3 border-b border-line p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-1 flex-col gap-2.5 sm:flex-row">
             <div className="relative flex-1 sm:max-w-sm">
               <label htmlFor="areaAdminSearch" className="sr-only">
@@ -232,7 +230,12 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                 Clear filters
               </Button>
             )}
-            <Button variant="secondary" size="sm" onClick={load} disabled={state.status === "loading"}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={load}
+              disabled={state.status === "loading"}
+            >
               {state.status === "loading" ? "Refreshing…" : "Refresh"}
             </Button>
           </div>
@@ -294,7 +297,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
           <>
             <div className="hidden overflow-x-auto lg:block">
               <table className="w-full text-left text-sm">
-                <thead className="bg-cream/60 text-ink-400 border-line border-b text-[0.6rem] font-bold tracking-[0.12em] uppercase">
+                <thead className="border-b border-line bg-cream/60 text-[0.6rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
                   <tr>
                     <th scope="col" className="px-4 py-2.5 sm:px-5">
                       Area
@@ -316,30 +319,32 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-line divide-y">
+                <tbody className="divide-y divide-line">
                   {areas.map((area) => {
                     const parentName =
-                      typeof area.parentId === "object" && area.parentId ? area.parentId.name : null;
+                      typeof area.parentId === "object" && area.parentId
+                        ? area.parentId.name
+                        : null;
                     return (
-                      <tr key={area._id} className="hover:bg-cream/40 transition-colors">
+                      <tr key={area._id} className="transition-colors hover:bg-cream/40">
                         <td className="px-4 py-3.5 sm:px-5">
-                          <p className="text-bark-900 text-sm font-semibold">{area.name}</p>
-                          <p className="text-ink-400 mt-0.5 text-[0.68rem]">
+                          <p className="text-sm font-semibold text-bark-900">{area.name}</p>
+                          <p className="mt-0.5 text-[0.68rem] text-ink-400">
                             {area.type || "Locality"}
                             {area.code ? ` · ${area.code}` : ""}
                             {area.createdAt ? ` · ${formatDate(area.createdAt)}` : ""}
                           </p>
                         </td>
-                        <td className="text-ink-600 px-4 py-3.5 text-[0.78rem]">
+                        <td className="px-4 py-3.5 text-[0.78rem] text-ink-600">
                           {parentName ?? "Top level"}
                         </td>
-                        <td className="text-ink-600 px-4 py-3.5 text-right text-[0.78rem] tabular-nums">
+                        <td className="px-4 py-3.5 text-right text-[0.78rem] text-ink-600 tabular-nums">
                           {Number(area.populationEstimate) > 0
                             ? formatNumber(area.populationEstimate)
                             : "Unrecorded"}
                         </td>
                         <td className="px-4 py-3.5">
-                          <span className="text-ink-500 text-[0.72rem]">
+                          <span className="text-[0.72rem] text-ink-500">
                             {area.boundary?.coordinates
                               ? "Boundary"
                               : area.location?.coordinates
@@ -355,7 +360,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                             <button
                               type="button"
                               onClick={() => openEdit(area)}
-                              className="text-saffron-700 hover:text-saffron-800 text-[0.72rem] font-semibold"
+                              className="text-[0.72rem] font-semibold text-saffron-700 hover:text-saffron-800"
                             >
                               Edit
                             </button>
@@ -363,7 +368,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                               <button
                                 type="button"
                                 onClick={() => setArchiveTarget(area)}
-                                className="text-ink-400 hover:text-red-700 text-[0.72rem] font-semibold"
+                                className="text-[0.72rem] font-semibold text-ink-400 hover:text-red-700"
                               >
                                 Archive
                               </button>
@@ -372,7 +377,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                                 type="button"
                                 onClick={() => restoreArea(area)}
                                 disabled={actionBusy}
-                                className="text-ink-400 hover:text-emerald-700 text-[0.72rem] font-semibold"
+                                className="text-[0.72rem] font-semibold text-ink-400 hover:text-emerald-700"
                               >
                                 Restore
                               </button>
@@ -386,7 +391,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
               </table>
             </div>
 
-            <ul className="divide-line divide-y lg:hidden">
+            <ul className="divide-y divide-line lg:hidden">
               {areas.map((area) => {
                 const parentName =
                   typeof area.parentId === "object" && area.parentId ? area.parentId.name : null;
@@ -394,13 +399,13 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                   <li key={area._id} className="px-4 py-3.5">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="text-bark-900 truncate text-sm font-semibold">{area.name}</p>
-                        <p className="text-ink-400 mt-0.5 text-[0.68rem]">
+                        <p className="truncate text-sm font-semibold text-bark-900">{area.name}</p>
+                        <p className="mt-0.5 text-[0.68rem] text-ink-400">
                           {area.type || "Locality"}
                           {parentName ? ` · ${parentName}` : ""}
                           {area.code ? ` · ${area.code}` : ""}
                         </p>
-                        <p className="text-ink-400 mt-1 text-[0.66rem]">
+                        <p className="mt-1 text-[0.66rem] text-ink-400">
                           {Number(area.populationEstimate) > 0
                             ? `${formatNumber(area.populationEstimate)} people`
                             : "Population unrecorded"}{" "}
@@ -422,7 +427,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                         <button
                           type="button"
                           onClick={() => setArchiveTarget(area)}
-                          className="text-ink-400 hover:text-red-700 text-[0.72rem] font-semibold"
+                          className="text-[0.72rem] font-semibold text-ink-400 hover:text-red-700"
                         >
                           Archive
                         </button>
@@ -431,7 +436,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
                           type="button"
                           onClick={() => restoreArea(area)}
                           disabled={actionBusy}
-                          className="text-ink-400 hover:text-emerald-700 text-[0.72rem] font-semibold"
+                          className="text-[0.72rem] font-semibold text-ink-400 hover:text-emerald-700"
                         >
                           Restore
                         </button>
@@ -446,13 +451,13 @@ export default function AdminAreasClient({ initialFocus = "" }) {
       </div>
 
       <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-        <p className="text-ink-400 text-[0.72rem] leading-relaxed">
-          Reports are tied to these official records. Archiving hides an area but never deletes it or
-          its reporting history.
+        <p className="text-[0.72rem] leading-relaxed text-ink-400">
+          Reports are tied to these official records. Archiving hides an area but never deletes it
+          or its reporting history.
         </p>
         <Link
           href="/admin/proposals"
-          className="text-saffron-700 hover:text-saffron-800 inline-flex items-center gap-1.5 text-[0.76rem] font-semibold"
+          className="inline-flex items-center gap-1.5 text-[0.76rem] font-semibold text-saffron-700 hover:text-saffron-800"
         >
           Review locality proposals <ArrowRight className="h-3.5 w-3.5" />
         </Link>
@@ -480,7 +485,7 @@ export default function AdminAreasClient({ initialFocus = "" }) {
         confirmLabel="Archive area"
       >
         {archiveTarget ? (
-          <p className="text-ink-600 text-sm">
+          <p className="text-sm text-ink-600">
             <strong className="text-bark-900">{archiveTarget.name}</strong>
             {archiveTarget.code ? ` (${archiveTarget.code})` : ""}
           </p>

@@ -169,18 +169,18 @@ export default function AdminInvitationsClient({ canReview = false }) {
         ].map((item) => (
           <div key={item.label} className="admin-card px-5 py-4">
             <Badge tone={item.tone}>{item.label}</Badge>
-            <p className="font-display text-bark-900 mt-2.5 text-2xl font-semibold tabular-nums">
+            <p className="mt-2.5 font-display text-2xl font-semibold text-bark-900 tabular-nums">
               {state.status === "error" ? "—" : formatNumber(item.value)}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="border-line shadow-soft rounded-2xl border bg-white">
-        <div className="border-line flex flex-wrap items-center justify-between gap-3 border-b p-4">
+      <div className="rounded-2xl border border-line bg-white shadow-soft">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4">
           <div>
-            <h2 className="text-bark-900 text-sm font-semibold">Report queue</h2>
-            <p className="text-ink-400 mt-0.5 text-[0.7rem]">
+            <h2 className="text-sm font-semibold text-bark-900">Report queue</h2>
+            <p className="mt-0.5 text-[0.7rem] text-ink-400">
               Newest report date first. Contributor identity is visible only in this workspace.
             </p>
           </div>
@@ -200,7 +200,12 @@ export default function AdminInvitationsClient({ canReview = false }) {
                 </option>
               ))}
             </select>
-            <Button variant="secondary" size="sm" onClick={load} disabled={state.status === "loading"}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={load}
+              disabled={state.status === "loading"}
+            >
               {state.status === "loading" ? "Refreshing…" : "Refresh"}
             </Button>
           </div>
@@ -253,7 +258,7 @@ export default function AdminInvitationsClient({ canReview = false }) {
           <>
             <div className="hidden overflow-x-auto lg:block">
               <table className="w-full text-left text-sm">
-                <thead className="bg-cream/60 text-ink-400 border-line border-b text-[0.6rem] font-bold tracking-[0.12em] uppercase">
+                <thead className="border-b border-line bg-cream/60 text-[0.6rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
                   <tr>
                     <th scope="col" className="px-4 py-2.5 sm:px-5">
                       Contributor
@@ -275,30 +280,30 @@ export default function AdminInvitationsClient({ canReview = false }) {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-line divide-y">
+                <tbody className="divide-y divide-line">
                   {reports.map((report) => (
-                    <tr key={report._id} className="hover:bg-cream/40 transition-colors">
+                    <tr key={report._id} className="transition-colors hover:bg-cream/40">
                       <td className="px-4 py-3.5 sm:px-5">
-                        <p className="text-bark-900 text-sm font-semibold">
+                        <p className="text-sm font-semibold text-bark-900">
                           {report.contributorId?.fullName ?? "Contributor unavailable"}
                         </p>
-                        <p className="text-ink-400 mt-0.5 text-[0.68rem]">
+                        <p className="mt-0.5 text-[0.68rem] text-ink-400">
                           {report.contributorId?.email ?? "—"}
                         </p>
                       </td>
                       <td className="px-4 py-3.5">
-                        <p className="text-ink-700 text-[0.8rem] font-medium">
+                        <p className="text-[0.8rem] font-medium text-ink-700">
                           {report.areaId?.name ?? "Locality unavailable"}
                         </p>
-                        <p className="text-ink-400 mt-0.5 text-[0.66rem]">
+                        <p className="mt-0.5 text-[0.66rem] text-ink-400">
                           {report.areaId?.type || "Locality"}
                           {report.areaId?.code ? ` · ${report.areaId.code}` : ""}
                         </p>
                       </td>
-                      <td className="text-bark-900 px-4 py-3.5 text-right font-semibold tabular-nums">
+                      <td className="px-4 py-3.5 text-right font-semibold text-bark-900 tabular-nums">
                         +{formatNumber(Number(report.invitationCount) || 0)}
                       </td>
-                      <td className="text-ink-600 px-4 py-3.5 text-[0.78rem] whitespace-nowrap">
+                      <td className="px-4 py-3.5 text-[0.78rem] whitespace-nowrap text-ink-600">
                         {formatDate(report.reportDate)}
                       </td>
                       <td className="px-4 py-3.5">
@@ -320,15 +325,15 @@ export default function AdminInvitationsClient({ canReview = false }) {
               </table>
             </div>
 
-            <ul className="divide-line divide-y lg:hidden">
+            <ul className="divide-y divide-line lg:hidden">
               {reports.map((report) => (
                 <li key={report._id} className="px-4 py-3.5">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
-                      <p className="text-bark-900 truncate text-sm font-semibold">
+                      <p className="truncate text-sm font-semibold text-bark-900">
                         {report.contributorId?.fullName ?? "Contributor unavailable"}
                       </p>
-                      <p className="text-ink-400 mt-0.5 text-[0.68rem]">
+                      <p className="mt-0.5 text-[0.68rem] text-ink-400">
                         {report.areaId?.name ?? "Locality unavailable"} ·{" "}
                         {formatDate(report.reportDate)}
                       </p>
@@ -336,10 +341,10 @@ export default function AdminInvitationsClient({ canReview = false }) {
                     <StatusBadge status={report.status} />
                   </div>
                   <div className="mt-2.5 flex items-end justify-between gap-3">
-                    <p className="text-ink-500 text-[0.74rem] leading-relaxed">
+                    <p className="text-[0.74rem] leading-relaxed text-ink-500">
                       {report.description || "No note added by the contributor."}
                     </p>
-                    <p className="text-bark-900 shrink-0 text-sm font-semibold tabular-nums">
+                    <p className="shrink-0 text-sm font-semibold text-bark-900 tabular-nums">
                       +{formatNumber(Number(report.invitationCount) || 0)}
                     </p>
                   </div>
@@ -361,12 +366,12 @@ export default function AdminInvitationsClient({ canReview = false }) {
 
       {!canReview ? (
         <Notice tone="info" className="mt-4" title="Read-only report access">
-          Your account can read invitation reports but cannot change their status. The review buttons
-          remain disabled, and the API refuses the action regardless of the interface.
+          Your account can read invitation reports but cannot change their status. The review
+          buttons remain disabled, and the API refuses the action regardless of the interface.
         </Notice>
       ) : null}
 
-      <p className="text-ink-400 mt-4 text-[0.72rem] leading-relaxed">
+      <p className="mt-4 text-[0.72rem] leading-relaxed text-ink-400">
         Invitations are never attributed to invitees. Only the contributor, locality, count and date
         are stored. Public coverage counts active reports exactly once.
       </p>
@@ -400,13 +405,13 @@ export default function AdminInvitationsClient({ canReview = false }) {
               </Notice>
             ) : null}
 
-            <div className="border-line rounded-2xl border bg-cream/50 p-4">
+            <div className="rounded-2xl border border-line bg-cream/50 p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
-                  <p className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <p className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Report
                   </p>
-                  <p className="text-bark-900 mt-1 text-lg font-semibold">
+                  <p className="mt-1 text-lg font-semibold text-bark-900">
                     +{formatNumber(Number(reviewTarget.invitationCount) || 0)} invitations
                   </p>
                 </div>
@@ -414,52 +419,52 @@ export default function AdminInvitationsClient({ canReview = false }) {
               </div>
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Locality
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {reviewTarget.areaId?.name ?? "Unavailable"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Report date
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {formatDate(reviewTarget.reportDate)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Contributor
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {reviewTarget.contributorId?.fullName ?? "Unavailable"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Submitted
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {formatDateTime(reviewTarget.createdAt)}
                   </dd>
                 </div>
               </dl>
-              <div className="border-line mt-3 border-t pt-3">
-                <p className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+              <div className="mt-3 border-t border-line pt-3">
+                <p className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                   Contributor note
                 </p>
-                <p className="text-ink-600 mt-1.5 text-[0.8rem] leading-[1.7] whitespace-pre-wrap">
+                <p className="mt-1.5 text-[0.8rem] leading-[1.7] whitespace-pre-wrap text-ink-600">
                   {reviewTarget.description || "No note was provided."}
                 </p>
               </div>
               {reviewTarget.adminNotes ? (
-                <div className="border-line mt-3 border-t pt-3">
-                  <p className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                <div className="mt-3 border-t border-line pt-3">
+                  <p className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Previous reviewer note
                   </p>
-                  <p className="text-ink-600 mt-1.5 text-[0.8rem] leading-[1.7] whitespace-pre-wrap">
+                  <p className="mt-1.5 text-[0.8rem] leading-[1.7] whitespace-pre-wrap text-ink-600">
                     {reviewTarget.adminNotes}
                   </p>
                 </div>
@@ -488,13 +493,13 @@ export default function AdminInvitationsClient({ canReview = false }) {
                           setDecision(option.value);
                           setErrors({});
                         }}
-                        className="accent-saffron-600 mt-0.5 h-4 w-4 shrink-0"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-saffron-600"
                       />
                       <span>
-                        <span className="text-bark-900 block text-[0.82rem] font-semibold">
+                        <span className="block text-[0.82rem] font-semibold text-bark-900">
                           {option.label}
                         </span>
-                        <span className="text-ink-500 mt-0.5 block text-[0.68rem] leading-relaxed">
+                        <span className="mt-0.5 block text-[0.68rem] leading-relaxed text-ink-500">
                           {option.body}
                         </span>
                       </span>

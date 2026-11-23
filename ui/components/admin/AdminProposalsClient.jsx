@@ -163,11 +163,11 @@ export default function AdminProposalsClient() {
         </Notice>
       ) : null}
 
-      <div className="border-line shadow-soft rounded-2xl border bg-white">
-        <div className="border-line flex flex-wrap items-center justify-between gap-3 border-b p-4">
+      <div className="rounded-2xl border border-line bg-white shadow-soft">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line p-4">
           <div>
-            <h2 className="text-bark-900 text-sm font-semibold">Proposal queue</h2>
-            <p className="text-ink-400 mt-0.5 text-[0.7rem]">
+            <h2 className="text-sm font-semibold text-bark-900">Proposal queue</h2>
+            <p className="mt-0.5 text-[0.7rem] text-ink-400">
               Pending proposals never appear on the public map or in coverage totals.
             </p>
           </div>
@@ -187,7 +187,12 @@ export default function AdminProposalsClient() {
                 </option>
               ))}
             </select>
-            <Button variant="secondary" size="sm" onClick={load} disabled={state.status === "loading"}>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={load}
+              disabled={state.status === "loading"}
+            >
               Refresh
             </Button>
           </div>
@@ -237,7 +242,7 @@ export default function AdminProposalsClient() {
         ) : null}
 
         {state.status === "ready" && proposals.length > 0 ? (
-          <ul className="divide-line divide-y">
+          <ul className="divide-y divide-line">
             {proposals.map((proposal) => {
               const parentName =
                 typeof proposal.parentId === "object" && proposal.parentId
@@ -248,7 +253,7 @@ export default function AdminProposalsClient() {
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-bark-900 text-sm font-semibold">{proposal.name}</p>
+                        <p className="text-sm font-semibold text-bark-900">{proposal.name}</p>
                         {proposal.duplicates?.length ? (
                           <Badge tone="red">
                             {proposal.duplicates.length} possible duplicate
@@ -256,12 +261,12 @@ export default function AdminProposalsClient() {
                           </Badge>
                         ) : null}
                       </div>
-                      <p className="text-ink-400 mt-1 text-[0.7rem]">
+                      <p className="mt-1 text-[0.7rem] text-ink-400">
                         {proposal.type || "Locality"}
                         {parentName ? ` · under ${parentName}` : ""}
                         {proposal.formattedAddress ? ` · ${proposal.formattedAddress}` : ""}
                       </p>
-                      <p className="text-ink-400 mt-1 text-[0.68rem]">
+                      <p className="mt-1 text-[0.68rem] text-ink-400">
                         Proposed by {proposal.proposerName} · {formatDate(proposal.createdAt)}
                         {proposal.location?.coordinates
                           ? " · point recorded"
@@ -270,7 +275,7 @@ export default function AdminProposalsClient() {
                             : " · no geometry"}
                       </p>
                       {proposal.status === "needs_correction" && proposal.correctionNotes ? (
-                        <p className="text-amber-800 mt-2 max-w-2xl text-[0.74rem] leading-relaxed">
+                        <p className="mt-2 max-w-2xl text-[0.74rem] leading-relaxed text-amber-800">
                           Correction request: {proposal.correctionNotes}
                         </p>
                       ) : null}
@@ -289,10 +294,13 @@ export default function AdminProposalsClient() {
         ) : null}
       </div>
 
-      <p className="text-ink-400 mt-4 text-[0.72rem] leading-relaxed">
-        Approving a proposal creates a new approved area. Duplicate warnings are advisory; nothing is
-        merged or deleted automatically. See the{" "}
-        <Link href="/admin/areas" className="text-saffron-700 font-semibold underline underline-offset-2">
+      <p className="mt-4 text-[0.72rem] leading-relaxed text-ink-400">
+        Approving a proposal creates a new approved area. Duplicate warnings are advisory; nothing
+        is merged or deleted automatically. See the{" "}
+        <Link
+          href="/admin/areas"
+          className="font-semibold text-saffron-700 underline underline-offset-2"
+        >
           official area list
         </Link>{" "}
         before deciding.
@@ -327,39 +335,39 @@ export default function AdminProposalsClient() {
               </Notice>
             ) : null}
 
-            <div className="border-line rounded-2xl border bg-cream/50 p-4">
+            <div className="rounded-2xl border border-line bg-cream/50 p-4">
               <dl className="grid gap-3 text-sm sm:grid-cols-2">
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Type
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {reviewTarget.type || "Locality"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Parent
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {typeof reviewTarget.parentId === "object" && reviewTarget.parentId
                       ? reviewTarget.parentId.name
                       : "Top level"}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Submitted
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {formatDateTime(reviewTarget.createdAt)}
                   </dd>
                 </div>
                 <div>
-                  <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                  <dt className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Geometry
                   </dt>
-                  <dd className="text-bark-900 mt-1 text-[0.8rem] font-medium">
+                  <dd className="mt-1 text-[0.8rem] font-medium text-bark-900">
                     {reviewTarget.boundary?.coordinates
                       ? "Boundary recorded"
                       : reviewTarget.location?.coordinates
@@ -369,16 +377,16 @@ export default function AdminProposalsClient() {
                 </div>
               </dl>
               {reviewTarget.formattedAddress ? (
-                <p className="text-ink-500 mt-3 text-[0.78rem] leading-relaxed">
+                <p className="mt-3 text-[0.78rem] leading-relaxed text-ink-500">
                   {reviewTarget.formattedAddress}
                 </p>
               ) : null}
               {reviewTarget.notes ? (
-                <div className="border-line mt-3 border-t pt-3">
-                  <p className="text-ink-400 text-[0.62rem] font-bold tracking-[0.1em] uppercase">
+                <div className="mt-3 border-t border-line pt-3">
+                  <p className="text-[0.62rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                     Proposer&apos;s context
                   </p>
-                  <p className="text-ink-600 mt-1.5 text-[0.8rem] leading-[1.7] whitespace-pre-wrap">
+                  <p className="mt-1.5 text-[0.8rem] leading-[1.7] whitespace-pre-wrap text-ink-600">
                     {reviewTarget.notes}
                   </p>
                 </div>
@@ -403,7 +411,7 @@ export default function AdminProposalsClient() {
                 </ul>
               </Notice>
             ) : (
-              <p className="text-ink-400 text-[0.72rem]">
+              <p className="text-[0.72rem] text-ink-400">
                 No automatic duplicate warning was recorded for this proposal. This is advisory, not
                 proof that the locality is unique.
               </p>
@@ -432,13 +440,13 @@ export default function AdminProposalsClient() {
                           setConfirmed(false);
                           setErrors({});
                         }}
-                        className="accent-saffron-600 mt-0.5 h-4 w-4 shrink-0"
+                        className="mt-0.5 h-4 w-4 shrink-0 accent-saffron-600"
                       />
                       <span>
-                        <span className="text-bark-900 block text-[0.82rem] font-semibold">
+                        <span className="block text-[0.82rem] font-semibold text-bark-900">
                           {option.label}
                         </span>
-                        <span className="text-ink-500 mt-0.5 block text-[0.68rem] leading-relaxed">
+                        <span className="mt-0.5 block text-[0.68rem] leading-relaxed text-ink-500">
                           {option.body}
                         </span>
                       </span>
@@ -481,7 +489,7 @@ export default function AdminProposalsClient() {
             </Field>
 
             {decision === "approved" ? (
-              <div className="border-line rounded-2xl border bg-white p-4">
+              <div className="rounded-2xl border border-line bg-white p-4">
                 <label className="flex cursor-pointer items-start gap-3">
                   <input
                     type="checkbox"
@@ -492,9 +500,9 @@ export default function AdminProposalsClient() {
                         setErrors((current) => ({ ...current, confirmed: undefined }));
                       }
                     }}
-                    className="accent-saffron-600 mt-0.5 h-4 w-4 shrink-0"
+                    className="mt-0.5 h-4 w-4 shrink-0 accent-saffron-600"
                   />
-                  <span className="text-ink-600 text-[0.76rem] leading-relaxed">
+                  <span className="text-[0.76rem] leading-relaxed text-ink-600">
                     I understand approval creates a new <strong>public approved area</strong> using
                     this proposal&apos;s name, type, parent and recorded geometry. It can receive
                     reports immediately.
@@ -510,8 +518,8 @@ export default function AdminProposalsClient() {
 
             {reviewTarget.status === "approved" ? (
               <Notice tone="info" title="Already approved">
-                This proposal has already created an official area. Further decisions are disabled by
-                the API.
+                This proposal has already created an official area. Further decisions are disabled
+                by the API.
               </Notice>
             ) : null}
           </form>

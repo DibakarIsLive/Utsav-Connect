@@ -1,25 +1,19 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { listAdminAreas, createArea } from "@/api/services/area-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
 import { createAreaSchema } from "@/api/lib/validation/area-schemas";
-import { hasPermission } from "@/api/lib/auth/permissions";
+import { requireAdmin } from "@/api/lib/auth/guards";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { assertTrustedOrigin } from "@/api/lib/http/origin";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/areas
- * Admin: List all areas (including archived), with search and filter.
+ * Admin: list all areas (including archived), with search and filter.
  */
 export async function GET(request) {
   try {
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin || admin.role === "devotee" || (!hasPermission(admin, "area:manage") && admin.role !== "super_admin")) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin area:manage access required", status: 403 });
-    }
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.AREA_MANAGE);
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get("search") || undefined;
@@ -34,17 +28,12 @@ export async function GET(request) {
 
 /**
  * POST /api/admin/areas
- * Admin: Create an area directly with boundary, parent, and duplicate check.
+ * Admin: create an area directly with boundary, parent and duplicate check.
  */
 export async function POST(request) {
   try {
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin || admin.role === "devotee" || (!hasPermission(admin, "area:manage") && admin.role !== "super_admin")) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin area:manage access required", status: 403 });
-    }
+    assertTrustedOrigin(request);
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.AREA_MANAGE);
 
     const body = await request.json();
     const validatedData = createAreaSchema.parse(body);

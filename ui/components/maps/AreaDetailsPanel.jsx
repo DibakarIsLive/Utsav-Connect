@@ -9,9 +9,9 @@ import { formatNumber } from "@/ui/lib/format";
 function Stat({ label, value, note }) {
   return (
     <div className="rounded-xl border border-line bg-cream/60 px-3.5 py-3">
-      <p className="text-ink-400 text-[0.6rem] font-bold tracking-[0.12em] uppercase">{label}</p>
-      <p className="text-bark-900 mt-1 text-lg font-semibold tabular-nums">{value}</p>
-      {note ? <p className="text-ink-400 mt-0.5 text-[0.62rem] leading-relaxed">{note}</p> : null}
+      <p className="text-[0.6rem] font-bold tracking-[0.12em] text-ink-400 uppercase">{label}</p>
+      <p className="mt-1 text-lg font-semibold text-bark-900 tabular-nums">{value}</p>
+      {note ? <p className="mt-0.5 text-[0.62rem] leading-relaxed text-ink-400">{note}</p> : null}
     </div>
   );
 }
@@ -31,8 +31,7 @@ export default function AreaDetailsPanel({
 }) {
   if (!area) return null;
 
-  const parentName =
-    typeof area.parentId === "object" && area.parentId ? area.parentId.name : null;
+  const parentName = typeof area.parentId === "object" && area.parentId ? area.parentId.name : null;
   const coverage = analytics?.coveragePercentage ?? null;
   const coverageStatus = analytics?.coverageStatus ?? "unavailable";
   const total = analytics?.totalInvitations ?? null;
@@ -42,7 +41,7 @@ export default function AreaDetailsPanel({
 
   return (
     <div className="card-paper overflow-hidden">
-      <div className="bg-bark-950 text-ivory relative overflow-hidden px-5 py-5">
+      <div className="relative overflow-hidden bg-bark-950 px-5 py-5 text-ivory">
         <div className="pattern-jaali absolute inset-0 opacity-[0.13]" aria-hidden="true" />
         <div className="relative">
           <div className="flex items-start justify-between gap-4">
@@ -50,7 +49,7 @@ export default function AreaDetailsPanel({
               <div className="flex flex-wrap items-center gap-2">
                 <Badge tone="dark">{area.type || "Locality"}</Badge>
                 {area.code ? (
-                  <span className="text-ivory/45 font-mono text-[0.64rem] tracking-[0.08em] uppercase">
+                  <span className="font-mono text-[0.64rem] tracking-[0.08em] text-ivory/45 uppercase">
                     {area.code}
                   </span>
                 ) : null}
@@ -58,7 +57,7 @@ export default function AreaDetailsPanel({
               <h2 className="mt-3 text-2xl leading-tight font-semibold tracking-[-0.03em] break-words">
                 {area.name}
               </h2>
-              <p className="text-ivory/50 mt-1.5 text-[0.72rem]">
+              <p className="mt-1.5 text-[0.72rem] text-ivory/50">
                 {parentName ? `Part of ${parentName}` : "Top-level approved area"}
               </p>
             </div>
@@ -66,7 +65,7 @@ export default function AreaDetailsPanel({
               type="button"
               onClick={onClose}
               aria-label="Close area details"
-              className="text-ivory/55 hover:bg-white/10 hover:text-ivory -mr-1 shrink-0 rounded-full p-2 transition-colors"
+              className="-mr-1 shrink-0 rounded-full p-2 text-ivory/55 transition-colors hover:bg-white/10 hover:text-ivory"
             >
               <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4.5 w-4.5" fill="none">
                 <path
@@ -82,11 +81,7 @@ export default function AreaDetailsPanel({
       </div>
 
       <div className="space-y-6 p-5">
-        <CoverageBar
-          percentage={coverage}
-          status={coverageStatus}
-          label="Invitation coverage"
-        />
+        <CoverageBar percentage={coverage} status={coverageStatus} label="Invitation coverage" />
 
         <div className="grid grid-cols-2 gap-2.5">
           <Stat
@@ -111,12 +106,12 @@ export default function AreaDetailsPanel({
           />
         </div>
 
-        <dl className="divide-line divide-y text-sm">
+        <dl className="divide-y divide-line text-sm">
           <div className="flex items-baseline justify-between gap-4 py-2.5 first:pt-0">
-            <dt className="text-ink-400 text-[0.66rem] font-bold tracking-[0.1em] uppercase">
+            <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
               Population estimate
             </dt>
-            <dd className="text-bark-900 text-right text-sm font-semibold">
+            <dd className="text-right text-sm font-semibold text-bark-900">
               {typeof analytics?.populationEstimate === "number"
                 ? formatNumber(analytics.populationEstimate)
                 : "Not recorded"}
@@ -124,19 +119,19 @@ export default function AreaDetailsPanel({
           </div>
           {area.formattedAddress ? (
             <div className="flex items-start justify-between gap-4 py-2.5">
-              <dt className="text-ink-400 text-[0.66rem] font-bold tracking-[0.1em] uppercase">
+              <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                 Address
               </dt>
-              <dd className="text-ink-600 max-w-[62%] text-right text-[0.8rem] leading-relaxed">
+              <dd className="max-w-[62%] text-right text-[0.8rem] leading-relaxed text-ink-600">
                 {area.formattedAddress}
               </dd>
             </div>
           ) : null}
           <div className="flex items-baseline justify-between gap-4 py-2.5">
-            <dt className="text-ink-400 text-[0.66rem] font-bold tracking-[0.1em] uppercase">
+            <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
               Boundary
             </dt>
-            <dd className="text-ink-600 text-right text-[0.78rem]">
+            <dd className="text-right text-[0.78rem] text-ink-600">
               {area.boundary?.coordinates
                 ? `Recorded ${area.boundary.type}`
                 : area.location?.coordinates
@@ -146,10 +141,10 @@ export default function AreaDetailsPanel({
           </div>
           {area.ancestorIds?.length ? (
             <div className="flex items-baseline justify-between gap-4 py-2.5">
-              <dt className="text-ink-400 text-[0.66rem] font-bold tracking-[0.1em] uppercase">
+              <dt className="text-[0.66rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                 Hierarchy depth
               </dt>
-              <dd className="text-ink-600 text-right text-[0.78rem]">
+              <dd className="text-right text-[0.78rem] text-ink-600">
                 {area.ancestorIds.length + 1} levels
               </dd>
             </div>
@@ -158,7 +153,7 @@ export default function AreaDetailsPanel({
 
         {childAreas.length > 0 ? (
           <div>
-            <p className="text-ink-400 text-[0.64rem] font-bold tracking-[0.12em] uppercase">
+            <p className="text-[0.64rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
               Approved child areas ({childAreas.length})
             </p>
             <div className="mt-2.5 flex flex-wrap gap-2">
@@ -167,7 +162,7 @@ export default function AreaDetailsPanel({
                   key={child._id}
                   type="button"
                   onClick={() => onSelect?.(child._id)}
-                  className="border-line text-ink-600 hover:border-gold-400 hover:text-bark-900 rounded-full border bg-white px-3 py-1 text-[0.72rem] font-semibold transition-colors"
+                  className="rounded-full border border-line bg-white px-3 py-1 text-[0.72rem] font-semibold text-ink-600 transition-colors hover:border-gold-400 hover:text-bark-900"
                 >
                   {child.name}
                 </button>
@@ -177,7 +172,7 @@ export default function AreaDetailsPanel({
         ) : null}
 
         <div className="rounded-2xl bg-cream px-4 py-3.5">
-          <p className="text-ink-500 text-[0.7rem] leading-relaxed">
+          <p className="text-[0.7rem] leading-relaxed text-ink-500">
             Public figures aggregate active reports only. Pending proposals, flagged reports and
             invalid reports never contribute. Contributor names are not published.
           </p>
@@ -186,7 +181,7 @@ export default function AreaDetailsPanel({
         {isAdmin ? (
           <Link
             href={`/admin/areas?focus=${area._id}`}
-            className="border-line text-bark-900 hover:border-gold-400 inline-flex w-full items-center justify-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm font-semibold transition-colors"
+            className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 py-2.5 text-sm font-semibold text-bark-900 transition-colors hover:border-gold-400"
           >
             Manage this area in the admin workspace
             <ArrowRight className="h-3.5 w-3.5" />

@@ -35,9 +35,7 @@ export default function Tabs({
       aria-label={ariaLabel}
       className={cn(
         "inline-flex rounded-xl border p-1",
-        tone === "dark"
-          ? "border-white/15 bg-white/[0.06]"
-          : "border-line bg-cream/80",
+        tone === "dark" ? "border-white/15 bg-white/[0.06]" : "border-line bg-cream/80",
         grow ? "w-full" : "",
         className,
       )}

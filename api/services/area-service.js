@@ -5,6 +5,17 @@ import { connectToDatabase } from "../lib/mongodb/connection.js";
 import { ForbiddenError, NotFoundError, ConflictError } from "../lib/http/errors.js";
 import { hasPermission, ADMIN_PERMISSIONS } from "../lib/auth/permissions.js";
 
+/**
+ * Escape a user-supplied search term before it becomes a RegExp. Prevents
+ * regex injection and runaway backtracking on crafted input.
+ *
+ * @param {string} value
+ * @returns {string}
+ */
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 export function normalizeName(name) {
   if (!name || typeof name !== "string") return "";
   return name
@@ -127,10 +138,8 @@ export async function listApprovedAreas(options = {}) {
   const query = { status: "approved" };
 
   if (options.search) {
-    query.$or = [
-      { name: new RegExp(options.search, "i") },
-      { formattedAddress: new RegExp(options.search, "i") },
-    ];
+    const term = new RegExp(escapeRegex(options.search.trim()), "i");
+    query.$or = [{ name: term }, { formattedAddress: term }];
   }
   if (options.parentId !== undefined) {
     query.parentId = options.parentId ? options.parentId : null;
@@ -157,11 +166,8 @@ export async function listAdminAreas(admin, options = {}) {
 
   const query = {};
   if (options.search) {
-    query.$or = [
-      { name: new RegExp(options.search, "i") },
-      { code: new RegExp(options.search, "i") },
-      { formattedAddress: new RegExp(options.search, "i") },
-    ];
+    const term = new RegExp(escapeRegex(options.search.trim()), "i");
+    query.$or = [{ name: term }, { code: term }, { formattedAddress: term }];
   }
   if (options.status) {
     query.status = options.status;
@@ -207,8 +213,8 @@ export async function createArea(admin, data) {
   let ancestorIds = [];
   if (data.parentId) {
     const parent = await Area.findById(data.parentId);
-    if (!parent) {
-      throw new NotFoundError("Parent area not found");
+    if (!parent || parent.status !== "approved") {
+      throw new NotFoundError("Parent area not found or not approved");
     }
     ancestorIds = [...(parent.ancestorIds || []), parent._id];
   }
@@ -267,16 +273,23 @@ export async function updateArea(admin, id, data) {
     throw new NotFoundError("Area not found");
   }
 
-  if (data.parentId !== undefined && data.parentId !== (area.parentId?.toString() || null)) {
-    if (data.parentId) {
-      if (data.parentId === id) {
+  // Route parameters and service callers may pass either an ObjectId or a
+  // string. Normalise before comparing ids: comparing an ObjectId to a string
+  // with `===` silently misses real hierarchy cycles.
+  const areaId = area._id.toString();
+  const currentParentId = area.parentId?.toString() || null;
+  const requestedParentId = data.parentId ? data.parentId.toString() : null;
+
+  if (data.parentId !== undefined && requestedParentId !== currentParentId) {
+    if (requestedParentId) {
+      if (requestedParentId === areaId) {
         throw new ConflictError("An area cannot be its own parent");
       }
-      const newParent = await Area.findById(data.parentId);
-      if (!newParent) {
-        throw new ConflictError("Selected parent area does not exist");
+      const newParent = await Area.findById(requestedParentId);
+      if (!newParent || newParent.status !== "approved") {
+        throw new ConflictError("Selected parent area does not exist or is not approved");
       }
-      if (newParent.ancestorIds?.some((ancId) => ancId.toString() === id)) {
+      if (newParent.ancestorIds?.some((ancId) => ancId.toString() === areaId)) {
         throw new ConflictError("Cannot set parent: this would create a circular hierarchy");
       }
       area.parentId = newParent._id;

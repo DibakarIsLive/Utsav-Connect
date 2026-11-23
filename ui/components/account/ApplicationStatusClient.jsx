@@ -113,12 +113,14 @@ function Timeline({ application, user }) {
                   />
                 </svg>
               ) : (
-                <span className="text-[0.55rem] font-bold">{String(index + 1).padStart(2, "0")}</span>
+                <span className="text-[0.55rem] font-bold">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
               )}
             </span>
             <div className="min-w-0 pt-0.5">
-              <p className="text-bark-900 text-sm font-semibold">{step.title}</p>
-              <p className="text-ink-400 mt-1 text-[0.72rem] leading-relaxed">{step.detail}</p>
+              <p className="text-sm font-semibold text-bark-900">{step.title}</p>
+              <p className="mt-1 text-[0.72rem] leading-relaxed text-ink-400">{step.detail}</p>
             </div>
           </li>
         );
@@ -198,12 +200,12 @@ export default function ApplicationStatusClient() {
   }
 
   return (
-    <div className="bg-cream pattern-contour relative overflow-hidden">
+    <div className="pattern-contour relative overflow-hidden bg-cream">
       <div className="shell relative py-12 sm:py-16">
         <div className="grid items-start gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:gap-8">
           <div className="space-y-6">
             <div className="card-paper overflow-hidden">
-              <div className="bg-bark-950 text-ivory relative overflow-hidden px-6 py-8 sm:px-9 sm:py-10">
+              <div className="relative overflow-hidden bg-bark-950 px-6 py-8 text-ivory sm:px-9 sm:py-10">
                 <div className="pattern-jaali absolute inset-0 opacity-[0.14]" aria-hidden="true" />
                 <div className="relative">
                   <div className="flex flex-wrap items-center gap-3">
@@ -217,7 +219,7 @@ export default function ApplicationStatusClient() {
                   <h1 className="mt-5 max-w-xl text-[2.1rem] leading-[1.05] font-semibold tracking-[-0.04em] sm:text-[2.7rem]">
                     {copy.title}
                   </h1>
-                  <p className="text-ivory/65 mt-4 max-w-xl text-[0.95rem] leading-[1.8]">
+                  <p className="mt-4 max-w-xl text-[0.95rem] leading-[1.8] text-ivory/65">
                     {copy.body}
                   </p>
                 </div>
@@ -231,7 +233,7 @@ export default function ApplicationStatusClient() {
                       <button
                         type="button"
                         onClick={load}
-                        className="text-saffron-800 mt-2 block font-semibold underline underline-offset-2"
+                        className="mt-2 block font-semibold text-saffron-800 underline underline-offset-2"
                       >
                         Try again
                       </button>
@@ -263,7 +265,7 @@ export default function ApplicationStatusClient() {
 
                     <div>
                       <p className="eyebrow text-saffron-700">Application details</p>
-                      <dl className="divide-line mt-4 divide-y">
+                      <dl className="mt-4 divide-y divide-line">
                         {[
                           ["Full name", application.applicantName],
                           ["Email", application.applicantEmail],
@@ -281,11 +283,14 @@ export default function ApplicationStatusClient() {
                             application.reviewedAt ? formatDate(application.reviewedAt) : "Pending",
                           ],
                         ].map(([term, value]) => (
-                          <div key={term} className="flex items-baseline justify-between gap-4 py-3 first:pt-0">
-                            <dt className="text-ink-400 text-[0.68rem] font-bold tracking-[0.1em] uppercase">
+                          <div
+                            key={term}
+                            className="flex items-baseline justify-between gap-4 py-3 first:pt-0"
+                          >
+                            <dt className="text-[0.68rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                               {term}
                             </dt>
-                            <dd className="text-bark-900 max-w-[60%] text-right text-sm font-medium break-words">
+                            <dd className="max-w-[60%] text-right text-sm font-medium break-words text-bark-900">
                               {value || "—"}
                             </dd>
                           </div>
@@ -294,16 +299,16 @@ export default function ApplicationStatusClient() {
 
                       {application.message ? (
                         <div className="mt-6 rounded-2xl bg-cream p-4">
-                          <p className="text-ink-400 text-[0.64rem] font-bold tracking-[0.12em] uppercase">
+                          <p className="text-[0.64rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
                             Your message
                           </p>
-                          <p className="text-ink-600 mt-2 text-sm leading-[1.75] whitespace-pre-wrap">
+                          <p className="mt-2 text-sm leading-[1.75] whitespace-pre-wrap text-ink-600">
                             {application.message}
                           </p>
                         </div>
                       ) : null}
 
-                      <p className="text-ink-400 mt-6 text-[0.7rem] leading-relaxed">
+                      <p className="mt-6 text-[0.7rem] leading-relaxed text-ink-400">
                         For privacy, internal review notes and reviewer identities are never shown
                         here. Decisions are recorded in the platform&apos;s audit log.
                       </p>
@@ -311,7 +316,7 @@ export default function ApplicationStatusClient() {
                   </div>
                 ) : null}
 
-                <div className="border-line mt-8 flex flex-wrap items-center gap-3 border-t pt-6">
+                <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-line pt-6">
                   {user.status === "active" ? (
                     <ButtonLink href="/dashboard" size="lg">
                       Open my dashboard <ArrowRight />
@@ -321,7 +326,7 @@ export default function ApplicationStatusClient() {
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="text-ink-400 hover:text-bark-900 ml-auto text-xs font-semibold"
+                    className="ml-auto text-xs font-semibold text-ink-400 hover:text-bark-900"
                   >
                     Sign out
                   </button>
@@ -340,19 +345,19 @@ export default function ApplicationStatusClient() {
           <aside className="space-y-5 lg:sticky lg:top-28">
             <div className="card-warm p-6">
               <div className="flex items-center gap-3">
-                <span className="bg-bark-900 flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-ivory">
+                <span className="flex h-11 w-11 items-center justify-center rounded-full bg-bark-900 text-sm font-bold text-ivory">
                   {initials(user.fullName)}
                 </span>
                 <div className="min-w-0">
-                  <p className="text-bark-900 truncate text-sm font-semibold">{user.fullName}</p>
-                  <p className="text-ink-400 truncate text-[0.72rem]">{user.email}</p>
+                  <p className="truncate text-sm font-semibold text-bark-900">{user.fullName}</p>
+                  <p className="truncate text-[0.72rem] text-ink-400">{user.email}</p>
                 </div>
               </div>
-              <div className="border-line mt-5 border-t pt-4">
-                <p className="text-ink-400 text-[0.64rem] font-bold tracking-[0.12em] uppercase">
+              <div className="mt-5 border-t border-line pt-4">
+                <p className="text-[0.64rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
                   Account
                 </p>
-                <p className="text-ink-600 mt-2 text-[0.78rem] leading-relaxed">
+                <p className="mt-2 text-[0.78rem] leading-relaxed text-ink-600">
                   Signed in with application-level access. Approval adds reporting and proposal
                   tools without creating a new account.
                 </p>
@@ -363,15 +368,23 @@ export default function ApplicationStatusClient() {
               <p className="eyebrow text-saffron-700">While you wait</p>
               <ul className="mt-4 space-y-4">
                 {[
-                  ["Learn about the platform", "Read how Utsav-Connect works and how to apply.", "/about"],
-                  ["Understand the process", "Read exactly how review, approval and coverage work.", "/about"],
+                  [
+                    "Learn about the platform",
+                    "Read how Utsav-Connect works and how to apply.",
+                    "/about",
+                  ],
+                  [
+                    "Understand the process",
+                    "Read exactly how review, approval and coverage work.",
+                    "/about",
+                  ],
                 ].map(([title, body, href]) => (
                   <li key={href}>
                     <Link href={href} className="group block">
-                      <p className="text-bark-900 group-hover:text-saffron-700 text-sm font-semibold transition-colors">
+                      <p className="text-sm font-semibold text-bark-900 transition-colors group-hover:text-saffron-700">
                         {title}
                       </p>
-                      <p className="text-ink-500 mt-1 text-[0.76rem] leading-relaxed">{body}</p>
+                      <p className="mt-1 text-[0.76rem] leading-relaxed text-ink-500">{body}</p>
                     </Link>
                   </li>
                 ))}
@@ -379,13 +392,13 @@ export default function ApplicationStatusClient() {
             </div>
 
             <div className="rounded-2xl border border-line bg-white/60 p-5">
-              <p className="text-ink-500 text-[0.76rem] leading-relaxed">
+              <p className="text-[0.76rem] leading-relaxed text-ink-500">
                 Need a correction to your application? Contact the Mahotsav committee through the{" "}
                 <a
                   href="https://www.satsang.org.in/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-saffron-700 font-semibold underline underline-offset-2"
+                  className="font-semibold text-saffron-700 underline underline-offset-2"
                 >
                   official Satsang website
                 </a>

@@ -1,24 +1,19 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { getApplication } from "@/api/services/admin-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
+import { requireAdmin } from "@/api/lib/auth/guards";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/applications/:id
- * Get application details (admin only)
+ * Full applicant detail. Requires application:read:all and is written to the
+ * audit log by the service before any contact data is returned.
  */
 export async function GET(request, { params }) {
   try {
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.APPLICATION_READ_ALL);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin access required", status: 403 });
-    }
 
     const application = await getApplication(admin, id);
 

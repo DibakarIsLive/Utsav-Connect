@@ -17,8 +17,7 @@ export default async function AdminProposalsPage() {
   const token = parseSessionToken(cookieStore.toString());
   const admin = token ? await validateSession(token) : null;
 
-  const canReview =
-    hasAdminPermission(admin, "proposal:review") || hasAdminPermission(admin, "area:manage");
+  const canReview = hasAdminPermission(admin, "proposal:review");
 
   if (!canReview) {
     return <AdminDenied permission="proposal:review" />;

@@ -1,28 +1,20 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { listApplications } from "@/api/services/admin-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
-import { hasPermission, ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { requireAdmin } from "@/api/lib/auth/guards";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { maskEmail, maskPhone } from "@/api/lib/privacy/mask";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/applications
- * List applications with pagination and filtering (admin only)
+ * List applications with pagination and filtering. Requires
+ * application:read:all. Contact data is masked; full values are available
+ * only from the audited detail endpoint.
  */
 export async function GET(request) {
   try {
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin || !hasPermission(admin, ADMIN_PERMISSIONS.APPLICATION_READ_ALL)) {
-      return errorToResponse({
-        code: "FORBIDDEN",
-        message: "Admin application access required",
-        status: 403,
-      });
-    }
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.APPLICATION_READ_ALL);
 
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get("page") || "1", 10);
@@ -36,8 +28,8 @@ export async function GET(request) {
       applications: result.applications.map((a) => ({
         id: a._id.toString(),
         applicantName: a.applicantName,
-        applicantEmail: a.applicantEmail,
-        applicantPhone: a.applicantPhone,
+        applicantEmail: maskEmail(a.applicantEmail),
+        applicantPhone: maskPhone(a.applicantPhone),
         gender: a.gender,
         status: a.status,
         message: a.message,

@@ -6,6 +6,7 @@ import SectionHeading from "@/ui/components/ui/SectionHeading";
 import { ButtonLink, ArrowRight } from "@/ui/components/ui/Button";
 import { LotusDivider } from "@/ui/components/ui/Ornament";
 import { IMAGE_CREDITS } from "@/ui/lib/image-credits";
+import { VENUE_SHORT_URL } from "@/ui/lib/venue";
 
 export const metadata = {
   title: "About",
@@ -83,8 +84,8 @@ export default function AboutPage() {
       <section className="bg-ivory py-20 sm:py-24">
         <div className="shell grid gap-12 lg:grid-cols-[1.15fr_0.85fr] lg:gap-16">
           <Reveal>
-            <p className="eyebrow text-saffron-700 eyebrow-line">Why this platform exists</p>
-            <h2 className="text-bark-900 mt-5 max-w-2xl text-[2.1rem] leading-[1.06] font-semibold tracking-[-0.04em] sm:text-[2.8rem]">
+            <p className="eyebrow eyebrow-line text-saffron-700">Why this platform exists</p>
+            <h2 className="mt-5 max-w-2xl text-[2.1rem] leading-[1.06] font-semibold tracking-[-0.04em] text-bark-900 sm:text-[2.8rem]">
               Outreach is personal. Coordination should still be shared.
             </h2>
             <div className="prose-editorial mt-6 max-w-2xl">
@@ -97,8 +98,8 @@ export default function AboutPage() {
               <p>
                 The platform brings three things together: a geographic record of{" "}
                 <strong>approved localities</strong>, a private-by-design way for devotees to{" "}
-                <strong>record invitations</strong>, and a public view of{" "}
-                <strong>coverage</strong> that distinguishes what is known from what is not.
+                <strong>record invitations</strong>, and a public view of <strong>coverage</strong>{" "}
+                that distinguishes what is known from what is not.
               </p>
               <p>
                 It is deliberately not a leaderboard. There are no rankings of devotees, no public
@@ -111,7 +112,7 @@ export default function AboutPage() {
           <Reveal delay={0.1}>
             <aside className="card-paper sticky top-28 p-7">
               <p className="eyebrow text-saffron-700">At a glance</p>
-              <dl className="divide-line mt-5 divide-y">
+              <dl className="mt-5 divide-y divide-line">
                 {[
                   ["Purpose", "Coordinate Mahotsav outreach across localities"],
                   ["Map", "Approved campaign areas only"],
@@ -119,15 +120,15 @@ export default function AboutPage() {
                   ["Access", "Public exploration; accounts required to report"],
                 ].map(([term, description]) => (
                   <div key={term} className="py-4 first:pt-0 last:pb-0">
-                    <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.14em] uppercase">
+                    <dt className="text-[0.62rem] font-bold tracking-[0.14em] text-ink-400 uppercase">
                       {term}
                     </dt>
-                    <dd className="text-bark-900 mt-1.5 text-sm leading-relaxed">{description}</dd>
+                    <dd className="mt-1.5 text-sm leading-relaxed text-bark-900">{description}</dd>
                   </div>
                 ))}
               </dl>
               <div className="mt-6 rounded-2xl bg-cream p-4">
-                <p className="text-ink-500 text-[0.72rem] leading-relaxed">
+                <p className="text-[0.72rem] leading-relaxed text-ink-500">
                   Utsav-Connect is an outreach coordination platform. It is not an official
                   publication of Satsang. Official resources are linked for reference.
                 </p>
@@ -150,7 +151,7 @@ export default function AboutPage() {
                     sizes="(min-width: 1024px) 42vw, 90vw"
                     className="object-cover"
                   />
-                  <div className="from-bark-950/75 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-bark-950/75 via-transparent to-transparent" />
                   <p className="absolute bottom-5 left-5 text-[0.62rem] font-bold tracking-[0.16em] text-gold-300 uppercase">
                     Satsang Ashram · Deoghar
                   </p>
@@ -158,16 +159,15 @@ export default function AboutPage() {
               </div>
 
               <div>
-                <p className="eyebrow text-saffron-700 eyebrow-line">The Mahotsav connection</p>
-                <h2 className="text-bark-900 mt-5 text-[2rem] leading-[1.08] font-semibold tracking-[-0.04em] sm:text-[2.6rem]">
+                <p className="eyebrow eyebrow-line text-saffron-700">The Mahotsav connection</p>
+                <h2 className="mt-5 text-[2rem] leading-[1.08] font-semibold tracking-[-0.04em] text-bark-900 sm:text-[2.6rem]">
                   One celebration. Many places preparing to welcome it.
                 </h2>
                 <div className="prose-editorial mt-5">
                   <p>
-                    The Mahotsav is a central celebration in the life of Satsang, and Satsang
-                    Ashram in Deoghar is its home. Around that centre, devotees reach out across
-                    towns, neighbourhoods and villages to extend invitations and prepare a warm
-                    welcome.
+                    The Mahotsav is a central celebration in the life of Satsang, and Satsang Ashram
+                    in Deoghar is its home. Around that centre, devotees reach out across towns,
+                    neighbourhoods and villages to extend invitations and prepare a warm welcome.
                   </p>
                   <p>
                     Utsav-Connect supports that preparation. It does not replace the personal
@@ -185,7 +185,7 @@ export default function AboutPage() {
                     Visit the official Satsang site
                   </ButtonLink>
                   <ButtonLink
-                    href="https://maps.app.goo.gl/BcY87xSjA6iRtBY78"
+                    href={VENUE_SHORT_URL}
                     target="_blank"
                     rel="noopener noreferrer"
                     variant="secondary"
@@ -214,15 +214,15 @@ export default function AboutPage() {
             {MAP_STEPS.map((step, index) => (
               <Reveal key={step.number} delay={index * 0.07}>
                 <div className="card-warm relative h-full p-6">
-                  <span className="font-display text-saffron-600/90 text-4xl font-semibold">
+                  <span className="font-display text-4xl font-semibold text-saffron-600/90">
                     {step.number}
                   </span>
-                  <h3 className="text-bark-900 mt-4 text-lg font-semibold tracking-[-0.02em]">
+                  <h3 className="mt-4 text-lg font-semibold tracking-[-0.02em] text-bark-900">
                     {step.title}
                   </h3>
-                  <p className="text-ink-500 mt-2.5 text-sm leading-[1.7]">{step.body}</p>
+                  <p className="mt-2.5 text-sm leading-[1.7] text-ink-500">{step.body}</p>
                   {index < MAP_STEPS.length - 1 ? (
-                    <span className="text-gold-500/70 absolute top-1/2 -right-3 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-ivory lg:flex">
+                    <span className="absolute top-1/2 -right-3 hidden h-6 w-6 -translate-y-1/2 items-center justify-center rounded-full border border-line bg-ivory text-gold-500/70 lg:flex">
                       <ArrowRight className="h-3 w-3" />
                     </span>
                   ) : null}
@@ -233,32 +233,43 @@ export default function AboutPage() {
 
           <Reveal delay={0.2}>
             <div className="mt-10 grid gap-5 md:grid-cols-2">
-              <div className="border-line rounded-3xl border bg-white p-7">
+              <div className="rounded-3xl border border-line bg-white p-7">
                 <div className="flex items-center gap-3">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-700">
                     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
-                      <path d="m4.5 10.5 3.4 3.4 7.6-8" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
+                      <path
+                        d="m4.5 10.5 3.4 3.4 7.6-8"
+                        stroke="currentColor"
+                        strokeWidth="1.7"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                   </span>
-                  <h3 className="text-bark-900 text-lg font-semibold">Approved area</h3>
+                  <h3 className="text-lg font-semibold text-bark-900">Approved area</h3>
                 </div>
-                <ul className="text-ink-600 mt-4 space-y-2.5 text-sm leading-relaxed">
+                <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-ink-600">
                   <li>Appears on the public map and in lists.</li>
                   <li>Can receive invitation reports from active devotees.</li>
                   <li>Contributes to public coverage when a population estimate exists.</li>
                 </ul>
               </div>
-              <div className="border-line rounded-3xl border border-dashed bg-cream/60 p-7">
+              <div className="rounded-3xl border border-dashed border-line bg-cream/60 p-7">
                 <div className="flex items-center gap-3">
-                  <span className="text-ink-500 flex h-8 w-8 items-center justify-center rounded-full bg-white">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink-500">
                     <svg viewBox="0 0 20 20" className="h-4 w-4" fill="none" aria-hidden="true">
                       <circle cx="10" cy="10" r="7" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M10 6.5V10l2.4 1.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                      <path
+                        d="M10 6.5V10l2.4 1.6"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                      />
                     </svg>
                   </span>
-                  <h3 className="text-bark-900 text-lg font-semibold">Pending proposal</h3>
+                  <h3 className="text-lg font-semibold text-bark-900">Pending proposal</h3>
                 </div>
-                <ul className="text-ink-500 mt-4 space-y-2.5 text-sm leading-relaxed">
+                <ul className="mt-4 space-y-2.5 text-sm leading-relaxed text-ink-500">
                   <li>Never appears as an official locality.</li>
                   <li>Never contributes to public invitation totals or coverage.</li>
                   <li>Is visible only to its proposer and authorised reviewers.</li>
@@ -269,7 +280,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="bg-bark-950 text-ivory relative overflow-hidden py-20 sm:py-24">
+      <section className="relative overflow-hidden bg-bark-950 py-20 text-ivory sm:py-24">
         <div className="pattern-jaali absolute inset-0 opacity-[0.12]" aria-hidden="true" />
         <div className="shell relative">
           <Reveal>
@@ -290,24 +301,28 @@ export default function AboutPage() {
               <div className="mt-4 flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-center sm:gap-5">
                 <div className="rounded-xl border border-white/12 bg-white/[0.06] px-5 py-3">
                   <p className="text-sm font-semibold text-ivory">Reported invitations</p>
-                  <p className="text-ivory/45 mt-1 text-[0.66rem]">In the area and its approved children, counted once</p>
+                  <p className="mt-1 text-[0.66rem] text-ivory/45">
+                    In the area and its approved children, counted once
+                  </p>
                 </div>
-                <span className="text-gold-300 text-2xl font-light" aria-hidden="true">
+                <span className="text-2xl font-light text-gold-300" aria-hidden="true">
                   ÷
                 </span>
                 <div className="rounded-xl border border-white/12 bg-white/[0.06] px-5 py-3">
                   <p className="text-sm font-semibold text-ivory">Recorded population</p>
-                  <p className="text-ivory/45 mt-1 text-[0.66rem]">The population estimate held for that area</p>
+                  <p className="mt-1 text-[0.66rem] text-ivory/45">
+                    The population estimate held for that area
+                  </p>
                 </div>
-                <span className="text-gold-300 text-2xl font-light" aria-hidden="true">
+                <span className="text-2xl font-light text-gold-300" aria-hidden="true">
                   =
                 </span>
                 <div className="rounded-xl border border-gold-400/30 bg-gold-400/10 px-5 py-3">
-                  <p className="text-gold-200 text-sm font-semibold">Coverage</p>
-                  <p className="text-ivory/45 mt-1 text-[0.66rem]">Shown as a percentage</p>
+                  <p className="text-sm font-semibold text-gold-200">Coverage</p>
+                  <p className="mt-1 text-[0.66rem] text-ivory/45">Shown as a percentage</p>
                 </div>
               </div>
-              <p className="text-ivory/35 mt-5 text-center text-[0.68rem]">
+              <p className="mt-5 text-center text-[0.68rem] text-ivory/35">
                 Diagram only. Live figures appear on the campaign map.
               </p>
             </div>
@@ -317,13 +332,13 @@ export default function AboutPage() {
             {COVERAGE_RULES.map((rule, index) => (
               <Reveal key={rule.title} delay={index * 0.08}>
                 <div className="h-full rounded-2xl border border-white/10 bg-white/[0.035] p-6">
-                  <span className="text-gold-300 flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-sm font-bold">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/10 text-sm font-bold text-gold-300">
                     {String(index + 1).padStart(2, "0")}
                   </span>
                   <h3 className="mt-4 text-lg font-semibold tracking-[-0.02em] text-ivory">
                     {rule.title}
                   </h3>
-                  <p className="text-ivory/55 mt-2.5 text-sm leading-[1.75]">{rule.body}</p>
+                  <p className="mt-2.5 text-sm leading-[1.75] text-ivory/55">{rule.body}</p>
                 </div>
               </Reveal>
             ))}
@@ -334,15 +349,15 @@ export default function AboutPage() {
       <section className="bg-ivory py-20 sm:py-24">
         <div className="shell grid gap-12 lg:grid-cols-[0.95fr_1.05fr] lg:gap-16">
           <Reveal>
-            <p className="eyebrow text-saffron-700 eyebrow-line">Privacy and accountability</p>
-            <h2 className="text-bark-900 mt-5 text-[2.1rem] leading-[1.06] font-semibold tracking-[-0.04em] sm:text-[2.7rem]">
+            <p className="eyebrow eyebrow-line text-saffron-700">Privacy and accountability</p>
+            <h2 className="mt-5 text-[2.1rem] leading-[1.06] font-semibold tracking-[-0.04em] text-bark-900 sm:text-[2.7rem]">
               The people we invite are never the data.
             </h2>
             <div className="prose-editorial mt-5">
               <p>
                 Invitation reporting records a number and a locality — not a list of people. No
-                invitee names, phone numbers or personal details are collected. A devotee sees
-                their own reports; authorised administrators see the campaign as a whole.
+                invitee names, phone numbers or personal details are collected. A devotee sees their
+                own reports; authorised administrators see the campaign as a whole.
               </p>
               <p>
                 Every approval, rejection, correction and invalidation is written to an audit log.
@@ -358,9 +373,9 @@ export default function AboutPage() {
                 ["Audited decisions", "Sensitive actions leave a permanent record."],
                 ["Honest public data", "Aggregates only, with missing values labelled."],
               ].map(([title, body]) => (
-                <div key={title} className="border-line rounded-2xl border bg-white p-5">
-                  <p className="text-bark-900 text-sm font-semibold">{title}</p>
-                  <p className="text-ink-500 mt-1.5 text-[0.78rem] leading-relaxed">{body}</p>
+                <div key={title} className="rounded-2xl border border-line bg-white p-5">
+                  <p className="text-sm font-semibold text-bark-900">{title}</p>
+                  <p className="mt-1.5 text-[0.78rem] leading-relaxed text-ink-500">{body}</p>
                 </div>
               ))}
             </div>
@@ -369,14 +384,17 @@ export default function AboutPage() {
           <Reveal delay={0.1}>
             <div className="card-warm p-7 sm:p-8">
               <p className="eyebrow text-saffron-700">Who uses Utsav-Connect</p>
-              <div className="divide-line mt-4 divide-y">
+              <div className="mt-4 divide-y divide-line">
                 {ROLES.map((role) => (
                   <div key={role.name} className="py-5 first:pt-3 last:pb-0">
                     <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="text-bark-900 text-base font-semibold">{role.name}</h3>
-                      <span className="bg-gold-500 h-1.5 w-1.5 shrink-0 rounded-full" aria-hidden="true" />
+                      <h3 className="text-base font-semibold text-bark-900">{role.name}</h3>
+                      <span
+                        className="h-1.5 w-1.5 shrink-0 rounded-full bg-gold-500"
+                        aria-hidden="true"
+                      />
                     </div>
-                    <p className="text-ink-500 mt-1.5 text-sm leading-relaxed">{role.body}</p>
+                    <p className="mt-1.5 text-sm leading-relaxed text-ink-500">{role.body}</p>
                   </div>
                 ))}
               </div>
@@ -384,7 +402,7 @@ export default function AboutPage() {
                 Apply to join
                 <ArrowRight />
               </ButtonLink>
-              <p className="text-ink-400 mt-3 text-center text-[0.68rem]">
+              <p className="mt-3 text-center text-[0.68rem] text-ink-400">
                 Already have an account? Sign in from the same page.
               </p>
             </div>
@@ -392,7 +410,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section id="heritage" className="bg-cream pattern-contour relative overflow-hidden py-20 sm:py-24">
+      <section
+        id="heritage"
+        className="pattern-contour relative overflow-hidden bg-cream py-20 sm:py-24"
+      >
         <div className="shell relative">
           <Reveal>
             <SectionHeading
@@ -439,7 +460,9 @@ export default function AboutPage() {
                     />
                   </div>
                   <figcaption className="px-4 py-3">
-                    <p className="font-display text-bark-900 text-base font-semibold">{image.title}</p>
+                    <p className="font-display text-base font-semibold text-bark-900">
+                      {image.title}
+                    </p>
                   </figcaption>
                 </figure>
               </Reveal>
@@ -458,7 +481,7 @@ export default function AboutPage() {
                     className="object-cover"
                   />
                 </div>
-                <figcaption className="text-ink-500 px-4 py-3 text-[0.75rem]">
+                <figcaption className="px-4 py-3 text-[0.75rem] text-ink-500">
                   Chakratirtha Satsang Vihar. Photograph by Shobhanlal mukherjee150, CC BY-SA 4.0.
                 </figcaption>
               </figure>
@@ -472,7 +495,7 @@ export default function AboutPage() {
                     className="object-cover"
                   />
                 </div>
-                <figcaption className="text-ink-500 px-4 py-3 text-[0.75rem]">
+                <figcaption className="px-4 py-3 text-[0.75rem] text-ink-500">
                   Satsang Vihar, Falakata, during Diwali. Photograph by Royz007, CC BY-SA 4.0.
                 </figcaption>
               </figure>
@@ -481,13 +504,13 @@ export default function AboutPage() {
 
           <Reveal delay={0.2}>
             <div className="mx-auto mt-10 max-w-3xl rounded-2xl border border-line bg-white/70 p-6">
-              <p className="text-ink-500 text-[0.82rem] leading-[1.8]">
-                <strong className="text-bark-900 font-semibold">A note on authenticity.</strong>{" "}
-                No historical person or event on this page has been generated or altered with AI.
-                Photographs are reproduced from Wikimedia Commons under the licences recorded
-                below. Where the original uploader is anonymous, that is stated. Images of Satsang
-                centres are included to show the wider tradition, not to suggest that the
-                Utsav-Connect campaign itself has formally adopted those locations as venues.
+              <p className="text-[0.82rem] leading-[1.8] text-ink-500">
+                <strong className="font-semibold text-bark-900">A note on authenticity.</strong> No
+                historical person or event on this page has been generated or altered with AI.
+                Photographs are reproduced from Wikimedia Commons under the licences recorded below.
+                Where the original uploader is anonymous, that is stated. Images of Satsang centres
+                are included to show the wider tradition, not to suggest that the Utsav-Connect
+                campaign itself has formally adopted those locations as venues.
               </p>
             </div>
           </Reveal>
@@ -507,19 +530,16 @@ export default function AboutPage() {
           <div className="mt-10 overflow-hidden rounded-3xl border border-line bg-white">
             <ul className="divide-y divide-line">
               {IMAGE_CREDITS.map((credit) => (
-                <li key={credit.asset} className="grid gap-4 p-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center">
+                <li
+                  key={credit.asset}
+                  className="grid gap-4 p-5 sm:grid-cols-[4rem_1fr_auto] sm:items-center"
+                >
                   <div className="relative h-16 w-16 overflow-hidden rounded-xl bg-cream">
-                    <Image
-                      src={credit.asset}
-                      alt=""
-                      fill
-                      sizes="64px"
-                      className="object-cover"
-                    />
+                    <Image src={credit.asset} alt="" fill sizes="64px" className="object-cover" />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-bark-900 text-sm font-semibold">{credit.title}</p>
-                    <p className="text-ink-500 mt-1 text-[0.76rem] leading-relaxed">
+                    <p className="text-sm font-semibold text-bark-900">{credit.title}</p>
+                    <p className="mt-1 text-[0.76rem] leading-relaxed text-ink-500">
                       {credit.author} · {credit.note}
                     </p>
                   </div>
@@ -528,7 +548,7 @@ export default function AboutPage() {
                       href={credit.licenceUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="border-line text-ink-600 hover:border-gold-400 inline-flex items-center rounded-full border px-3 py-1 text-[0.66rem] font-bold tracking-[0.04em] uppercase transition-colors"
+                      className="inline-flex items-center rounded-full border border-line px-3 py-1 text-[0.66rem] font-bold tracking-[0.04em] text-ink-600 uppercase transition-colors hover:border-gold-400"
                     >
                       {credit.licence}
                     </a>
@@ -536,7 +556,7 @@ export default function AboutPage() {
                       href={credit.source}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-saffron-700 hover:text-saffron-800 inline-flex items-center gap-1 text-[0.72rem] font-semibold"
+                      className="inline-flex items-center gap-1 text-[0.72rem] font-semibold text-saffron-700 hover:text-saffron-800"
                     >
                       Source <ArrowRight className="h-3 w-3" />
                     </a>
@@ -545,11 +565,11 @@ export default function AboutPage() {
               ))}
             </ul>
           </div>
-          <p className="text-ink-400 mt-5 text-[0.72rem] leading-relaxed">
-            Image files were resized and converted to WebP for delivery. Historical photographs
-            were not otherwise altered. Some images still require formal confirmation from the
-            original copyright holder if the campaign later decides to use them in printed
-            material; the licences above cover this website&apos;s use.
+          <p className="mt-5 text-[0.72rem] leading-relaxed text-ink-400">
+            Image files were resized and converted to WebP for delivery. Historical photographs were
+            not otherwise altered. Some images still require formal confirmation from the original
+            copyright holder if the campaign later decides to use them in printed material; the
+            licences above cover this website&apos;s use.
           </p>
         </div>
       </section>
@@ -559,10 +579,10 @@ export default function AboutPage() {
           <Reveal>
             <div className="text-center">
               <LotusDivider className="mb-7" />
-              <h2 className="text-bark-900 mx-auto max-w-2xl text-[2.1rem] leading-[1.08] font-semibold tracking-[-0.04em] text-balance sm:text-[2.8rem]">
+              <h2 className="mx-auto max-w-2xl text-[2.1rem] leading-[1.08] font-semibold tracking-[-0.04em] text-balance text-bark-900 sm:text-[2.8rem]">
                 If you know a locality that is not yet on the map, help us find it.
               </h2>
-              <p className="text-ink-600 mx-auto mt-5 max-w-xl text-[1rem] leading-[1.8]">
+              <p className="mx-auto mt-5 max-w-xl text-[1rem] leading-[1.8] text-ink-600">
                 Apply to join, then propose the places you know. Every approved locality makes the
                 shared picture more complete.
               </p>
@@ -576,9 +596,14 @@ export default function AboutPage() {
                   <ArrowRight />
                 </ButtonLink>
               </div>
-              <p className="text-ink-400 mt-5 text-[0.72rem]">
+              <p className="mt-5 text-[0.72rem] text-ink-400">
                 Questions about the campaign?{" "}
-                <Link href="https://www.satsang.org.in/" className="text-saffron-700 font-semibold underline underline-offset-2" target="_blank" rel="noopener noreferrer">
+                <Link
+                  href="https://www.satsang.org.in/"
+                  className="font-semibold text-saffron-700 underline underline-offset-2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
                   Refer to the official Satsang website
                 </Link>
                 .

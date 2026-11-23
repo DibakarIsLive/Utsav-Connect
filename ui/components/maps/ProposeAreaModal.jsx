@@ -104,7 +104,9 @@ export default function ProposeAreaModal({
         try {
           parsed = JSON.parse(form.boundary);
         } catch {
-          throw new Error("The boundary JSON is not valid. Paste an array of [longitude, latitude] rings.");
+          throw new Error(
+            "The boundary JSON is not valid. Paste an array of [longitude, latitude] rings.",
+          );
         }
         if (!Array.isArray(parsed) || parsed.length === 0) {
           throw new Error("The boundary must be a non-empty GeoJSON coordinate array.");
@@ -144,7 +146,9 @@ export default function ProposeAreaModal({
       size="lg"
       footer={
         success ? (
-          <Button onClick={onClose}>Done <ArrowRight /></Button>
+          <Button onClick={onClose}>
+            Done <ArrowRight />
+          </Button>
         ) : (
           <>
             <Button variant="secondary" onClick={onClose} disabled={busy}>
@@ -172,8 +176,8 @@ export default function ProposeAreaModal({
               </svg>
             </span>
             <div>
-              <h3 className="text-bark-900 text-lg font-semibold">Thank you for the lead.</h3>
-              <p className="text-ink-500 mt-2 text-sm leading-[1.75]">
+              <h3 className="text-lg font-semibold text-bark-900">Thank you for the lead.</h3>
+              <p className="mt-2 text-sm leading-[1.75] text-ink-500">
                 <strong className="text-bark-900">{form.name.trim()}</strong> is now a pending
                 proposal. It does <strong>not</strong> appear on the public map and does not change
                 any invitation or coverage totals while it is reviewed.
@@ -187,7 +191,11 @@ export default function ProposeAreaModal({
         </div>
       ) : (
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
-          {errors.submit ? <Notice tone="error" title="Proposal not submitted">{errors.submit}</Notice> : null}
+          {errors.submit ? (
+            <Notice tone="error" title="Proposal not submitted">
+              {errors.submit}
+            </Notice>
+          ) : null}
 
           <Field id="proposalName" label="Locality name" required error={errors.name}>
             <TextInput
@@ -262,21 +270,21 @@ export default function ProposeAreaModal({
             />
           </Field>
 
-          <div className="border-line rounded-2xl border bg-cream/50">
+          <div className="rounded-2xl border border-line bg-cream/50">
             <button
               type="button"
               onClick={() => setShowAdvanced((value) => !value)}
               aria-expanded={showAdvanced}
-              className="text-ink-600 hover:text-bark-900 flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[0.78rem] font-semibold"
+              className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-[0.78rem] font-semibold text-ink-600 hover:text-bark-900"
             >
               Add coordinates or a boundary
-              <span aria-hidden="true" className="text-ink-400 text-lg leading-none">
+              <span aria-hidden="true" className="text-lg leading-none text-ink-400">
                 {showAdvanced ? "−" : "+"}
               </span>
             </button>
             {showAdvanced ? (
-              <div className="border-line space-y-4 border-t px-4 py-4">
-                <p className="text-ink-400 text-[0.7rem] leading-relaxed">
+              <div className="space-y-4 border-t border-line px-4 py-4">
+                <p className="text-[0.7rem] leading-relaxed text-ink-400">
                   Only enter coordinates you can verify from a reliable source. Leave these blank
                   rather than guessing.
                 </p>
@@ -327,7 +335,7 @@ export default function ProposeAreaModal({
             ) : null}
           </div>
 
-          <p className="text-ink-400 text-[0.68rem] leading-relaxed">
+          <p className="text-[0.68rem] leading-relaxed text-ink-400">
             Proposals are private to you and authorised reviewers. They never appear as approved
             localities or affect public totals.
           </p>

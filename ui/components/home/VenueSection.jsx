@@ -29,40 +29,40 @@ export default function VenueSection() {
   }
 
   return (
-    <section aria-labelledby="venue-heading" className="relative overflow-hidden bg-cream py-20 sm:py-24">
+    <section
+      aria-labelledby="venue-heading"
+      className="relative overflow-hidden bg-cream py-20 sm:py-24"
+    >
       <div className="pattern-contour absolute inset-0 opacity-60" aria-hidden="true" />
       <div className="shell relative">
         <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
           <div>
-            <p className="eyebrow text-saffron-700 eyebrow-line">Official Mahotsav venue</p>
+            <p className="eyebrow eyebrow-line text-saffron-700">Official Mahotsav venue</p>
             <h2
               id="venue-heading"
-              className="text-bark-900 mt-5 max-w-xl text-[2.2rem] leading-[1.06] font-semibold tracking-[-0.04em] sm:text-[3.1rem]"
+              className="mt-5 max-w-xl text-[2.2rem] leading-[1.06] font-semibold tracking-[-0.04em] text-bark-900 sm:text-[3.1rem]"
             >
               Kulti Golf Ground,
               <br />
               Kulti
             </h2>
-            <p className="text-ink-600 mt-5 max-w-lg text-[1.02rem] leading-[1.8]">
-              The central Mahotsav celebration gathers at Kulti Golf Ground in Kulti.
-              Every visitor can open the official location and travel directions without
-              creating an account.
+            <p className="mt-5 max-w-lg text-[1.02rem] leading-[1.8] text-ink-600">
+              The central Mahotsav celebration gathers at Kulti Golf Ground in Kulti. Every visitor
+              can open the official location and travel directions without creating an account.
             </p>
 
-            <dl className="border-line mt-8 grid max-w-lg gap-px overflow-hidden rounded-2xl border bg-white sm:grid-cols-2">
-              <div className="border-line border-b p-4 sm:border-r sm:border-b-0">
-                <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.14em] uppercase">
+            <dl className="mt-8 grid max-w-lg gap-px overflow-hidden rounded-2xl border border-line bg-white sm:grid-cols-2">
+              <div className="border-b border-line p-4 sm:border-r sm:border-b-0">
+                <dt className="text-[0.62rem] font-bold tracking-[0.14em] text-ink-400 uppercase">
                   Location
                 </dt>
-                <dd className="text-bark-900 mt-1.5 text-sm font-semibold">
-                  Kulti, West Bengal
-                </dd>
+                <dd className="mt-1.5 text-sm font-semibold text-bark-900">Kulti, West Bengal</dd>
               </div>
               <div className="p-4">
-                <dt className="text-ink-400 text-[0.62rem] font-bold tracking-[0.14em] uppercase">
+                <dt className="text-[0.62rem] font-bold tracking-[0.14em] text-ink-400 uppercase">
                   Access
                 </dt>
-                <dd className="text-bark-900 mt-1.5 text-sm font-semibold">
+                <dd className="mt-1.5 text-sm font-semibold text-bark-900">
                   Open to every visitor
                 </dd>
               </div>
@@ -91,7 +91,7 @@ export default function VenueSection() {
               <button
                 type="button"
                 onClick={copyVenueLink}
-                className="text-ink-500 hover:text-bark-900 inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-colors"
+                className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold text-ink-500 transition-colors hover:text-bark-900"
               >
                 <svg aria-hidden="true" viewBox="0 0 20 20" className="h-3.5 w-3.5" fill="none">
                   <path
@@ -104,7 +104,7 @@ export default function VenueSection() {
                 {copied ? "Link copied" : "Copy official link"}
               </button>
             </div>
-            <p className="text-ink-400 mt-5 max-w-md text-[0.72rem] leading-relaxed">
+            <p className="mt-5 max-w-md text-[0.72rem] leading-relaxed text-ink-400">
               Directions open in Google Maps and use your current location as the starting point
               when your device allows it. The short link above is the verified official venue
               destination.
@@ -112,7 +112,7 @@ export default function VenueSection() {
           </div>
 
           <div className="relative">
-            <div className="border-line relative overflow-hidden rounded-t-[10rem] rounded-b-[1.75rem] border-4 border-white bg-bark-900 shadow-[var(--shadow-arch)]">
+            <div className="relative overflow-hidden rounded-t-[10rem] rounded-b-[1.75rem] border-4 border-line border-white bg-bark-900 shadow-[var(--shadow-arch)]">
               <div className="relative aspect-[4/5]">
                 <Image
                   src="/images/ashram/deoghar-courtyard.webp"
@@ -125,18 +125,18 @@ export default function VenueSection() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-bark-950/85 via-bark-950/10 to-transparent" />
                 <div className="absolute inset-x-0 bottom-0 p-6">
-                  <p className="text-[0.62rem] font-bold tracking-[0.18em] uppercase text-gold-300">
+                  <p className="text-[0.62rem] font-bold tracking-[0.18em] text-gold-300 uppercase">
                     Kulti Golf Ground
                   </p>
-                  <p className="font-display mt-1.5 text-xl font-semibold text-ivory">
+                  <p className="mt-1.5 font-display text-xl font-semibold text-ivory">
                     The heart of the Mahotsav
                   </p>
                 </div>
               </div>
             </div>
 
-            <div className="border-line shadow-soft absolute -bottom-6 -left-4 flex items-center gap-3 rounded-2xl border bg-white px-4 py-3 sm:-left-8">
-              <span className="bg-saffron-50 text-saffron-700 flex h-9 w-9 items-center justify-center rounded-xl">
+            <div className="absolute -bottom-6 -left-4 flex items-center gap-3 rounded-2xl border border-line bg-white px-4 py-3 shadow-soft sm:-left-8">
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-saffron-50 text-saffron-700">
                 <svg aria-hidden="true" viewBox="0 0 20 20" className="h-4 w-4" fill="none">
                   <path
                     d="M10 18s6-5.1 6-9.5A6 6 0 0 0 4 8.5C4 12.9 10 18 10 18Z"
@@ -147,14 +147,14 @@ export default function VenueSection() {
                 </svg>
               </span>
               <div>
-                <p className="text-ink-400 text-[0.6rem] font-bold tracking-[0.14em] uppercase">
+                <p className="text-[0.6rem] font-bold tracking-[0.14em] text-ink-400 uppercase">
                   Venue destination
                 </p>
-                <p className="text-bark-900 text-xs font-semibold">Verified official link</p>
+                <p className="text-xs font-semibold text-bark-900">Verified official link</p>
               </div>
             </div>
 
-            <p className="text-ink-400 absolute -right-2 top-1/2 hidden -translate-y-1/2 rotate-90 text-[0.58rem] font-bold tracking-[0.2em] uppercase lg:block">
+            <p className="absolute top-1/2 -right-2 hidden -translate-y-1/2 rotate-90 text-[0.58rem] font-bold tracking-[0.2em] text-ink-400 uppercase lg:block">
               Photo · Pinakpani · CC BY 4.0
             </p>
           </div>

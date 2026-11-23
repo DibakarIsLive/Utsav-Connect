@@ -39,8 +39,7 @@ export const IMAGE_CREDITS = Object.freeze([
     author: "Shobhanlal mukherjee150",
     licence: "CC BY-SA 4.0",
     licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-    source:
-      "https://commons.wikimedia.org/wiki/File:Chakratirtha_Satsang_Vihar_Aug-2016.jpg",
+    source: "https://commons.wikimedia.org/wiki/File:Chakratirtha_Satsang_Vihar_Aug-2016.jpg",
     note: "Chakratirtha Satsang Vihar, a centre associated with Satsang.",
   },
   {
@@ -77,8 +76,7 @@ export const IMAGE_CREDITS = Object.freeze([
     author: "MatirManush",
     licence: "CC BY-SA 4.0",
     licenceUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
-    source:
-      "https://commons.wikimedia.org/wiki/File:Sree_Sree_Thakur_Anukulchandra.jpg",
+    source: "https://commons.wikimedia.org/wiki/File:Sree_Sree_Thakur_Anukulchandra.jpg",
     note: "Portrait of Shree Shree Thakur Anukulchandra.",
   },
 ]);

@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 /**
  * Session model - opaque MongoDB-backed sessions.
- * 
+ *
  * Token is hashed at rest. Cookie contains the unhashed token.
  * Scopes: "application" (limited) or "full" (complete access)
  */
@@ -49,7 +49,7 @@ const sessionSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // TTL index - MongoDB removes expired sessions automatically

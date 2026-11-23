@@ -55,9 +55,9 @@ function StatIcon({ children }) {
 function SidebarCard({ title, description, children, className = "" }) {
   return (
     <section className={cn("card-warm p-5", className)}>
-      <h2 className="text-bark-900 text-base font-semibold">{title}</h2>
+      <h2 className="text-base font-semibold text-bark-900">{title}</h2>
       {description ? (
-        <p className="text-ink-400 mt-1 text-[0.72rem] leading-relaxed">{description}</p>
+        <p className="mt-1 text-[0.72rem] leading-relaxed text-ink-400">{description}</p>
       ) : null}
       <div className="mt-4">{children}</div>
     </section>
@@ -163,7 +163,10 @@ export default function DashboardClient({
   const months = useMemo(() => buildRecentMonths(reports), [reports]);
   const monthMax = Math.max(1, ...months.map((month) => month.total));
 
-  const firstName = String(initialUser.fullName ?? "").trim().split(/\s+/)[0] || "friend";
+  const firstName =
+    String(initialUser.fullName ?? "")
+      .trim()
+      .split(/\s+/)[0] || "friend";
 
   async function handleSignOut() {
     await signOut();
@@ -174,12 +177,15 @@ export default function DashboardClient({
   const dataUnavailable = Boolean(dataError);
 
   return (
-    <div className="bg-cream relative overflow-hidden">
+    <div className="relative overflow-hidden bg-cream">
       <div className="pattern-contour absolute inset-0 opacity-50" aria-hidden="true" />
 
-      <section className="bg-bark-950 text-ivory relative overflow-hidden">
+      <section className="relative overflow-hidden bg-bark-950 text-ivory">
         <div className="pattern-jaali absolute inset-0 opacity-[0.13]" aria-hidden="true" />
-        <div className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-saffron-600/15 blur-3xl" aria-hidden="true" />
+        <div
+          className="absolute -top-24 -right-16 h-72 w-72 rounded-full bg-saffron-600/15 blur-3xl"
+          aria-hidden="true"
+        />
         <div className="shell relative pt-12 pb-20 sm:pt-16 sm:pb-24">
           <motion.div
             initial={reduce ? false : { opacity: 0, y: 14 }}
@@ -188,17 +194,17 @@ export default function DashboardClient({
             className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between"
           >
             <div>
-              <p className="eyebrow text-gold-300 flex items-center gap-3">
-                <span className="bg-gold-400/70 h-px w-8" aria-hidden="true" />
+              <p className="eyebrow flex items-center gap-3 text-gold-300">
+                <span className="h-px w-8 bg-gold-400/70" aria-hidden="true" />
                 Devotee workspace
               </p>
               <h1 className="mt-5 max-w-2xl text-[2.4rem] leading-[1.02] font-semibold tracking-[-0.045em] sm:text-[3.3rem]">
                 Jai Guru, <span className="text-gold-300 italic">{firstName}.</span>
               </h1>
-              <p className="text-ivory/60 mt-5 max-w-xl text-[0.98rem] leading-[1.8]">
+              <p className="mt-5 max-w-xl text-[0.98rem] leading-[1.8] text-ivory/60">
                 This is your private view of the outreach: every invitation you have recorded, the
-                localities you have reached, and the proposals you have shared. Your reports help the
-                whole campaign see itself clearly.
+                localities you have reached, and the proposals you have shared. Your reports help
+                the whole campaign see itself clearly.
               </p>
               <div className="mt-6 flex flex-wrap items-center gap-2.5">
                 <Badge tone="dark" dot>
@@ -208,7 +214,7 @@ export default function DashboardClient({
                   {initialUser.emailVerified ? "Email verified" : "Email not verified"}
                 </Badge>
                 {initialUser.createdAt ? (
-                  <span className="text-ivory/40 text-[0.68rem]">
+                  <span className="text-[0.68rem] text-ivory/40">
                     Member since {formatDate(initialUser.createdAt)}
                   </span>
                 ) : null}
@@ -216,11 +222,7 @@ export default function DashboardClient({
             </div>
 
             <div className="flex flex-wrap gap-3">
-              <Button
-                size="lg"
-                onClick={() => setReportOpen(true)}
-                disabled={areas.length === 0}
-              >
+              <Button size="lg" onClick={() => setReportOpen(true)} disabled={areas.length === 0}>
                 Record invitations <ArrowRight />
               </Button>
               <Button variant="outline-light" size="lg" onClick={() => setProposalOpen(true)}>
@@ -249,9 +251,9 @@ export default function DashboardClient({
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
           {[
             {
-              label: "Invitations in public totals",
+              label: "Invitations you recorded",
               value: dataUnavailable ? "—" : formatNumber(stats.invitations),
-              detail: "Active reports only; flagged and invalid excluded",
+              detail: "Your active reports only; flagged and invalid excluded",
               icon: (
                 <StatIcon>
                   <path
@@ -314,6 +316,27 @@ export default function DashboardClient({
           ))}
         </div>
 
+        <section className="mt-6 rounded-2xl border border-line bg-white p-5">
+          <h2 className="text-base font-semibold text-bark-900">Explore your portal</h2>
+          <p className="mt-1 text-[0.74rem] text-ink-400">
+            Every section uses your own data or approved aggregate campaign data only.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {[
+              { href: "/dashboard/areas", label: "Area details" },
+              { href: "/dashboard/statistics", label: "Campaign statistics" },
+              { href: "/dashboard/invitations/new", label: "Record invitations" },
+              { href: "/dashboard/reports", label: "My reports" },
+              { href: "/dashboard/contributions", label: "My contributions" },
+              { href: "/dashboard/profile", label: "My profile" },
+            ].map((link) => (
+              <ButtonLink key={link.href} href={link.href} size="sm" variant="secondary">
+                {link.label}
+              </ButtonLink>
+            ))}
+          </div>
+        </section>
+
         <div className="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div className="min-w-0 space-y-6">
             <div className="table-shell">
@@ -328,10 +351,10 @@ export default function DashboardClient({
             </div>
 
             <section className="table-shell">
-              <div className="border-line flex flex-wrap items-center justify-between gap-3 border-b bg-cream/50 px-4 py-3.5 sm:px-5">
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-cream/50 px-4 py-3.5 sm:px-5">
                 <div>
-                  <h2 className="text-bark-900 text-base font-semibold">Your locality proposals</h2>
-                  <p className="text-ink-400 mt-0.5 text-[0.7rem]">
+                  <h2 className="text-base font-semibold text-bark-900">Your locality proposals</h2>
+                  <p className="mt-0.5 text-[0.7rem] text-ink-400">
                     A proposal becomes an approved area only after administrative review.
                   </p>
                 </div>
@@ -353,7 +376,7 @@ export default function DashboardClient({
                   }
                 />
               ) : (
-                <ul className="divide-line divide-y">
+                <ul className="divide-y divide-line">
                   {proposals.map((proposal) => {
                     const parentName =
                       typeof proposal.parentId === "object" && proposal.parentId
@@ -365,14 +388,14 @@ export default function DashboardClient({
                         className="flex flex-wrap items-start justify-between gap-3 px-4 py-3.5 sm:px-5"
                       >
                         <div className="min-w-0">
-                          <p className="text-bark-900 text-sm font-semibold">{proposal.name}</p>
-                          <p className="text-ink-400 mt-0.5 text-[0.68rem]">
+                          <p className="text-sm font-semibold text-bark-900">{proposal.name}</p>
+                          <p className="mt-0.5 text-[0.68rem] text-ink-400">
                             {proposal.type || "Locality"}
                             {parentName ? ` · under ${parentName}` : ""}
                             {proposal.createdAt ? ` · ${formatDate(proposal.createdAt)}` : ""}
                           </p>
                           {proposal.status === "needs_correction" && proposal.correctionNotes ? (
-                            <p className="text-ink-500 mt-1.5 max-w-lg text-[0.74rem] leading-relaxed">
+                            <p className="mt-1.5 max-w-lg text-[0.74rem] leading-relaxed text-ink-500">
                               Correction requested: {proposal.correctionNotes}
                             </p>
                           ) : null}
@@ -385,20 +408,19 @@ export default function DashboardClient({
               )}
             </section>
 
-            <div className="border-line flex flex-col items-start justify-between gap-4 rounded-3xl border bg-white/70 px-5 py-4 sm:flex-row sm:items-center">
+            <div className="flex flex-col items-start justify-between gap-4 rounded-3xl border border-line bg-white/70 px-5 py-4 sm:flex-row sm:items-center">
               <div>
-                <p className="text-bark-900 text-sm font-semibold">See the whole picture</p>
-                <p className="text-ink-500 mt-1 text-[0.78rem] leading-relaxed">
+                <p className="text-sm font-semibold text-bark-900">See the whole picture</p>
+                <p className="mt-1 text-[0.78rem] leading-relaxed text-ink-500">
                   Your reports feed the public coverage figures for the localities you reached.
                 </p>
               </div>
-
             </div>
           </div>
 
           <aside className="space-y-5">
             <section className="card-warm overflow-hidden">
-              <div className="bg-bark-950 text-ivory relative overflow-hidden px-5 py-5">
+              <div className="relative overflow-hidden bg-bark-950 px-5 py-5 text-ivory">
                 <div className="pattern-jaali absolute inset-0 opacity-[0.14]" aria-hidden="true" />
                 <div className="relative flex items-center gap-3.5">
                   <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gold-400 text-sm font-bold text-bark-950">
@@ -406,22 +428,30 @@ export default function DashboardClient({
                   </span>
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold">{initialUser.fullName}</p>
-                    <p className="text-ivory/50 truncate text-[0.72rem]">{initialUser.email}</p>
+                    <p className="truncate text-[0.72rem] text-ivory/50">{initialUser.email}</p>
                   </div>
                 </div>
               </div>
               <div className="p-5">
-                <dl className="divide-line divide-y text-sm">
+                <dl className="divide-y divide-line text-sm">
                   {[
                     ["Status", "Active devotee"],
                     ["Joined", initialUser.createdAt ? formatDate(initialUser.createdAt) : "—"],
-                    ["Last sign in", initialUser.lastLoginAt ? formatDate(initialUser.lastLoginAt) : "—"],
+                    [
+                      "Last sign in",
+                      initialUser.lastLoginAt ? formatDate(initialUser.lastLoginAt) : "—",
+                    ],
                   ].map(([term, value]) => (
-                    <div key={term} className="flex items-baseline justify-between gap-3 py-2 first:pt-0">
-                      <dt className="text-ink-400 text-[0.64rem] font-bold tracking-[0.1em] uppercase">
+                    <div
+                      key={term}
+                      className="flex items-baseline justify-between gap-3 py-2 first:pt-0"
+                    >
+                      <dt className="text-[0.64rem] font-bold tracking-[0.1em] text-ink-400 uppercase">
                         {term}
                       </dt>
-                      <dd className="text-bark-900 text-right text-[0.78rem] font-medium">{value}</dd>
+                      <dd className="text-right text-[0.78rem] font-medium text-bark-900">
+                        {value}
+                      </dd>
                     </div>
                   ))}
                 </dl>
@@ -429,7 +459,7 @@ export default function DashboardClient({
                 <button
                   type="button"
                   onClick={handleSignOut}
-                  className="text-ink-400 hover:text-bark-900 w-full text-left text-[0.72rem] font-semibold"
+                  className="w-full text-left text-[0.72rem] font-semibold text-ink-400 hover:text-bark-900"
                 >
                   Sign out of this device
                 </button>
@@ -441,11 +471,11 @@ export default function DashboardClient({
               description="Active reports, grouped by approved area."
             >
               {dataUnavailable ? (
-                <p className="text-ink-400 text-[0.78rem] leading-relaxed">
+                <p className="text-[0.78rem] leading-relaxed text-ink-400">
                   Available when the campaign database reconnects.
                 </p>
               ) : localities.length === 0 ? (
-                <p className="text-ink-400 text-[0.78rem] leading-relaxed">
+                <p className="text-[0.78rem] leading-relaxed text-ink-400">
                   Your first report will begin this list. Only approved localities can be reported.
                 </p>
               ) : (
@@ -455,17 +485,17 @@ export default function DashboardClient({
                     return (
                       <li key={locality.id}>
                         <div className="flex items-baseline justify-between gap-3">
-                          <p className="text-bark-900 min-w-0 truncate text-[0.8rem] font-semibold">
+                          <p className="min-w-0 truncate text-[0.8rem] font-semibold text-bark-900">
                             {locality.name}
                           </p>
-                          <p className="text-bark-900 shrink-0 text-[0.8rem] font-semibold tabular-nums">
+                          <p className="shrink-0 text-[0.8rem] font-semibold text-bark-900 tabular-nums">
                             {formatNumber(locality.total)}
                           </p>
                         </div>
                         <div className="mt-1.5 flex items-center gap-2">
-                          <span className="bg-line/80 h-1.5 flex-1 overflow-hidden rounded-full">
+                          <span className="h-1.5 flex-1 overflow-hidden rounded-full bg-line/80">
                             <span
-                              className="bg-saffron-600 block h-full rounded-full"
+                              className="block h-full rounded-full bg-saffron-600"
                               style={{
                                 width: `${Math.max(
                                   8,
@@ -474,17 +504,16 @@ export default function DashboardClient({
                               }}
                             />
                           </span>
-                          <span className="text-ink-400 w-24 shrink-0 text-right text-[0.62rem]">
+                          <span className="w-24 shrink-0 text-right text-[0.62rem] text-ink-400">
                             {coverage?.coveragePercentage === null ||
                             coverage?.coveragePercentage === undefined
                               ? "Coverage unavailable"
                               : `${coverage.coveragePercentage.toFixed(1)}% coverage`}
                           </span>
                         </div>
-                        <p className="text-ink-400 mt-1 text-[0.64rem]">
-                          {locality.reportCount}{" "}
-                          {locality.reportCount === 1 ? "report" : "reports"} ·{" "}
-                          {locality.type || "Locality"}
+                        <p className="mt-1 text-[0.64rem] text-ink-400">
+                          {locality.reportCount} {locality.reportCount === 1 ? "report" : "reports"}{" "}
+                          · {locality.type || "Locality"}
                         </p>
                       </li>
                     );
@@ -492,7 +521,7 @@ export default function DashboardClient({
                 </ul>
               )}
               {localities.length > 5 ? (
-                <p className="text-ink-400 mt-4 text-[0.68rem]">
+                <p className="mt-4 text-[0.68rem] text-ink-400">
                   +{localities.length - 5} more in your full history above.
                 </p>
               ) : null}
@@ -503,13 +532,15 @@ export default function DashboardClient({
               description="Active invitations over the last six months."
             >
               {dataUnavailable ? (
-                <p className="text-ink-400 text-[0.78rem] leading-relaxed">Unavailable right now.</p>
+                <p className="text-[0.78rem] leading-relaxed text-ink-400">
+                  Unavailable right now.
+                </p>
               ) : (
                 <>
                   <div className="flex h-28 items-end gap-2" aria-hidden="true">
                     {months.map((month) => (
                       <div key={month.key} className="flex flex-1 flex-col items-center gap-2">
-                        <span className="text-ink-400 text-[0.58rem] font-semibold tabular-nums">
+                        <span className="text-[0.58rem] font-semibold text-ink-400 tabular-nums">
                           {month.total > 0 ? month.total : ""}
                         </span>
                         <div className="flex w-full flex-1 items-end">
@@ -523,11 +554,13 @@ export default function DashboardClient({
                             }}
                           />
                         </div>
-                        <span className="text-ink-400 text-[0.6rem] font-semibold">{month.label}</span>
+                        <span className="text-[0.6rem] font-semibold text-ink-400">
+                          {month.label}
+                        </span>
                       </div>
                     ))}
                   </div>
-                  <p className="text-ink-400 mt-3 text-[0.68rem] leading-relaxed">
+                  <p className="mt-3 text-[0.68rem] leading-relaxed text-ink-400">
                     {months.every((month) => month.total === 0)
                       ? "No active invitations recorded in this window yet."
                       : "A quiet record of your own effort — never a comparison with anyone else."}
@@ -536,14 +569,14 @@ export default function DashboardClient({
               )}
             </SidebarCard>
 
-            <div className="border-line rounded-2xl border bg-white/60 p-5">
-              <p className="text-ink-500 text-[0.74rem] leading-relaxed">
+            <div className="rounded-2xl border border-line bg-white/60 p-5">
+              <p className="text-[0.74rem] leading-relaxed text-ink-500">
                 Need to correct something? Contact the Mahotsav committee through the{" "}
                 <a
                   href="https://www.satsang.org.in/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-saffron-700 font-semibold underline underline-offset-2"
+                  className="font-semibold text-saffron-700 underline underline-offset-2"
                 >
                   official Satsang website
                 </a>

@@ -14,10 +14,20 @@ import { apiFetch } from "@/ui/lib/api-client";
 export default function VerifyEmailClient({ token }) {
   const [state, setState] = useState({ status: token ? "verifying" : "missing", message: null });
   const started = useRef(false);
+  const urlCleaned = useRef(false);
 
   useEffect(() => {
     if (!token || started.current) return;
     started.current = true;
+
+    // Remove the one-time verification token from the visible browser URL after
+    // capturing it in React state. This prevents the token from lingering in
+    // browser history, bookmarks, or Referer headers.
+    if (typeof window !== "undefined" && !urlCleaned.current) {
+      urlCleaned.current = true;
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+
     apiFetch("/api/auth/verify-email", {
       method: "POST",
       body: JSON.stringify({ token }),
@@ -37,7 +47,7 @@ export default function VerifyEmailClient({ token }) {
   if (state.status === "verifying") {
     return (
       <div className="card-paper mx-auto max-w-xl p-8 text-center">
-        <span className="bg-saffron-50 text-saffron-700 mx-auto flex h-14 w-14 items-center justify-center rounded-2xl">
+        <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-saffron-50 text-saffron-700">
           <svg viewBox="0 0 24 24" className="h-6 w-6 animate-spin" fill="none" aria-hidden="true">
             <path
               d="M12 3a9 9 0 1 1-6.4 2.6"
@@ -47,10 +57,10 @@ export default function VerifyEmailClient({ token }) {
             />
           </svg>
         </span>
-        <h2 className="text-bark-900 mt-5 text-2xl font-semibold tracking-[-0.03em]">
+        <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-bark-900">
           Verifying your email
         </h2>
-        <p className="text-ink-500 mt-2 text-sm">This usually takes a moment.</p>
+        <p className="mt-2 text-sm text-ink-500">This usually takes a moment.</p>
       </div>
     );
   }
@@ -69,10 +79,10 @@ export default function VerifyEmailClient({ token }) {
             />
           </svg>
         </span>
-        <h2 className="text-bark-900 mt-5 text-2xl font-semibold tracking-[-0.03em]">
+        <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-bark-900">
           Email verified.
         </h2>
-        <p className="text-ink-500 mx-auto mt-3 max-w-md text-sm leading-[1.75]">
+        <p className="mx-auto mt-3 max-w-md text-sm leading-[1.75] text-ink-500">
           Thank you. Your application now moves to administrative review. You can still sign in to
           follow its status while you wait.
         </p>
@@ -99,15 +109,17 @@ export default function VerifyEmailClient({ token }) {
           : state.message}
       </Notice>
       <div className="mt-6 flex flex-wrap gap-3">
-        <ButtonLink href="/apply?mode=login">Go to sign in <ArrowRight /></ButtonLink>
+        <ButtonLink href="/apply?mode=login">
+          Go to sign in <ArrowRight />
+        </ButtonLink>
         <Link
           href="/about"
-          className="text-ink-600 hover:text-bark-900 inline-flex min-h-11 items-center px-2 text-sm font-semibold"
+          className="inline-flex min-h-11 items-center px-2 text-sm font-semibold text-ink-600 hover:text-bark-900"
         >
           Learn how applications work
         </Link>
       </div>
-      <p className="text-ink-400 mt-5 text-[0.72rem] leading-relaxed">
+      <p className="mt-5 text-[0.72rem] leading-relaxed text-ink-400">
         If you have already verified this address, simply sign in. Verification links can only be
         used once.
       </p>

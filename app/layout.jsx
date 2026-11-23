@@ -26,13 +26,7 @@ export const metadata = {
   },
   description:
     "A shared campaign map and transparent invitation-reporting platform for the Mahotsav outreach community. Explore approved localities, follow coverage, and join the effort.",
-  keywords: [
-    "Mahotsav",
-    "Satsang",
-    "Kulti",
-    "outreach",
-    "invitation reporting",
-  ],
+  keywords: ["Mahotsav", "Satsang", "Kulti", "outreach", "invitation reporting"],
   openGraph: {
     title: "Utsav-Connect · Every invitation. Every locality. One shared map.",
     description:
@@ -74,7 +68,7 @@ export default function RootLayout({ children }) {
       <body className="flex min-h-full flex-col overflow-x-clip">
         <a
           href="#main-content"
-          className="focus:bg-bark-950 focus:text-ivory sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-xl focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[100] focus:rounded-xl focus:bg-bark-950 focus:px-4 focus:py-2.5 focus:text-sm focus:font-semibold focus:text-ivory focus:shadow-lg"
         >
           Skip to main content
         </a>

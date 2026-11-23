@@ -14,7 +14,7 @@ export const metadata = {
 export default function HomePage() {
   return (
     <>
-      <section className="bg-bark-950 text-ivory relative isolate overflow-hidden">
+      <section className="relative isolate overflow-hidden bg-bark-950 text-ivory">
         <div className="absolute inset-0">
           <Image
             src="/images/ashram/deoghar-avenue.webp"
@@ -34,8 +34,8 @@ export default function HomePage() {
         <div className="shell relative grid items-center gap-14 pt-[9.5rem] pb-16 sm:pt-[10.5rem] lg:grid-cols-[1.08fr_0.92fr] lg:gap-10 lg:pt-[11rem] lg:pb-24">
           <div>
             <Reveal y={14}>
-              <p className="eyebrow text-gold-300 flex items-center gap-3">
-                <span className="bg-gold-400/70 h-px w-8" aria-hidden="true" />
+              <p className="eyebrow flex items-center gap-3 text-gold-300">
+                <span className="h-px w-8 bg-gold-400/70" aria-hidden="true" />
                 Mahotsav outreach
               </p>
             </Reveal>
@@ -51,7 +51,7 @@ export default function HomePage() {
             </Reveal>
 
             <Reveal delay={0.16}>
-              <p className="text-ivory/65 mt-7 max-w-xl text-[1.02rem] leading-[1.8]">
+              <p className="mt-7 max-w-xl text-[1.02rem] leading-[1.8] text-ivory/65">
                 Utsav-Connect helps the Mahotsav outreach community find the official venue and
                 coordinate locality by locality. Find Kulti Golf Ground, learn about the platform,
                 and apply to become a devotee.
@@ -64,11 +64,7 @@ export default function HomePage() {
                   Apply to join
                   <ArrowRight />
                 </ButtonLink>
-                <Link
-                  href="/about"
-                  variant="outline-light"
-                  size="lg"
-                >
+                <Link href="/about" variant="outline-light" size="lg">
                   Learn more <ArrowRight />
                 </Link>
               </div>
@@ -88,18 +84,18 @@ export default function HomePage() {
                     sizes="(min-width: 1024px) 38vw, 90vw"
                     className="object-cover"
                   />
-                  <div className="from-bark-950/80 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-bark-950/80 via-transparent to-transparent" />
                 </div>
                 <div className="absolute right-4 bottom-4 left-4 rounded-2xl border border-white/15 bg-bark-950/55 px-4 py-3 backdrop-blur-md">
                   <p className="text-[0.58rem] font-bold tracking-[0.18em] text-gold-300 uppercase">
                     Kulti Golf Ground · Kulti
                   </p>
-                  <p className="font-display mt-1 text-lg leading-snug font-semibold text-ivory">
+                  <p className="mt-1 font-display text-lg leading-snug font-semibold text-ivory">
                     The heart of the Mahotsav
                   </p>
                 </div>
               </div>
-              <p className="text-ivory/35 mt-4 text-center text-[0.58rem] tracking-[0.12em] uppercase lg:text-right">
+              <p className="mt-4 text-center text-[0.58rem] tracking-[0.12em] text-ivory/35 uppercase lg:text-right">
                 Photograph by Pinakpani · CC BY 4.0
               </p>
             </div>
@@ -111,9 +107,12 @@ export default function HomePage() {
 
       <VenueSection />
 
-      <section className="bg-bark-950 text-ivory relative overflow-hidden py-20 sm:py-24">
+      <section className="relative overflow-hidden bg-bark-950 py-20 text-ivory sm:py-24">
         <div className="pattern-jaali absolute inset-0 opacity-[0.12]" aria-hidden="true" />
-        <div className="absolute -left-32 top-0 h-72 w-72 rounded-full bg-saffron-600/10 blur-3xl" aria-hidden="true" />
+        <div
+          className="absolute top-0 -left-32 h-72 w-72 rounded-full bg-saffron-600/10 blur-3xl"
+          aria-hidden="true"
+        />
         <div className="shell relative">
           <Reveal>
             <div className="flex flex-col items-center text-center">
@@ -121,10 +120,10 @@ export default function HomePage() {
               <h2 className="mt-5 max-w-3xl text-[2.15rem] leading-[1.08] font-semibold tracking-[-0.04em] text-balance sm:text-[2.9rem]">
                 A platform shaped by the spirit of Satsang.
               </h2>
-              <p className="text-ivory/60 mt-5 max-w-2xl text-[1rem] leading-[1.8]">
+              <p className="mt-5 max-w-2xl text-[1rem] leading-[1.8] text-ivory/60">
                 Satsang draws its inspiration from the life and teachings of Shree Shree Thakur
-                Anukulchandra. This outreach platform is a modern instrument for an old
-                purpose — gathering people, serving communities, and moving together with care.
+                Anukulchandra. This outreach platform is a modern instrument for an old purpose —
+                gathering people, serving communities, and moving together with care.
               </p>
             </div>
           </Reveal>
@@ -133,7 +132,7 @@ export default function HomePage() {
             <div className="mt-12 flex flex-col items-center gap-4">
               <Link
                 href="/about"
-                className="text-gold-300 hover:text-gold-200 inline-flex items-center gap-1.5 text-sm font-semibold"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold-300 hover:text-gold-200"
               >
                 Learn more about Utsav-Connect <ArrowRight />
               </Link>

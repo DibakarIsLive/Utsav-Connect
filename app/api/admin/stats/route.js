@@ -1,7 +1,7 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { getApplicationStats } from "@/api/services/admin-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
+import { requireAdmin } from "@/api/lib/auth/guards";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
 
 export const dynamic = "force-dynamic";
 
@@ -11,14 +11,7 @@ export const dynamic = "force-dynamic";
  */
 export async function GET(request) {
   try {
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (!admin) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin access required", status: 403 });
-    }
-
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.APPLICATION_READ_ALL);
     const stats = await getApplicationStats(admin);
     return jsonSuccess({ stats });
   } catch (error) {

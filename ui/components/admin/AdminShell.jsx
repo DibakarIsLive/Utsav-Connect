@@ -63,6 +63,11 @@ function NavIcon({ name, className = "h-4.5 w-4.5" }) {
           <path d="m9.2 11.8 2 2 3.6-3.8" />
         </g>
       ) : null}
+      {name === "chart" ? (
+        <g {...common}>
+          <path d="M4 20h16M6.5 16.5v-5M11 16.5V7.5M15.5 16.5v-8" />
+        </g>
+      ) : null}
       {name === "arrow" ? (
         <g {...common}>
           <path d="M5 12h13m0 0-4.5-4.5M18 12l-4.5 4.5" />
@@ -97,7 +102,7 @@ function NavList({ groups, pathname, onNavigate }) {
     <nav aria-label="Admin sections" className="space-y-6">
       {groups.map((group) => (
         <div key={group.label}>
-          <p className="text-ivory/30 px-3 text-[0.6rem] font-bold tracking-[0.18em] uppercase">
+          <p className="px-3 text-[0.6rem] font-bold tracking-[0.18em] text-ivory/30 uppercase">
             {group.label}
           </p>
           <ul className="mt-2 space-y-0.5">
@@ -119,7 +124,7 @@ function NavList({ groups, pathname, onNavigate }) {
                     <span
                       aria-hidden="true"
                       className={cn(
-                        "bg-gold-400 absolute top-1/2 left-0 h-4 w-[2px] -translate-y-1/2 rounded-full transition-opacity",
+                        "absolute top-1/2 left-0 h-4 w-[2px] -translate-y-1/2 rounded-full bg-gold-400 transition-opacity",
                         active ? "opacity-100" : "opacity-0",
                       )}
                     />
@@ -185,14 +190,17 @@ export default function AdminShell({ user, children }) {
   }
 
   return (
-    <div className="bg-cream min-h-screen">
-      <aside className="bg-bark-950 text-ivory fixed inset-y-0 left-0 z-30 hidden w-[17.5rem] flex-col lg:flex">
-        <div className="pattern-jaali pointer-events-none absolute inset-0 opacity-[0.1]" aria-hidden="true" />
+    <div className="min-h-screen bg-cream">
+      <aside className="fixed inset-y-0 left-0 z-30 hidden w-[17.5rem] flex-col bg-bark-950 text-ivory lg:flex">
+        <div
+          className="pattern-jaali pointer-events-none absolute inset-0 opacity-[0.1]"
+          aria-hidden="true"
+        />
         <div className="relative px-5 pt-6 pb-5">
           <Link href="/admin" className="inline-flex rounded-xl" aria-label="Admin workspace home">
             <Logo tone="light" showTagline={false} />
           </Link>
-          <p className="text-gold-300 mt-3 text-[0.58rem] font-bold tracking-[0.2em] uppercase">
+          <p className="mt-3 text-[0.58rem] font-bold tracking-[0.2em] text-gold-300 uppercase">
             {roleLabel} workspace
           </p>
         </div>
@@ -201,20 +209,20 @@ export default function AdminShell({ user, children }) {
           <NavList groups={groups} pathname={pathname} />
         </div>
 
-        <div className="border-ivory/10 relative border-t px-4 py-4">
+        <div className="relative border-t border-ivory/10 px-4 py-4">
           <div className="flex items-center gap-3">
-            <span className="bg-gold-400 text-bark-950 flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[0.72rem] font-bold">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gold-400 text-[0.72rem] font-bold text-bark-950">
               {initials(user.fullName)}
             </span>
             <div className="min-w-0">
-              <p className="text-ivory truncate text-[0.8rem] font-semibold">{user.fullName}</p>
-              <p className="text-ivory/40 truncate text-[0.66rem]">{roleLabel}</p>
+              <p className="truncate text-[0.8rem] font-semibold text-ivory">{user.fullName}</p>
+              <p className="truncate text-[0.66rem] text-ivory/40">{roleLabel}</p>
             </div>
           </div>
           <div className="mt-3 grid gap-1">
             <Link
               href="/"
-              className="text-ivory/50 hover:bg-white/[0.06] hover:text-ivory flex items-center gap-2 rounded-lg px-2.5 py-2 text-[0.74rem] font-medium transition-colors"
+              className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-[0.74rem] font-medium text-ivory/50 transition-colors hover:bg-white/[0.06] hover:text-ivory"
             >
               <NavIcon name="external" className="h-3.5 w-3.5" />
               View public site
@@ -222,7 +230,7 @@ export default function AdminShell({ user, children }) {
             <button
               type="button"
               onClick={handleSignOut}
-              className="text-ivory/50 hover:bg-white/[0.06] hover:text-ivory flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[0.74rem] font-medium transition-colors"
+              className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-left text-[0.74rem] font-medium text-ivory/50 transition-colors hover:bg-white/[0.06] hover:text-ivory"
             >
               <NavIcon name="logout" className="h-3.5 w-3.5" />
               Sign out
@@ -232,7 +240,7 @@ export default function AdminShell({ user, children }) {
       </aside>
 
       <div className="lg:pl-[17.5rem]">
-        <header className="border-line/80 bg-ivory/92 sticky top-0 z-20 border-b backdrop-blur-xl">
+        <header className="sticky top-0 z-20 border-b border-line/80 bg-ivory/92 backdrop-blur-xl">
           <div className="flex h-14 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
             <div className="flex min-w-0 items-center gap-3">
               <button
@@ -241,24 +249,27 @@ export default function AdminShell({ user, children }) {
                 aria-expanded={open}
                 aria-controls="admin-mobile-nav"
                 aria-label="Open admin navigation"
-                className="border-line text-bark-900 hover:border-gold-400 inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white transition-colors lg:hidden"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-line bg-white text-bark-900 transition-colors hover:border-gold-400 lg:hidden"
               >
                 <NavIcon name="menu" className="h-4.5 w-4.5" />
               </button>
               <div className="min-w-0">
-                <p className="text-ink-400 text-[0.58rem] font-bold tracking-[0.16em] uppercase">
+                <p className="text-[0.58rem] font-bold tracking-[0.16em] text-ink-400 uppercase">
                   Utsav-Connect
                 </p>
-                <p className="text-bark-900 truncate text-[0.82rem] font-semibold">
+                <p className="truncate text-[0.82rem] font-semibold text-bark-900">
                   Administrative workspace
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-2.5">
-              <Badge tone={user.role === "super_admin" ? "gold" : "neutral"} className="hidden sm:inline-flex">
+              <Badge
+                tone={user.role === "super_admin" ? "gold" : "neutral"}
+                className="hidden sm:inline-flex"
+              >
                 {roleLabel}
               </Badge>
-              <span className="bg-bark-900 text-ivory flex h-8 w-8 items-center justify-center rounded-full text-[0.64rem] font-bold">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bark-900 text-[0.64rem] font-bold text-ivory">
                 {initials(user.fullName)}
               </span>
             </div>
@@ -276,7 +287,7 @@ export default function AdminShell({ user, children }) {
             <motion.button
               type="button"
               aria-label="Close admin navigation"
-              className="bg-bark-950/50 fixed inset-0 z-40 backdrop-blur-sm lg:hidden"
+              className="fixed inset-0 z-40 bg-bark-950/50 backdrop-blur-sm lg:hidden"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={reduce ? undefined : { opacity: 0 }}
@@ -291,11 +302,18 @@ export default function AdminShell({ user, children }) {
               animate={{ x: 0 }}
               exit={reduce ? undefined : { x: "-100%" }}
               transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-              className="bg-bark-950 text-ivory fixed inset-y-0 left-0 z-50 flex w-[18rem] max-w-[86vw] flex-col lg:hidden"
+              className="fixed inset-y-0 left-0 z-50 flex w-[18rem] max-w-[86vw] flex-col bg-bark-950 text-ivory lg:hidden"
             >
-              <div className="pattern-jaali pointer-events-none absolute inset-0 opacity-[0.1]" aria-hidden="true" />
+              <div
+                className="pattern-jaali pointer-events-none absolute inset-0 opacity-[0.1]"
+                aria-hidden="true"
+              />
               <div className="relative flex items-start justify-between gap-3 px-5 pt-5 pb-4">
-                <Link href="/admin" onClick={() => setOpen(false)} aria-label="Admin workspace home">
+                <Link
+                  href="/admin"
+                  onClick={() => setOpen(false)}
+                  aria-label="Admin workspace home"
+                >
                   <Logo tone="light" showTagline={false} />
                 </Link>
                 <button
@@ -303,39 +321,41 @@ export default function AdminShell({ user, children }) {
                   type="button"
                   onClick={() => setOpen(false)}
                   aria-label="Close admin navigation"
-                  className="text-ivory/60 hover:bg-white/10 hover:text-ivory inline-flex h-9 w-9 items-center justify-center rounded-lg transition-colors"
+                  className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-ivory/60 transition-colors hover:bg-white/10 hover:text-ivory"
                 >
                   <NavIcon name="close" className="h-4.5 w-4.5" />
                 </button>
               </div>
-              <p className="text-gold-300 relative px-5 text-[0.58rem] font-bold tracking-[0.2em] uppercase">
+              <p className="relative px-5 text-[0.58rem] font-bold tracking-[0.2em] text-gold-300 uppercase">
                 {roleLabel} workspace
               </p>
               <div className="no-scrollbar relative flex-1 overflow-y-auto px-3 py-5">
                 <NavList groups={groups} pathname={pathname} onNavigate={() => setOpen(false)} />
               </div>
-              <div className="border-ivory/10 relative border-t px-4 py-4">
+              <div className="relative border-t border-ivory/10 px-4 py-4">
                 <div className="flex items-center gap-3">
-                  <span className="bg-gold-400 text-bark-950 flex h-9 w-9 items-center justify-center rounded-full text-[0.72rem] font-bold">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gold-400 text-[0.72rem] font-bold text-bark-950">
                     {initials(user.fullName)}
                   </span>
                   <div className="min-w-0">
-                    <p className="text-ivory truncate text-[0.8rem] font-semibold">{user.fullName}</p>
-                    <p className="text-ivory/40 truncate text-[0.66rem]">{user.email}</p>
+                    <p className="truncate text-[0.8rem] font-semibold text-ivory">
+                      {user.fullName}
+                    </p>
+                    <p className="truncate text-[0.66rem] text-ivory/40">{user.email}</p>
                   </div>
                 </div>
                 <div className="mt-3 flex flex-wrap gap-2">
                   <Link
                     href="/"
                     onClick={() => setOpen(false)}
-                    className="border-ivory/15 text-ivory/70 hover:bg-white/10 hover:text-ivory inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[0.72rem] font-semibold"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-ivory/15 px-2.5 py-1.5 text-[0.72rem] font-semibold text-ivory/70 hover:bg-white/10 hover:text-ivory"
                   >
                     Public site
                   </Link>
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="border-ivory/15 text-ivory/70 hover:bg-white/10 hover:text-ivory inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[0.72rem] font-semibold"
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-ivory/15 px-2.5 py-1.5 text-[0.72rem] font-semibold text-ivory/70 hover:bg-white/10 hover:text-ivory"
                   >
                     Sign out
                   </button>

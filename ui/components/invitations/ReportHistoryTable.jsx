@@ -32,10 +32,10 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
 
   return (
     <div>
-      <div className="border-line flex flex-wrap items-center justify-between gap-3 border-b bg-cream/50 px-4 py-3 sm:px-5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line bg-cream/50 px-4 py-3 sm:px-5">
         <div>
-          <h2 className="text-bark-900 text-base font-semibold">Your invitation history</h2>
-          <p className="text-ink-400 mt-0.5 text-[0.7rem]">
+          <h2 className="text-base font-semibold text-bark-900">Your invitation history</h2>
+          <p className="mt-0.5 text-[0.7rem] text-ink-400">
             {reports.length} {reports.length === 1 ? "report" : "reports"} · private to you
           </p>
         </div>
@@ -59,7 +59,7 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
 
       {filtered.length === 0 ? (
         <div className="px-4 py-10 text-center">
-          <p className="text-ink-500 text-sm">No report with this status.</p>
+          <p className="text-sm text-ink-500">No report with this status.</p>
           <Button variant="secondary" size="sm" className="mt-3" onClick={() => setStatus("all")}>
             Show every report
           </Button>
@@ -69,7 +69,7 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
           {/* Desktop table */}
           <div className="hidden overflow-x-auto md:block">
             <table className="w-full text-left text-sm">
-              <thead className="bg-cream/60 text-ink-400 border-line border-b text-[0.6rem] font-bold tracking-[0.12em] uppercase">
+              <thead className="border-b border-line bg-cream/60 text-[0.6rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
                 <tr>
                   <th scope="col" className="px-4 py-2.5 sm:px-5">
                     Locality
@@ -88,25 +88,25 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-line divide-y">
+              <tbody className="divide-y divide-line">
                 {filtered.map((report) => (
-                  <tr key={report._id} className="hover:bg-cream/40 transition-colors">
+                  <tr key={report._id} className="transition-colors hover:bg-cream/40">
                     <td className="px-4 py-3 sm:px-5">
-                      <span className="text-bark-900 block text-sm font-semibold">
+                      <span className="block text-sm font-semibold text-bark-900">
                         {report.areaId?.name || "Locality unavailable"}
                       </span>
-                      <span className="text-ink-400 block text-[0.66rem]">
+                      <span className="block text-[0.66rem] text-ink-400">
                         {report.areaId?.type || "Locality"}
                         {report.areaId?.code ? ` · ${report.areaId.code}` : ""}
                       </span>
                     </td>
-                    <td className="text-bark-900 px-4 py-3 text-right font-semibold tabular-nums">
+                    <td className="px-4 py-3 text-right font-semibold text-bark-900 tabular-nums">
                       +{Number(report.invitationCount).toLocaleString("en-IN")}
                     </td>
-                    <td className="text-ink-600 px-4 py-3 text-[0.78rem] whitespace-nowrap">
+                    <td className="px-4 py-3 text-[0.78rem] whitespace-nowrap text-ink-600">
                       {formatDate(report.reportDate)}
                     </td>
-                    <td className="text-ink-500 max-w-[16rem] px-4 py-3 text-[0.76rem]">
+                    <td className="max-w-[16rem] px-4 py-3 text-[0.76rem] text-ink-500">
                       <span className="line-clamp-2">{report.description || "—"}</span>
                     </td>
                     <td className="px-4 py-3 text-right sm:px-5">
@@ -119,15 +119,15 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
           </div>
 
           {/* Mobile cards */}
-          <ul className="divide-line divide-y md:hidden">
+          <ul className="divide-y divide-line md:hidden">
             {filtered.map((report) => (
               <li key={report._id} className="px-4 py-3.5">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-bark-900 truncate text-sm font-semibold">
+                    <p className="truncate text-sm font-semibold text-bark-900">
                       {report.areaId?.name || "Locality unavailable"}
                     </p>
-                    <p className="text-ink-400 mt-0.5 text-[0.66rem]">
+                    <p className="mt-0.5 text-[0.66rem] text-ink-400">
                       {formatDate(report.reportDate)}
                       {report.areaId?.type ? ` · ${report.areaId.type}` : ""}
                     </p>
@@ -135,10 +135,10 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
                   <StatusBadge status={report.status} />
                 </div>
                 <div className="mt-2.5 flex items-start justify-between gap-4">
-                  <p className="text-ink-500 text-[0.76rem] leading-relaxed">
+                  <p className="text-[0.76rem] leading-relaxed text-ink-500">
                     {report.description || "No note added."}
                   </p>
-                  <p className="text-bark-900 shrink-0 text-sm font-semibold tabular-nums">
+                  <p className="shrink-0 text-sm font-semibold text-bark-900 tabular-nums">
                     +{Number(report.invitationCount).toLocaleString("en-IN")}
                   </p>
                 </div>
@@ -149,8 +149,8 @@ export default function ReportHistoryTable({ reports = [], compact = false, acti
       )}
 
       {!compact && reports.some((report) => report.status !== "active") ? (
-        <div className="border-line bg-cream/40 border-t px-4 py-3 sm:px-5">
-          <p className="text-ink-400 text-[0.68rem] leading-relaxed">
+        <div className="border-t border-line bg-cream/40 px-4 py-3 sm:px-5">
+          <p className="text-[0.68rem] leading-relaxed text-ink-400">
             Flagged reports are under administrative review. Invalid reports are excluded from
             public coverage. Internal reviewer notes are not shown here.
           </p>

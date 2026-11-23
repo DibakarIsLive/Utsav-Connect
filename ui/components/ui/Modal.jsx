@@ -30,10 +30,17 @@ export default function Modal({
   const reduce = useReducedMotion();
   const panelRef = useRef(null);
   const previousFocus = useRef(null);
+  const onCloseRef = useRef(onClose);
   const titleId = useId();
   const descriptionId = useId();
 
-  const close = useCallback(() => onClose?.(), [onClose]);
+  // Keep the latest callback without making the focus effect depend on its
+  // identity. Callers frequently pass an inline closure; depending on it would
+  // re-run this effect (and steal focus) on every parent render/keystroke.
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+  const close = useCallback(() => onCloseRef.current?.(), []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -41,11 +48,25 @@ export default function Modal({
     const originalOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
 
-    const timer = window.setTimeout(() => {
-      const focusable = panelRef.current?.querySelector(
-        "[data-autofocus], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), a[href]",
+    function focusableNodes() {
+      return Array.from(
+        panelRef.current?.querySelectorAll(
+          'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+        ) ?? [],
       );
-      focusable?.focus();
+    }
+
+    const timer = window.setTimeout(() => {
+      const nodes = focusableNodes();
+      const preferred = panelRef.current?.querySelector("[data-autofocus]");
+      const initial =
+        (preferred && nodes.includes(preferred) ? preferred : null) ??
+        nodes.find(
+          (node) =>
+            node.tagName === "INPUT" || node.tagName === "SELECT" || node.tagName === "TEXTAREA",
+        ) ??
+        nodes[0];
+      initial?.focus();
     }, 30);
 
     function onKeyDown(event) {
@@ -55,10 +76,8 @@ export default function Modal({
         return;
       }
       if (event.key !== "Tab") return;
-      const nodes = panelRef.current?.querySelectorAll(
-        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
-      );
-      if (!nodes?.length) return;
+      const nodes = focusableNodes();
+      if (!nodes.length) return;
       const first = nodes[0];
       const last = nodes[nodes.length - 1];
       if (event.shiftKey && document.activeElement === first) {
@@ -70,13 +89,22 @@ export default function Modal({
       }
     }
 
+    function onFocusIn(event) {
+      if (!panelRef.current?.contains(event.target)) {
+        focusableNodes()[0]?.focus();
+      }
+    }
+
     document.addEventListener("keydown", onKeyDown);
+    document.addEventListener("focusin", onFocusIn);
     return () => {
       window.clearTimeout(timer);
       document.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("focusin", onFocusIn);
       document.body.style.overflow = originalOverflow;
       if (previousFocus.current instanceof HTMLElement) previousFocus.current.focus();
     };
+    // Only the open state controls focus lifecycle; `close` is now stable.
   }, [open, close]);
 
   return (
@@ -110,12 +138,18 @@ export default function Modal({
             <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 sm:px-7 sm:py-5">
               <div>
                 {title ? (
-                  <h2 id={titleId} className="text-bark-900 text-xl font-semibold tracking-[-0.02em]">
+                  <h2
+                    id={titleId}
+                    className="text-xl font-semibold tracking-[-0.02em] text-bark-900"
+                  >
                     {title}
                   </h2>
                 ) : null}
                 {description ? (
-                  <p id={descriptionId} className="text-ink-500 mt-1 max-w-xl text-sm leading-relaxed">
+                  <p
+                    id={descriptionId}
+                    className="mt-1 max-w-xl text-sm leading-relaxed text-ink-500"
+                  >
                     {description}
                   </p>
                 ) : null}
@@ -124,7 +158,7 @@ export default function Modal({
                 type="button"
                 onClick={close}
                 aria-label={closeLabel}
-                className="text-ink-400 hover:bg-bark-50 hover:text-bark-900 -mr-1 rounded-full p-2 transition-colors"
+                className="-mr-1 rounded-full p-2 text-ink-400 transition-colors hover:bg-bark-50 hover:text-bark-900"
               >
                 <svg aria-hidden="true" viewBox="0 0 20 20" className="h-5 w-5" fill="none">
                   <path
@@ -140,7 +174,7 @@ export default function Modal({
               {children}
             </div>
             {footer ? (
-              <div className="border-line flex flex-wrap items-center justify-end gap-2.5 border-t bg-white/60 px-5 py-4 sm:px-7">
+              <div className="flex flex-wrap items-center justify-end gap-2.5 border-t border-line bg-white/60 px-5 py-4 sm:px-7">
                 {footer}
               </div>
             ) : null}

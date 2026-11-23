@@ -161,6 +161,15 @@ const localityProposalSchema = new mongoose.Schema(
       trim: true,
       maxlength: 2000,
     },
+    // Set when the proposer account is permanently deleted. Proposal history
+    // is retained with anonymized attribution.
+    anonymizedAt: {
+      type: Date,
+    },
+    anonymizedForUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,

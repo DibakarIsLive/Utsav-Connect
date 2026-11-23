@@ -41,7 +41,9 @@ async function run() {
 
   const fs = await import("fs");
   const path = await import("path");
-  const dir = path.join(process.cwd(), "docs", "screenshots");
+  const { fileURLToPath } = await import("node:url");
+  const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+  const dir = path.join(projectRoot, ".local", "screenshots");
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }

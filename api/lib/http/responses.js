@@ -26,14 +26,17 @@ export function jsonSuccess(data, init = {}) {
 }
 
 /**
- * @param {{ code: string, message: string, details?: unknown, status?: number, extra?: Record<string, unknown> }} error
+ * @param {{ code: string, message: string, details?: unknown, status?: number, extra?: Record<string, unknown>, headers?: Record<string, string> }} error
  */
-export function jsonError({ code, message, details, status = 500, extra = {} }) {
+export function jsonError({ code, message, details, status = 500, extra = {}, headers = {} }) {
   const body = { success: false, error: { code, message } };
   if (details !== undefined) {
     body.error.details = details;
   }
-  return Response.json({ ...body, ...extra }, { status, headers: NO_STORE_HEADERS });
+  return Response.json(
+    { ...body, ...extra },
+    { status, headers: { ...NO_STORE_HEADERS, ...headers } },
+  );
 }
 
 /**
@@ -76,6 +79,7 @@ export function errorToResponse(error) {
       code: error.code,
       message: error.message,
       details: error.details,
+      headers: error.headers,
     });
   }
   if (error instanceof DatabaseUnavailableError) {

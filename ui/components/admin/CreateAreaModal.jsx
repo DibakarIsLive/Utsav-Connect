@@ -153,12 +153,28 @@ export default function CreateAreaModal({
     return next;
   }
 
+  const ERROR_FIELD_IDS = {
+    name: "areaName",
+    type: "areaType",
+    code: "areaCode",
+    formattedAddress: "areaAddress",
+    notes: "areaNotes",
+    populationEstimate: "areaPopulation",
+    geometry: "areaLatitude",
+  };
+
+  function focusFirstError(errors) {
+    const key = Object.keys(errors)[0];
+    if (!key) return;
+    document.getElementById(ERROR_FIELD_IDS[key] ?? key)?.focus();
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
-      document.getElementById(Object.keys(nextErrors)[0])?.focus();
+      focusFirstError(nextErrors);
       return;
     }
 
@@ -171,7 +187,8 @@ export default function CreateAreaModal({
     };
     if (form.code.trim()) payload.code = form.code.trim();
     if (form.formattedAddress.trim()) payload.formattedAddress = form.formattedAddress.trim();
-    if (form.populationEstimate !== "") payload.populationEstimate = Number(form.populationEstimate);
+    if (form.populationEstimate !== "")
+      payload.populationEstimate = Number(form.populationEstimate);
     if (form.latitude !== "" && form.longitude !== "") {
       payload.location = {
         type: "Point",
@@ -199,7 +216,7 @@ export default function CreateAreaModal({
       const mapped = fieldErrors(error.details);
       if (Object.keys(mapped).length > 0) {
         setErrors(mapped);
-        document.getElementById(Object.keys(mapped)[0])?.focus();
+        focusFirstError(mapped);
       } else {
         setErrors({ submit: error.message });
       }
@@ -212,7 +229,15 @@ export default function CreateAreaModal({
     <Modal
       open={open}
       onClose={busy ? () => {} : onClose}
-      title={result ? (editing ? "Area updated" : "Area created") : editing ? "Edit area" : "Create an official area"}
+      title={
+        result
+          ? editing
+            ? "Area updated"
+            : "Area created"
+          : editing
+            ? "Edit area"
+            : "Create an official area"
+      }
       description={
         result
           ? undefined
@@ -249,10 +274,10 @@ export default function CreateAreaModal({
               </svg>
             </span>
             <div>
-              <h3 className="text-bark-900 text-lg font-semibold">
+              <h3 className="text-lg font-semibold text-bark-900">
                 {result.area?.name ?? form.name.trim()}
               </h3>
-              <p className="text-ink-500 mt-2 text-sm leading-[1.75]">
+              <p className="mt-2 text-sm leading-[1.75] text-ink-500">
                 {editing
                   ? "The area record has been updated. Public pages will reflect the change on their next load."
                   : "The area is now approved and can receive invitation reports. It appears on the public map if geometry has been recorded."}
@@ -288,6 +313,7 @@ export default function CreateAreaModal({
             <Field id="areaName" label="Official name" required error={errors.name}>
               <TextInput
                 id="areaName"
+                data-autofocus
                 value={form.name}
                 onChange={(event) => update("name", event.target.value)}
                 invalid={Boolean(errors.name)}
@@ -305,11 +331,18 @@ export default function CreateAreaModal({
                 list="admin-area-types"
               />
               <datalist id="admin-area-types">
-                {["Locality", "Ward", "Village", "Town", "Block", "District", "Region", "State"].map(
-                  (type) => (
-                    <option key={type} value={type} />
-                  ),
-                )}
+                {[
+                  "Locality",
+                  "Ward",
+                  "Village",
+                  "Town",
+                  "Block",
+                  "District",
+                  "Region",
+                  "State",
+                ].map((type) => (
+                  <option key={type} value={type} />
+                ))}
               </datalist>
             </Field>
           </div>
@@ -357,7 +390,12 @@ export default function CreateAreaModal({
           </Field>
 
           <div className="grid gap-4 sm:grid-cols-3">
-            <Field id="areaPopulation" label="Population estimate" hint="Optional" error={errors.populationEstimate}>
+            <Field
+              id="areaPopulation"
+              label="Population estimate"
+              hint="Optional"
+              error={errors.populationEstimate}
+            >
               <TextInput
                 id="areaPopulation"
                 type="number"
@@ -414,7 +452,12 @@ export default function CreateAreaModal({
             />
           </Field>
 
-          <Field id="areaNotes" label="Internal notes" hint={`${form.notes.length}/2000`} error={errors.notes}>
+          <Field
+            id="areaNotes"
+            label="Internal notes"
+            hint={`${form.notes.length}/2000`}
+            error={errors.notes}
+          >
             <TextArea
               id="areaNotes"
               value={form.notes}
@@ -426,7 +469,7 @@ export default function CreateAreaModal({
             />
           </Field>
 
-          <p className="text-ink-400 text-[0.68rem] leading-relaxed">
+          <p className="text-[0.68rem] leading-relaxed text-ink-400">
             Approved areas appear publicly. Archived areas are hidden from the public map but keep
             their report history. Missing population is displayed as “unavailable”, never 0%.
           </p>

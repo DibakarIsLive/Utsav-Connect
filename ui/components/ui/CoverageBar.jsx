@@ -30,7 +30,7 @@ export default function CoverageBar({
           >
             {label}
           </p>
-          <p className="text-bark-900 mt-1 font-display text-2xl leading-none font-semibold">
+          <p className="mt-1 font-display text-2xl leading-none font-semibold text-bark-900">
             {unavailable ? "Unavailable" : `${percentage.toFixed(1)}%`}
           </p>
         </div>
@@ -38,7 +38,7 @@ export default function CoverageBar({
         {unavailable ? <StatusBadge status="unavailable">No estimate</StatusBadge> : null}
       </div>
       <div
-        className="bg-cream relative h-2.5 overflow-hidden rounded-full"
+        className="relative h-2.5 overflow-hidden rounded-full bg-cream"
         role="img"
         aria-label={
           unavailable
@@ -49,18 +49,20 @@ export default function CoverageBar({
         <div
           className={cn(
             "absolute inset-y-0 left-0 rounded-full transition-[width] duration-700",
-            exceeds ? "bg-gradient-to-r from-gold-500 to-red-600" : "bg-gradient-to-r from-saffron-600 to-gold-400",
+            exceeds
+              ? "bg-gradient-to-r from-gold-500 to-red-600"
+              : "bg-gradient-to-r from-saffron-600 to-gold-400",
           )}
           style={{ width: `${width}%` }}
         />
         <div className="absolute inset-y-0 left-[100%] w-px bg-white/70" aria-hidden="true" />
       </div>
       {unavailable ? (
-        <p className="text-ink-400 text-[0.72rem] leading-relaxed">
+        <p className="text-[0.72rem] leading-relaxed text-ink-400">
           A population estimate is required before coverage can be calculated. Zero is not assumed.
         </p>
       ) : exceeds ? (
-        <p className="text-gold-800 text-[0.72rem] leading-relaxed">
+        <p className="text-[0.72rem] leading-relaxed text-gold-800">
           Reported invitations are higher than the recorded population estimate. The real value is
           shown above, not capped.
         </p>

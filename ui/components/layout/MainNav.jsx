@@ -52,11 +52,31 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
     return (
       <nav aria-label="Primary" className="flex items-center">
         <div className="hidden items-center gap-2 md:flex" aria-hidden="true">
-          <div className={cn("h-8 w-14 animate-pulse rounded-lg", overHero ? "bg-white/15" : "bg-bark-100")} />
-          <div className={cn("h-8 w-16 animate-pulse rounded-lg", overHero ? "bg-white/15" : "bg-bark-100")} />
-          <div className={cn("h-9 w-28 animate-pulse rounded-xl", overHero ? "bg-white/20" : "bg-bark-100")} />
+          <div
+            className={cn(
+              "h-8 w-14 animate-pulse rounded-lg",
+              overHero ? "bg-white/15" : "bg-bark-100",
+            )}
+          />
+          <div
+            className={cn(
+              "h-8 w-16 animate-pulse rounded-lg",
+              overHero ? "bg-white/15" : "bg-bark-100",
+            )}
+          />
+          <div
+            className={cn(
+              "h-9 w-28 animate-pulse rounded-xl",
+              overHero ? "bg-white/20" : "bg-bark-100",
+            )}
+          />
         </div>
-        <div className={cn("h-10 w-10 animate-pulse rounded-xl md:hidden", overHero ? "bg-white/20" : "bg-bark-100")} />
+        <div
+          className={cn(
+            "h-10 w-10 animate-pulse rounded-xl md:hidden",
+            overHero ? "bg-white/20" : "bg-bark-100",
+          )}
+        />
       </nav>
     );
   }
@@ -86,7 +106,7 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "bg-saffron-500 absolute right-3.5 -bottom-0.5 left-3.5 h-[2px] origin-left rounded-full transition-transform duration-300",
+                    "absolute right-3.5 -bottom-0.5 left-3.5 h-[2px] origin-left rounded-full bg-saffron-500 transition-transform duration-300",
                     active ? "scale-x-100" : "scale-x-0",
                   )}
                 />
@@ -141,9 +161,19 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
       >
         <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5" fill="none">
           {open ? (
-            <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            <path
+              d="M6 6l12 12M18 6 6 18"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
           ) : (
-            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+            <path
+              d="M4 7h16M4 12h16M4 17h16"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+            />
           )}
         </svg>
       </button>
@@ -154,7 +184,7 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
             <motion.button
               type="button"
               aria-label="Close menu"
-              className="bg-bark-950/45 fixed inset-0 z-40 backdrop-blur-sm md:hidden"
+              className="fixed inset-0 z-40 bg-bark-950/45 backdrop-blur-sm md:hidden"
               initial={reduce ? false : { opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -162,16 +192,16 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
             />
             <motion.div
               id={panelId}
-              className="border-line bg-ivory fixed inset-x-3 top-[4.7rem] z-50 overflow-hidden rounded-[1.5rem] border shadow-[0_30px_90px_-20px_rgba(43,15,4,0.45)] md:hidden"
+              className="fixed inset-x-3 top-[4.7rem] z-50 overflow-hidden rounded-[1.5rem] border border-line bg-ivory shadow-[0_30px_90px_-20px_rgba(43,15,4,0.45)] md:hidden"
               initial={reduce ? false : { opacity: 0, y: -12, scale: 0.99 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={reduce ? undefined : { opacity: 0, y: -8, scale: 0.99 }}
               transition={{ duration: 0.25, ease: [0.16, 1, 0.3, 1] }}
             >
-              <div className="pattern-jaali border-line border-b px-5 py-3">
+              <div className="pattern-jaali border-b border-line px-5 py-3">
                 <p className="eyebrow text-saffron-700">Explore</p>
               </div>
-              <ul className="divide-line divide-y px-5 py-2">
+              <ul className="divide-y divide-line px-5 py-2">
                 {items.map((item) => {
                   const active = isActivePath(item.href, pathname ?? "");
                   return (
@@ -186,7 +216,7 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
                         )}
                       >
                         {item.label}
-                        <ArrowRight className="text-ink-300 h-4 w-4" />
+                        <ArrowRight className="h-4 w-4 text-ink-300" />
                       </Link>
                     </li>
                   );
@@ -205,12 +235,12 @@ export default function MainNav({ user, loading = false, overHero = false, onSig
                   <button
                     type="button"
                     onClick={handleSignOut}
-                    className="text-ink-500 hover:text-bark-900 mt-3 w-full py-2 text-center text-xs font-semibold"
+                    className="mt-3 w-full py-2 text-center text-xs font-semibold text-ink-500 hover:text-bark-900"
                   >
                     Sign out of this device
                   </button>
                 ) : (
-                  <p className="text-ink-400 mt-3 text-center text-[0.68rem] leading-relaxed">
+                  <p className="mt-3 text-center text-[0.68rem] leading-relaxed text-ink-400">
                     One account entry for both new applications and existing accounts.
                   </p>
                 )}

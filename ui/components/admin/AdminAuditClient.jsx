@@ -57,14 +57,14 @@ function eventLabel(eventType) {
 
 function MetadataList({ metadata }) {
   if (!metadata || typeof metadata !== "object" || Object.keys(metadata).length === 0) {
-    return <span className="text-ink-400 text-[0.72rem]">No additional context.</span>;
+    return <span className="text-[0.72rem] text-ink-400">No additional context.</span>;
   }
   return (
     <dl className="flex flex-wrap gap-x-4 gap-y-1.5">
       {Object.entries(metadata).map(([key, value]) => (
         <div key={key} className="flex items-baseline gap-1.5">
-          <dt className="text-ink-400 font-mono text-[0.62rem]">{key}</dt>
-          <dd className="text-ink-600 text-[0.7rem]">
+          <dt className="font-mono text-[0.62rem] text-ink-400">{key}</dt>
+          <dd className="text-[0.7rem] text-ink-600">
             {typeof value === "object" ? JSON.stringify(value) : String(value)}
           </dd>
         </div>
@@ -74,8 +74,9 @@ function MetadataList({ metadata }) {
 }
 
 /**
- * Append-only audit trail. The API restricts this to Super Admins and returns
- * real records only; no placeholder or fabricated security events are shown.
+ * Append-only audit trail. The API requires audit:read:all, which may be held
+ * by a Super Admin or an explicitly granted administrator. Real records only;
+ * no placeholder or fabricated security events are shown.
  */
 export default function AdminAuditClient() {
   const [logs, setLogs] = useState([]);
@@ -107,7 +108,6 @@ export default function AdminAuditClient() {
       return (
         log.eventType?.toLowerCase().includes(term) ||
         log.actorId?.fullName?.toLowerCase().includes(term) ||
-        log.actorId?.email?.toLowerCase().includes(term) ||
         log.targetType?.toLowerCase().includes(term)
       );
     });
@@ -125,7 +125,7 @@ export default function AdminAuditClient() {
   return (
     <div>
       <AdminPageHeader
-        eyebrow="Super Admin · Audit log"
+        eyebrow="Oversight · Audit log"
         title="Because trust needs a record."
         description="An append-only trail of sign-ins, applications, reviews, geography changes and account creation. Entries are never edited or deleted from this workspace."
         actions={
@@ -136,9 +136,9 @@ export default function AdminAuditClient() {
       />
 
       <Notice tone="info" className="mb-5" title="What this log contains">
-        Event codes, actor roles, target types and safe context such as status changes. It does not
-        contain passwords, invitee details, application notes or raw IP addresses — only a one-way
-        hash where collected.
+        Event codes, actor roles, target types and sanitized context such as status transitions.
+        Invitee addresses, free-text reasons, application notes and raw user agents are never shown.
+        IP addresses are only ever stored as a keyed, versioned hash and are not displayed.
       </Notice>
 
       <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
@@ -150,15 +150,15 @@ export default function AdminAuditClient() {
         ].map((item) => (
           <div key={item.key} className="admin-card px-5 py-4">
             <Badge tone={EVENT_TONES[item.key] ?? "neutral"}>{item.label}</Badge>
-            <p className="font-display text-bark-900 mt-2.5 text-2xl font-semibold tabular-nums">
-              {state.status === "error" ? "—" : categoryCounts.get(item.key) ?? 0}
+            <p className="mt-2.5 font-display text-2xl font-semibold text-bark-900 tabular-nums">
+              {state.status === "error" ? "—" : (categoryCounts.get(item.key) ?? 0)}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="border-line shadow-soft rounded-2xl border bg-white">
-        <div className="border-line flex flex-col gap-3 border-b p-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="rounded-2xl border border-line bg-white shadow-soft">
+        <div className="flex flex-col gap-3 border-b border-line p-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex flex-1 flex-col gap-2.5 sm:flex-row">
             <div className="relative flex-1 sm:max-w-xs">
               <label htmlFor="auditSearch" className="sr-only">
@@ -206,7 +206,12 @@ export default function AdminAuditClient() {
               </select>
             </div>
           </div>
-          <Button variant="secondary" size="sm" onClick={load} disabled={state.status === "loading"}>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={load}
+            disabled={state.status === "loading"}
+          >
             {state.status === "loading" ? "Refreshing…" : "Refresh"}
           </Button>
         </div>
@@ -261,7 +266,7 @@ export default function AdminAuditClient() {
         ) : null}
 
         {state.status === "ready" && filtered.length > 0 ? (
-          <ol className="divide-line divide-y">
+          <ol className="divide-y divide-line">
             {filtered.map((log) => {
               const key = eventCategory(log.eventType);
               return (
@@ -286,15 +291,15 @@ export default function AdminAuditClient() {
                         aria-hidden="true"
                       />
                       <div className="min-w-0">
-                        <p className="text-bark-900 text-[0.82rem] font-semibold">
+                        <p className="text-[0.82rem] font-semibold text-bark-900">
                           {eventLabel(log.eventType)}
                         </p>
-                        <p className="text-ink-400 mt-0.5 font-mono text-[0.62rem]">
+                        <p className="mt-0.5 font-mono text-[0.62rem] text-ink-400">
                           {log.eventType}
                         </p>
-                        <p className="text-ink-500 mt-1.5 text-[0.72rem]">
+                        <p className="mt-1.5 text-[0.72rem] text-ink-500">
                           {log.actorId?.fullName ?? "Unknown actor"}
-                          {log.actorId?.email ? ` · ${log.actorId.email}` : ""}
+
                           {" · "}
                           {ROLE_LABEL[log.actorRole] ?? log.actorRole ?? "unknown role"}
                           {log.targetType ? ` · target ${log.targetType}` : ""}
@@ -306,10 +311,10 @@ export default function AdminAuditClient() {
                     </div>
                     <div className="shrink-0 text-right">
                       <Badge tone={EVENT_TONES[key] ?? "neutral"}>{key}</Badge>
-                      <p className="text-ink-500 mt-1.5 text-[0.7rem] font-medium">
+                      <p className="mt-1.5 text-[0.7rem] font-medium text-ink-500">
                         {timeAgo(log.createdAt)}
                       </p>
-                      <p className="text-ink-400 mt-0.5 text-[0.62rem]">
+                      <p className="mt-0.5 text-[0.62rem] text-ink-400">
                         {formatDateTime(log.createdAt)}
                       </p>
                     </div>
@@ -321,9 +326,10 @@ export default function AdminAuditClient() {
         ) : null}
       </div>
 
-      <p className="text-ink-400 mt-4 text-[0.72rem] leading-relaxed">
-        Showing {filtered.length} of {logs.length} loaded entries, newest first. The API caps a single
-        request at 500 entries; this page does not claim to show the complete lifetime history.
+      <p className="mt-4 text-[0.72rem] leading-relaxed text-ink-400">
+        Showing {filtered.length} of {logs.length} loaded entries, newest first. The API caps a
+        single request at 500 entries; this page does not claim to show the complete lifetime
+        history.
       </p>
     </div>
   );

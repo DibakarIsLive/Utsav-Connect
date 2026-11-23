@@ -1,6 +1,7 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { logout } from "@/api/services/auth-service";
 import { parseSessionToken } from "@/api/lib/auth/session";
+import { assertTrustedOrigin } from "@/api/lib/http/origin";
 
 export const dynamic = "force-dynamic";
 
@@ -10,17 +11,20 @@ export const dynamic = "force-dynamic";
  */
 export async function POST(request) {
   try {
+    assertTrustedOrigin(request);
     const cookieHeader = request.headers.get("cookie") || undefined;
     const token = parseSessionToken(cookieHeader);
 
     await logout(token);
 
-    return jsonSuccess({ message: "Logged out successfully" }, {
-      headers: {
-        "Set-Cookie": "session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0",
+    return jsonSuccess(
+      { message: "Logged out successfully" },
+      {
+        headers: {
+          "Set-Cookie": "session=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0",
+        },
       },
-    });
-
+    );
   } catch (error) {
     return errorToResponse(error);
   }

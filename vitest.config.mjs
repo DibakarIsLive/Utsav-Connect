@@ -17,7 +17,12 @@ export default defineConfig({
     environment: "node",
     include: ["tests/**/*.test.js"],
     setupFiles: ["tests/setup/load-env.js"],
+    globalSetup: "tests/setup/global-isolation.mjs",
     testTimeout: 20_000,
     hookTimeout: 20_000,
+    // Integration suites share one MongoDB database and some perform cleanup
+    // between cases. Running files in parallel makes those suites race each
+    // other, so files run serially (individual tests within a file already do).
+    fileParallelism: false,
   },
 });

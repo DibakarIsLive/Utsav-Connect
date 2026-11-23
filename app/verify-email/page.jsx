@@ -20,10 +20,10 @@ export default async function VerifyEmailPage({ searchParams }) {
         description="Email verification keeps applications genuine and protects the person behind every report."
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "Verify email" }]}
       />
-      <section className="bg-cream pattern-contour relative overflow-hidden py-16 sm:py-20">
+      <section className="pattern-contour relative overflow-hidden bg-cream py-16 sm:py-20">
         <div className="shell relative">
           <VerifyEmailClient token={token} />
-          <p className="text-ink-400 mx-auto mt-6 max-w-xl text-center text-[0.72rem] leading-relaxed">
+          <p className="mx-auto mt-6 max-w-xl text-center text-[0.72rem] leading-relaxed text-ink-400">
             Utsav-Connect will never ask for your password in an email. If a message claims
             otherwise, do not respond to it.
           </p>

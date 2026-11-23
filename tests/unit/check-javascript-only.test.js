@@ -1,5 +1,6 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { getLocalPath } from "@/api/lib/paths/local-artifacts.js";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { findForbiddenFiles, isForbiddenFile } from "../../scripts/check-javascript-only.js";
 
@@ -27,7 +28,7 @@ describe("isForbiddenFile", () => {
 
 describe("findForbiddenFiles", () => {
   // Scratch space lives inside the repository (.local/ is git-ignored).
-  const scratchRoot = path.resolve(process.cwd(), ".local", "test-scratch");
+  const scratchRoot = getLocalPath("test-scratch");
   let fixture;
 
   beforeEach(() => {

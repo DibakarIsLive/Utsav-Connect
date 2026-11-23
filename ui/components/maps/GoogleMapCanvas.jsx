@@ -3,11 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import SvgAtlas from "./SvgAtlas";
 import Notice from "@/ui/components/ui/Notice";
-
-const VENUE_URL = "https://maps.app.goo.gl/BcY87xSjA6iRtBY78";
-const VENUE_DIRECTIONS = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-  VENUE_URL,
-)}`;
+import { VENUE_DIRECTIONS_URL } from "@/ui/lib/venue";
 
 function hasPoint(area) {
   const coordinates = area.location?.coordinates;
@@ -179,17 +175,17 @@ export default function GoogleMapCanvas({ areas = [], selectedId, onSelect }) {
   }
 
   return (
-    <div className="border-line relative overflow-hidden rounded-2xl border bg-[#f3ead9]">
+    <div className="relative overflow-hidden rounded-2xl border border-line bg-[#f3ead9]">
       <div ref={containerRef} className="h-[420px] w-full sm:h-[520px] lg:h-[600px]" />
-      <div className="border-line/70 absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-2 border-t bg-white/90 px-4 py-2.5 text-[0.62rem] backdrop-blur">
+      <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-center justify-between gap-2 border-t border-line/70 bg-white/90 px-4 py-2.5 text-[0.62rem] backdrop-blur">
         <span className="text-ink-500">
           Live Google Maps · approved geometry only · {mappable.length} plotted
         </span>
         <a
-          href={VENUE_DIRECTIONS}
+          href={VENUE_DIRECTIONS_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-saffron-700 hover:text-saffron-800 font-semibold"
+          className="font-semibold text-saffron-700 hover:text-saffron-800"
         >
           Directions to the official venue
         </a>

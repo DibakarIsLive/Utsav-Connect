@@ -61,7 +61,13 @@ const TONES = {
  * Inline notice for form and workspace feedback. It is intentionally compact
  * so it can live inside cards without stealing the page hierarchy.
  */
-export default function Notice({ tone = "info", title, children, className = "", role = "status" }) {
+export default function Notice({
+  tone = "info",
+  title,
+  children,
+  className = "",
+  role = "status",
+}) {
   const styles = TONES[tone] ?? TONES.info;
   return (
     <div

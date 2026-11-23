@@ -28,8 +28,9 @@ describe("getPrimaryNavItems", () => {
     expect(
       getPrimaryNavItems({ role: "devotee", status: "active" }).map((item) => item.href),
     ).toEqual(["/about"]);
-    expect(getPrimaryNavItems({ role: "super_admin", status: "active" }).map((item) => item.href))
-      .toEqual(["/about"]);
+    expect(
+      getPrimaryNavItems({ role: "super_admin", status: "active" }).map((item) => item.href),
+    ).toEqual(["/about"]);
   });
 });
 

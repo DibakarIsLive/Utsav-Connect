@@ -37,7 +37,14 @@ export function UtsavMark({ className = "", tone = "warm" }) {
         fill={seat}
       />
       <defs>
-        <linearGradient id="utsav-mark-bg" x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
+        <linearGradient
+          id="utsav-mark-bg"
+          x1="4"
+          y1="4"
+          x2="44"
+          y2="44"
+          gradientUnits="userSpaceOnUse"
+        >
           <stop stopColor="#c04602" />
           <stop offset="0.55" stopColor="#e85b00" />
           <stop offset="1" stopColor="#98380a" />
@@ -57,7 +64,7 @@ export default function Logo({ tone = "dark", className = "", showTagline = true
       <span className="leading-none">
         <span
           className={cn(
-            "font-display block text-[1.35rem] font-semibold tracking-[-0.03em]",
+            "block font-display text-[1.35rem] font-semibold tracking-[-0.03em]",
             tone === "light" ? "text-white" : "text-bark-900",
           )}
         >

@@ -11,8 +11,8 @@ import { z } from "zod";
  */
 
 const LOG_LEVELS = ["debug", "info", "warn", "error"];
-const REGISTRATION_MODES = ["open", "closed"];
-const EMAIL_PROVIDERS = ["dev", "resend", "smtp"];
+const REGISTRATION_MODES = ["applications", "closed"];
+const EMAIL_PROVIDERS = ["dev", "resend"];
 
 const mongoUriSchema = z
   .string()
@@ -26,7 +26,9 @@ const mongoUriSchema = z
 const booleanFlag = (defaultValue) =>
   z
     .union([z.boolean(), z.literal("0"), z.literal("1")])
-    .transform((val) => (val === "1" || val === true ? true : val === "0" || val === false ? false : defaultValue))
+    .transform((val) =>
+      val === "1" || val === true ? true : val === "0" || val === false ? false : defaultValue,
+    )
     .default(defaultValue);
 
 export const envSchema = z
@@ -49,7 +51,12 @@ export const envSchema = z
     EMAIL_PROVIDER: z.enum(EMAIL_PROVIDERS).default("dev"),
     EMAIL_FROM: z.string().email().default("no-reply@example.com"),
     EMAIL_API_KEY: z.string().min(1).optional(),
-    SMTP_URL: z.string().min(1).optional(),
+
+    // Local Development Test Credential Registry
+    STORE_CREDENTIALS_FOR_ALL_USERS: z.string().optional(),
+    STORE_CREDENTIALS_FOR_ALL_SUPER_ADMINS: z.string().optional(),
+    STORE_CREDENTIALS_FOR_ALL_ADMINS: z.string().optional(),
+    STORE_CREDENTIALS_FOR_ALL_DEVOTEES: z.string().optional(),
   })
   .superRefine((env, context) => {
     if (env.SESSION_IDLE_DAYS > env.SESSION_ABSOLUTE_DAYS) {

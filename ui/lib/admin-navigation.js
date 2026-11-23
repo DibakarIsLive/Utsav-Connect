@@ -11,11 +11,23 @@ export const ADMIN_NAV_GROUPS = Object.freeze([
     label: "Workspace",
     items: [
       { href: "/admin", label: "Overview", icon: "grid", exact: true },
+      {
+        href: "/admin/analytics",
+        label: "Campaign analytics",
+        icon: "chart",
+        anyPermission: ["area:manage", "invitation-report:read:all"],
+      },
     ],
   },
   {
-    label: "Applications",
+    label: "People",
     items: [
+      {
+        href: "/admin/devotees",
+        label: "Devotee management",
+        icon: "users",
+        permission: "devotee:read:all",
+      },
       {
         href: "/admin/applications",
         label: "Applications",
@@ -34,10 +46,16 @@ export const ADMIN_NAV_GROUPS = Object.freeze([
         permission: "area:manage",
       },
       {
+        href: "/admin/population",
+        label: "Population",
+        icon: "chart",
+        permission: "area:manage",
+      },
+      {
         href: "/admin/proposals",
         label: "Proposals",
         icon: "compass",
-        anyPermission: ["proposal:review", "area:manage"],
+        permission: "proposal:review",
       },
     ],
   },
@@ -48,17 +66,25 @@ export const ADMIN_NAV_GROUPS = Object.freeze([
         href: "/admin/invitations",
         label: "Invitation reports",
         icon: "report",
-        anyPermission: ["invitation-report:read:all", "area:manage"],
+        permission: "invitation-report:read:all",
+      },
+    ],
+  },
+  {
+    label: "Oversight",
+    items: [
+      {
+        href: "/admin/audit",
+        label: "Audit log",
+        icon: "shield",
+        permission: "audit:read:all",
       },
     ],
   },
   {
     label: "Super Admin",
     superAdminOnly: true,
-    items: [
-      { href: "/admin/users", label: "Accounts & roles", icon: "users" },
-      { href: "/admin/audit", label: "Audit log", icon: "shield" },
-    ],
+    items: [{ href: "/admin/users", label: "Accounts & roles", icon: "users" }],
   },
 ]);
 

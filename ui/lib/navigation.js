@@ -4,9 +4,7 @@
  * The brand mark is the home link; a separate "Home" item is intentionally
  * absent. Sign-in lives inside /apply, so there is exactly one account entry.
  */
-export const PUBLIC_NAV_ITEMS = Object.freeze([
-  { href: "/about", label: "About" },
-]);
+export const PUBLIC_NAV_ITEMS = Object.freeze([{ href: "/about", label: "About" }]);
 
 export const ADMIN_PERMISSION_LABELS = Object.freeze({
   "application:read:all": "View applications",

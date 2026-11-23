@@ -55,14 +55,16 @@ describe("getAdminNavGroups", () => {
     expect(getAdminNavGroups(bareAdmin).map((group) => group.label)).toEqual(["Workspace"]);
   });
 
-  it("keeps Super Admin functions separated in their own section", () => {
+  it("keeps Super Admin-only account management in its own section", () => {
     const groups = getAdminNavGroups(superAdmin);
     const superGroup = groups.find((group) => group.label === "Super Admin");
     expect(superGroup).toBeTruthy();
-    expect(superGroup.items.map((item) => item.href)).toEqual([
-      "/admin/users",
-      "/admin/audit",
-    ]);
+    expect(superGroup.items.map((item) => item.href)).toEqual(["/admin/users"]);
+
+    // Audit is an oversight permission (`audit:read:all`), not a Super Admin
+    // privilege, so it lives under Oversight and is visible to granted admins.
+    const oversight = groups.find((group) => group.label === "Oversight");
+    expect(oversight.items.map((item) => item.href)).toEqual(["/admin/audit"]);
 
     const moderatorLinks = getAdminNavGroups(moderator).flatMap((group) =>
       group.items.map((item) => item.href),

@@ -1,44 +1,33 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { reviewReport } from "@/api/services/invitation-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
+import { requireAdmin } from "@/api/lib/auth/guards";
 import { reviewReportSchema } from "@/api/lib/validation/invitation-schemas";
-import { hasPermission, ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { assertTrustedOrigin } from "@/api/lib/http/origin";
 
 export const dynamic = "force-dynamic";
 
 /**
  * POST /api/admin/invitations/:id/review
- * Admin: Review, flag, or invalidate an invitation report. Invalidating a
- * report requires an audit note, enforced by the service as well.
+ * Review, flag, or invalidate an invitation report. Invalidating a report
+ * requires an audit note, enforced by the schema, route and service.
  */
 export async function POST(request, { params }) {
   try {
+    assertTrustedOrigin(request);
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.INVITATION_REPORT_READ_ALL);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (
-      !admin ||
-      (!hasPermission(admin, ADMIN_PERMISSIONS.INVITATION_REPORT_READ_ALL) &&
-        !hasPermission(admin, ADMIN_PERMISSIONS.AREA_MANAGE) &&
-        admin.role !== "super_admin")
-    ) {
-      return errorToResponse({
-        code: "FORBIDDEN",
-        message: "Admin invitation report access required",
-        status: 403,
-      });
-    }
 
     const body = await request.json();
     const validatedData = reviewReportSchema.parse(body);
 
-    if (validatedData.status === "invalid" && !validatedData.adminNotes?.trim()) {
+    if (
+      (validatedData.status === "invalid" || validatedData.status === "flagged") &&
+      !validatedData.adminNotes?.trim()
+    ) {
       return errorToResponse({
         code: "VALIDATION_ERROR",
-        message: "An audit note is required to invalidate an invitation report.",
+        message: "An audit note is required to flag or invalidate an invitation report.",
         status: 400,
       });
     }

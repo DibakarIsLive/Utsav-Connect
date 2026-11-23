@@ -71,9 +71,7 @@ export async function listProposals(user, options = {}) {
   await connectToDatabase();
 
   const isAdmin =
-    user.role === "super_admin" ||
-    hasPermission(user, ADMIN_PERMISSIONS.PROPOSAL_REVIEW) ||
-    hasPermission(user, ADMIN_PERMISSIONS.AREA_MANAGE);
+    user.role === "super_admin" || hasPermission(user, ADMIN_PERMISSIONS.PROPOSAL_REVIEW);
 
   const query = {};
   if (!isAdmin) {
@@ -108,9 +106,7 @@ export async function getProposalById(user, id) {
   }
 
   const isAdmin =
-    user.role === "super_admin" ||
-    hasPermission(user, ADMIN_PERMISSIONS.PROPOSAL_REVIEW) ||
-    hasPermission(user, ADMIN_PERMISSIONS.AREA_MANAGE);
+    user.role === "super_admin" || hasPermission(user, ADMIN_PERMISSIONS.PROPOSAL_REVIEW);
   if (!isAdmin && proposal.proposedBy.toString() !== user._id.toString()) {
     throw new ForbiddenError("Permission denied: cannot access another devotee's proposal");
   }
@@ -125,9 +121,7 @@ export async function getProposalById(user, id) {
  */
 export async function reviewProposal(admin, id, reviewData) {
   const isAdmin =
-    admin?.role === "super_admin" ||
-    hasPermission(admin, ADMIN_PERMISSIONS.PROPOSAL_REVIEW) ||
-    hasPermission(admin, ADMIN_PERMISSIONS.AREA_MANAGE);
+    admin?.role === "super_admin" || hasPermission(admin, ADMIN_PERMISSIONS.PROPOSAL_REVIEW);
   if (!isAdmin) {
     throw new ForbiddenError("Permission denied: proposal review requires admin permissions");
   }
@@ -143,7 +137,8 @@ export async function reviewProposal(admin, id, reviewData) {
     throw new ConflictError("Proposal has already been approved");
   }
 
-  const { status, reviewNotes, correctionNotes, customName, customType, customParentId } = reviewData;
+  const { status, reviewNotes, correctionNotes, customName, customType, customParentId } =
+    reviewData;
 
   let createdArea = null;
 

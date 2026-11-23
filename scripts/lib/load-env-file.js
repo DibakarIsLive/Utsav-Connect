@@ -1,5 +1,8 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 
 /**
  * Load `.env.local` (or another file) into process.env for scripts and tests.
@@ -13,7 +16,9 @@ import path from "node:path";
  * @returns {boolean} whether a file was loaded
  */
 export function loadLocalEnvFile(fileName = ".env.local") {
-  const filePath = path.resolve(process.cwd(), fileName);
+  // Anchor to the project root: loading a different (or no) .env.local just
+  // because a script was launched from another directory is a safety hazard.
+  const filePath = path.resolve(PROJECT_ROOT, fileName);
   if (!existsSync(filePath)) {
     return false;
   }

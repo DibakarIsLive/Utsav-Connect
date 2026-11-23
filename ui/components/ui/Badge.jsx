@@ -21,7 +21,9 @@ export default function Badge({ tone = "neutral", dot = false, className = "", c
         className,
       )}
     >
-      {dot ? <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden="true" /> : null}
+      {dot ? (
+        <span className="h-1.5 w-1.5 rounded-full bg-current opacity-80" aria-hidden="true" />
+      ) : null}
       {children}
     </span>
   );

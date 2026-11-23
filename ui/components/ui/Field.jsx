@@ -18,9 +18,9 @@ export default function Field({
       <div className="flex items-baseline justify-between gap-3">
         <label htmlFor={id} className={cn("label-base", labelClassName)}>
           {label}
-          {required ? <span className="text-saffron-700 ml-1">*</span> : null}
+          {required ? <span className="ml-1 text-saffron-700">*</span> : null}
         </label>
-        {hint ? <span className="text-ink-400 mb-2 text-[0.7rem]">{hint}</span> : null}
+        {hint ? <span className="mb-2 text-[0.7rem] text-ink-400">{hint}</span> : null}
       </div>
       {children}
       {error ? (
@@ -59,7 +59,7 @@ export function SelectInput({ className = "", invalid = false, children, ...prop
       <svg
         aria-hidden="true"
         viewBox="0 0 20 20"
-        className="text-ink-400 pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2"
+        className="pointer-events-none absolute top-1/2 right-4 h-4 w-4 -translate-y-1/2 text-ink-400"
         fill="none"
       >
         <path

@@ -1,31 +1,20 @@
 import { jsonSuccess, errorToResponse } from "@/api/lib/http/responses";
 import { reviewProposal, getProposalById } from "@/api/services/proposal-service";
-import { validateSession } from "@/api/services/auth-service";
-import { parseSessionToken } from "@/api/lib/auth/session";
+import { requireAdmin } from "@/api/lib/auth/guards";
 import { reviewProposalSchema } from "@/api/lib/validation/area-schemas";
-import { hasPermission } from "@/api/lib/auth/permissions";
+import { ADMIN_PERMISSIONS } from "@/api/lib/auth/permissions";
+import { assertTrustedOrigin } from "@/api/lib/http/origin";
 
 export const dynamic = "force-dynamic";
 
 /**
  * GET /api/admin/areas/proposals/:id/review
- * Admin: Get single proposal details with duplicate warnings.
+ * Proposal detail with duplicate warnings. Requires proposal:review.
  */
 export async function GET(request, { params }) {
   try {
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.PROPOSAL_REVIEW);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (
-      !admin ||
-      admin.role === "devotee" ||
-      (!hasPermission(admin, "proposal:review") && !hasPermission(admin, "area:manage") && admin.role !== "super_admin")
-    ) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin proposal review access required", status: 403 });
-    }
-
     const proposal = await getProposalById(admin, id);
     return jsonSuccess({ proposal });
   } catch (error) {
@@ -35,23 +24,14 @@ export async function GET(request, { params }) {
 
 /**
  * POST /api/admin/areas/proposals/:id/review
- * Admin: Review proposal (approve, reject, needs_correction, duplicate).
- * If approved: automatically creates the Area record in areas collection.
+ * Review a proposal (approve, reject, needs_correction, duplicate).
+ * Approval creates the official Area record atomically with the status change.
  */
 export async function POST(request, { params }) {
   try {
+    assertTrustedOrigin(request);
+    const admin = await requireAdmin(request, ADMIN_PERMISSIONS.PROPOSAL_REVIEW);
     const { id } = await params;
-    const cookieHeader = request.headers.get("cookie") || undefined;
-    const token = parseSessionToken(cookieHeader);
-    const admin = await validateSession(token);
-
-    if (
-      !admin ||
-      admin.role === "devotee" ||
-      (!hasPermission(admin, "proposal:review") && !hasPermission(admin, "area:manage") && admin.role !== "super_admin")
-    ) {
-      return errorToResponse({ code: "FORBIDDEN", message: "Admin proposal review access required", status: 403 });
-    }
 
     const body = await request.json();
     const validatedData = reviewProposalSchema.parse(body);

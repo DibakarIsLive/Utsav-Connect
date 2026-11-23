@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 /**
  * Devotee application model.
- * 
+ *
  * Separate from User - preserves complete application history.
  * Status: pending, approved, rejected
  * isCurrent: true for the active application record
@@ -60,10 +60,19 @@ const devoteeApplicationSchema = new mongoose.Schema(
     reviewNote: {
       type: String, // Internal note (admin-only)
     },
+    // Set when the applicant account is permanently deleted. The historical
+    // record is retained with anonymized applicant fields.
+    anonymizedAt: {
+      type: Date,
+    },
+    anonymizedForUserId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Compound indexes
@@ -76,5 +85,6 @@ devoteeApplicationSchema.statics.applicantProjection = {
   reviewedBy: 0,
 };
 
-export const DevoteeApplication = mongoose.models.DevoteeApplication || 
+export const DevoteeApplication =
+  mongoose.models.DevoteeApplication ||
   mongoose.model("DevoteeApplication", devoteeApplicationSchema);

@@ -27,6 +27,7 @@ export default async function AdminApplicationDetailPage({ params }) {
     <AdminApplicationDetailClient
       applicationId={id}
       canReview={hasAdminPermission(admin, "application:review:all")}
+      canNote={hasAdminPermission(admin, "application:note:write")}
     />
   );
 }

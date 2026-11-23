@@ -35,7 +35,10 @@ export default function MapTeaser() {
   return (
     <div className="relative overflow-hidden rounded-[1.75rem] border border-white/10 bg-bark-950 p-6 text-ivory shadow-[var(--shadow-arch)] sm:p-8">
       <div className="pattern-jaali absolute inset-0 opacity-[0.18]" aria-hidden="true" />
-      <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-saffron-600/15 blur-3xl" aria-hidden="true" />
+      <div
+        className="absolute -top-16 -right-16 h-56 w-56 rounded-full bg-saffron-600/15 blur-3xl"
+        aria-hidden="true"
+      />
 
       <div className="relative">
         <div className="flex items-center justify-between gap-4">
@@ -45,7 +48,7 @@ export default function MapTeaser() {
               Approved localities
             </h3>
           </div>
-          <span className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[0.62rem] font-bold tracking-[0.12em] uppercase text-ivory/60">
+          <span className="flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-[0.62rem] font-bold tracking-[0.12em] text-ivory/60 uppercase">
             <span className="relative flex h-1.5 w-1.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold-400 opacity-70" />
               <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-gold-400" />
@@ -57,7 +60,10 @@ export default function MapTeaser() {
         <div className="mt-6 space-y-4">
           {state.status === "loading"
             ? [0, 1, 2].map((index) => (
-                <div key={index} className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5">
+                <div
+                  key={index}
+                  className="rounded-xl border border-white/10 bg-white/[0.04] p-3.5"
+                >
                   <div className="skeleton h-3 w-1/2 rounded-full opacity-30" />
                   <div className="skeleton mt-2 h-2 w-full rounded-full opacity-20" />
                 </div>
@@ -66,8 +72,8 @@ export default function MapTeaser() {
 
           {state.status === "error" ? (
             <p className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-5 text-sm leading-relaxed text-ivory/60">
-              Coverage data could not be loaded right now. Open the map to see approved
-              localities directly.
+              Coverage data could not be loaded right now. Open the map to see approved localities
+              directly.
             </p>
           ) : null}
 

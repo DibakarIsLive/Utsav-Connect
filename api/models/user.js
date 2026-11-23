@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 /**
  * User model - core account entity.
- * 
+ *
  * Roles: devotee, admin, super_admin
  * Status: pending_verification, pending_approval, active, rejected, suspended
  */
@@ -51,7 +51,14 @@ const userSchema = new mongoose.Schema(
     },
     status: {
       type: String,
-      enum: ["pending_verification", "pending_approval", "active", "rejected", "suspended", "invited"],
+      enum: [
+        "pending_verification",
+        "pending_approval",
+        "active",
+        "rejected",
+        "suspended",
+        "invited",
+      ],
       default: "pending_verification",
       required: true,
       index: true,
@@ -66,7 +73,7 @@ const userSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // Compound index for role + status queries

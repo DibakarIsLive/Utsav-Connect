@@ -100,7 +100,7 @@
   }
 
   body {
-    @apply bg-ivory text-ink-900 font-sans antialiased;
+    @apply bg-ivory font-sans text-ink-900 antialiased;
     background-image:
       radial-gradient(ellipse 70% 40% at 8% -8%, rgb(232 91 0 / 0.07), transparent 60%),
       radial-gradient(ellipse 50% 40% at 92% 2%, rgb(217 154 56 / 0.08), transparent 55%);
@@ -154,31 +154,31 @@
   }
 
   .eyebrow-line {
-    @apply before:bg-gold-500 relative inline-flex items-center gap-3 pl-9 before:absolute before:left-0 before:h-px before:w-6 before:content-[''];
+    @apply relative inline-flex items-center gap-3 pl-9 before:absolute before:left-0 before:h-px before:w-6 before:bg-gold-500 before:content-[''];
   }
 
   .card-paper {
-    @apply border-line rounded-3xl border bg-white/90 shadow-[var(--shadow-soft)] backdrop-blur;
+    @apply rounded-3xl border border-line bg-white/90 shadow-[var(--shadow-soft)] backdrop-blur;
   }
 
   .card-warm {
-    @apply border-line/80 rounded-3xl border bg-white shadow-[0_22px_60px_-40px_rgba(67,24,6,0.28)];
+    @apply rounded-3xl border border-line/80 bg-white shadow-[0_22px_60px_-40px_rgba(67,24,6,0.28)];
   }
 
   .input-base {
-    @apply border-line focus:border-saffron-500 focus:ring-saffron-500/20 w-full rounded-xl border bg-white px-4 py-3 text-sm text-ink-900 shadow-[0_1px_0_rgba(67,24,6,0.03)] transition placeholder:text-ink-400 focus:ring-4 focus:outline-none disabled:cursor-not-allowed disabled:bg-cream disabled:opacity-70;
+    @apply w-full rounded-xl border border-line bg-white px-4 py-3 text-sm text-ink-900 shadow-[0_1px_0_rgba(67,24,6,0.03)] transition placeholder:text-ink-400 focus:border-saffron-500 focus:ring-4 focus:ring-saffron-500/20 focus:outline-none disabled:cursor-not-allowed disabled:bg-cream disabled:opacity-70;
   }
 
   .label-base {
-    @apply text-ink-800 mb-2 block text-[0.78rem] font-bold tracking-[0.08em] uppercase;
+    @apply mb-2 block text-[0.78rem] font-bold tracking-[0.08em] text-ink-800 uppercase;
   }
 
   .table-shell {
-    @apply border-line overflow-hidden rounded-3xl border bg-white shadow-[var(--shadow-soft)];
+    @apply overflow-hidden rounded-3xl border border-line bg-white shadow-[var(--shadow-soft)];
   }
 
   .admin-card {
-    @apply border-line/80 rounded-2xl border bg-white shadow-[0_18px_50px_-40px_rgba(43,15,4,0.35)];
+    @apply rounded-2xl border border-line/80 bg-white shadow-[0_18px_50px_-40px_rgba(43,15,4,0.35)];
   }
 }
 
@@ -268,7 +268,7 @@
 
 /* Editorial long-form text. */
 .prose-editorial {
-  @apply text-ink-600 text-[1.04rem] leading-[1.85];
+  @apply text-[1.04rem] leading-[1.85] text-ink-600;
 }
 
 .prose-editorial p + p {
@@ -276,11 +276,11 @@
 }
 
 .prose-editorial strong {
-  @apply text-ink-900 font-semibold;
+  @apply font-semibold text-ink-900;
 }
 
 .prose-editorial a {
-  @apply text-saffron-700 decoration-saffron-300 font-semibold underline decoration-2 underline-offset-4 hover:text-saffron-800;
+  @apply font-semibold text-saffron-700 underline decoration-saffron-300 decoration-2 underline-offset-4 hover:text-saffron-800;
 }
 
 /* Hide scrollbars only where a native scrollbar would break the composition. */

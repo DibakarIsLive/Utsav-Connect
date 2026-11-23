@@ -31,13 +31,13 @@ export default async function AdminLayout({ children }) {
 
   if (unavailable) {
     return (
-      <div className="bg-cream flex min-h-screen items-center justify-center px-5 py-16">
+      <div className="flex min-h-screen items-center justify-center bg-cream px-5 py-16">
         <div className="card-paper max-w-md p-8 text-center">
           <Logo className="justify-center" />
-          <h1 className="text-bark-900 mt-6 text-2xl font-semibold tracking-[-0.03em]">
+          <h1 className="mt-6 text-2xl font-semibold tracking-[-0.03em] text-bark-900">
             The admin workspace is temporarily unavailable.
           </h1>
-          <p className="text-ink-500 mt-3 text-sm leading-[1.75]">
+          <p className="mt-3 text-sm leading-[1.75] text-ink-500">
             The campaign database could not be reached, so no account or application data is being
             shown. Please try again in a moment.
           </p>

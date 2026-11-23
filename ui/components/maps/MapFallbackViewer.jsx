@@ -1,9 +1,7 @@
 "use client";
 
 import StatusNotice from "@/ui/components/ui/StatusNotice";
-
-const VENUE_SHORT_URL = "https://maps.app.goo.gl/BcY87xSjA6iRtBY78";
-const VENUE_DIRECTIONS_URL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(VENUE_SHORT_URL)}`;
+import { VENUE_DIRECTIONS_URL } from "@/ui/lib/venue";
 
 export default function MapFallbackViewer({ areas = [], onSelectArea, selectedArea, errorMsg }) {
   return (

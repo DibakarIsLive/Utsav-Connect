@@ -28,10 +28,7 @@ export default function CampaignPulse() {
         // total never double-counts a report rolled up into a parent.
         const invitations = analytics.reduce(
           (sum, area) =>
-            sum +
-            (typeof area.directInvitationCount === "number"
-              ? area.directInvitationCount
-              : 0),
+            sum + (typeof area.directInvitationCount === "number" ? area.directInvitationCount : 0),
           0,
         );
         const withPopulation = analytics.filter(
@@ -58,7 +55,7 @@ export default function CampaignPulse() {
 
   if (state.status === "loading") {
     return (
-      <div className="border-line/70 bg-ivory/95 shadow-soft relative z-10 -mt-px border-y">
+      <div className="relative z-10 -mt-px border-y border-line/70 bg-ivory/95 shadow-soft">
         <div className="shell grid gap-px py-6 sm:grid-cols-3">
           {[0, 1, 2].map((index) => (
             <div key={index} className="px-2 py-3 sm:px-6">
@@ -73,14 +70,14 @@ export default function CampaignPulse() {
 
   if (state.status === "error") {
     return (
-      <div className="border-line/70 bg-ivory relative z-10 border-y">
+      <div className="relative z-10 border-y border-line/70 bg-ivory">
         <div className="shell flex flex-col items-start justify-between gap-3 py-5 sm:flex-row sm:items-center">
-          <p className="text-ink-500 text-sm">
+          <p className="text-sm text-ink-500">
             Live campaign totals are temporarily unavailable. The map still opens normally.
           </p>
           <Link
             href="/map"
-            className="text-saffron-700 hover:text-saffron-800 inline-flex items-center gap-1.5 text-sm font-semibold"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-saffron-700 hover:text-saffron-800"
           >
             Open the map <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -91,14 +88,14 @@ export default function CampaignPulse() {
 
   if (state.status === "empty") {
     return (
-      <div className="border-line/70 bg-ivory relative z-10 border-y">
+      <div className="relative z-10 border-y border-line/70 bg-ivory">
         <div className="shell flex flex-col items-start justify-between gap-3 py-5 sm:flex-row sm:items-center">
-          <p className="text-ink-500 text-sm">
+          <p className="text-sm text-ink-500">
             The campaign map is ready. Approved localities will appear here as they are added.
           </p>
           <Link
             href="/about"
-            className="text-saffron-700 hover:text-saffron-800 inline-flex items-center gap-1.5 text-sm font-semibold"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-saffron-700 hover:text-saffron-800"
           >
             How the map works <ArrowRight className="h-3.5 w-3.5" />
           </Link>
@@ -122,7 +119,7 @@ export default function CampaignPulse() {
   ];
 
   return (
-    <div className="border-line/70 bg-ivory relative z-10 border-y">
+    <div className="relative z-10 border-y border-line/70 bg-ivory">
       <div className="shell grid sm:grid-cols-3">
         {metrics.map((metric, index) => (
           <div
@@ -131,17 +128,17 @@ export default function CampaignPulse() {
               index === 0
                 ? "border-line py-6 sm:border-r sm:pr-8"
                 : index === 1
-                  ? "border-line border-t py-6 sm:border-r sm:border-t-0 sm:px-8"
-                  : "border-line border-t py-6 sm:border-t-0 sm:pl-8"
+                  ? "border-t border-line py-6 sm:border-t-0 sm:border-r sm:px-8"
+                  : "border-t border-line py-6 sm:border-t-0 sm:pl-8"
             }
           >
-            <p className="text-ink-400 text-[0.66rem] font-bold tracking-[0.16em] uppercase">
+            <p className="text-[0.66rem] font-bold tracking-[0.16em] text-ink-400 uppercase">
               {metric.label}
             </p>
-            <p className="font-display text-bark-900 mt-2 text-[1.7rem] leading-none font-semibold tracking-[-0.03em]">
+            <p className="mt-2 font-display text-[1.7rem] leading-none font-semibold tracking-[-0.03em] text-bark-900">
               {metric.value}
             </p>
-            <p className="text-ink-400 mt-1.5 text-[0.7rem]">{metric.note}</p>
+            <p className="mt-1.5 text-[0.7rem] text-ink-400">{metric.note}</p>
           </div>
         ))}
       </div>

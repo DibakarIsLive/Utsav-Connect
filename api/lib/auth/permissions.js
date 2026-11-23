@@ -2,7 +2,7 @@ import "server-only";
 
 /**
  * Role and permission management.
- * 
+ *
  * Roles: devotee, admin, super_admin
  * Admins use granular permissions (D-17).
  * Super Admin capabilities are not assignable permission strings.
@@ -15,6 +15,7 @@ export const ADMIN_PERMISSIONS = {
   APPLICATION_NOTE_WRITE: "application:note:write",
   DEVOTEE_READ_ALL: "devotee:read:all",
   DEVOTEE_STATUS_UPDATE: "devotee:status:update",
+  DEVOTEE_DELETE: "devotee:delete",
   INVITATION_REPORT_READ_ALL: "invitation-report:read:all",
   AUDIT_READ_ALL: "audit:read:all",
   AREA_MANAGE: "area:manage",
@@ -62,19 +63,21 @@ export function isSuperAdmin(user) {
  */
 export function canManageUser(actor, target) {
   if (!actor || !target) return false;
-  
+
   // Cannot manage yourself
   if (actor._id.toString() === target._id.toString()) return false;
-  
+
   // Only Super Admin can manage other admins/super admins
   if (target.role === "admin" || target.role === "super_admin") {
     return actor.role === "super_admin";
   }
-  
+
   // Admins with correct permission can manage devotees
   if (target.role === "devotee") {
-    return actor.role === "super_admin" || hasPermission(actor, ADMIN_PERMISSIONS.DEVOTEE_STATUS_UPDATE);
+    return (
+      actor.role === "super_admin" || hasPermission(actor, ADMIN_PERMISSIONS.DEVOTEE_STATUS_UPDATE)
+    );
   }
-  
+
   return false;
 }

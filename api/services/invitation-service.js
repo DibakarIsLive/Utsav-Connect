@@ -3,18 +3,15 @@ import { InvitationReport } from "../models/invitation-report.js";
 import { Area } from "../models/area.js";
 import { AuditLog } from "../models/audit-log.js";
 import { connectToDatabase } from "../lib/mongodb/connection.js";
-import {
-  ForbiddenError,
-  NotFoundError,
-  ValidationError,
-} from "../lib/http/errors.js";
+import { ForbiddenError, NotFoundError, ValidationError } from "../lib/http/errors.js";
 import { hasPermission, ADMIN_PERMISSIONS } from "../lib/auth/permissions.js";
 
 function canReadAllReports(user) {
+  // `area:manage` is deliberately not an implicit grant: geography work and
+  // access to private contributor identities are separate responsibilities.
   return (
     user?.role === "super_admin" ||
-    hasPermission(user, ADMIN_PERMISSIONS.INVITATION_REPORT_READ_ALL) ||
-    hasPermission(user, ADMIN_PERMISSIONS.AREA_MANAGE)
+    hasPermission(user, ADMIN_PERMISSIONS.INVITATION_REPORT_READ_ALL)
   );
 }
 
@@ -25,7 +22,9 @@ export async function submitReport(user, data) {
   if (!user) {
     throw new ForbiddenError("Authentication required");
   }
-  if (user.role === "devotee" && user.status !== "active") {
+  // Contributor identity belongs to an approved devotee. Administrators do
+  // not submit reports; they review them.
+  if (user.role !== "devotee" || user.status !== "active") {
     throw new ForbiddenError(
       "Only active devotees with approved applications can submit invitation reports",
     );
@@ -98,6 +97,17 @@ export async function listReports(user, options = {}) {
   }
   if (options.status) {
     query.status = options.status;
+  }
+  if (options.from || options.to) {
+    query.reportDate = {};
+    if (options.from) {
+      const start = new Date(options.from);
+      if (!Number.isNaN(start.getTime())) query.reportDate.$gte = start;
+    }
+    if (options.to) {
+      const end = new Date(options.to);
+      if (!Number.isNaN(end.getTime())) query.reportDate.$lte = end;
+    }
   }
 
   const reports = await InvitationReport.find(query)

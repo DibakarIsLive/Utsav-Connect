@@ -7,7 +7,10 @@ import { ADMIN_PERMISSION_LABELS } from "@/ui/lib/navigation";
  * Clear, honest restricted state for admin pages. The API already refuses the
  * request; this screen explains why without pretending the section loaded.
  */
-export default function AdminDenied({ title = "This section needs a different permission", permission }) {
+export default function AdminDenied({
+  title = "This section needs a different permission",
+  permission,
+}) {
   const label = permission ? ADMIN_PERMISSION_LABELS[permission] : null;
   return (
     <div>

@@ -3,7 +3,7 @@ import { hash, verify } from "@node-rs/argon2";
 
 /**
  * Password hashing with Argon2id.
- * 
+ *
  * Uses @node-rs/argon2 (approved in D-06).
  * Parameters tuned for balance between security and performance.
  */

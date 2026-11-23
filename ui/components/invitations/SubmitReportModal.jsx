@@ -79,12 +79,23 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
     return next;
   }
 
+  function focusFirstError(errors) {
+    const key = Object.keys(errors)[0];
+    if (!key) return;
+    const field = document.getElementById(key);
+    if (key === "areaId") {
+      field?.querySelector('input[type="radio"]')?.focus();
+    } else {
+      field?.focus();
+    }
+  }
+
   async function handleSubmit(event) {
     event.preventDefault();
     const nextErrors = validate();
     if (Object.keys(nextErrors).length > 0) {
       setErrors(nextErrors);
-      document.getElementById(Object.keys(nextErrors)[0])?.focus();
+      focusFirstError(nextErrors);
       return;
     }
 
@@ -111,7 +122,7 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
       const mapped = fieldErrors(error.details);
       if (Object.keys(mapped).length > 0) {
         setErrors(mapped);
-        document.getElementById(Object.keys(mapped)[0])?.focus();
+        focusFirstError(mapped);
       } else {
         setErrors({ submit: error.message });
       }
@@ -175,11 +186,11 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
               </svg>
             </span>
             <div>
-              <h3 className="text-bark-900 text-lg font-semibold">
+              <h3 className="text-lg font-semibold text-bark-900">
                 {success.count.toLocaleString("en-IN")}{" "}
                 {success.count === 1 ? "invitation" : "invitations"} in {success.areaName}
               </h3>
-              <p className="text-ink-500 mt-2 text-sm leading-[1.75]">
+              <p className="mt-2 text-sm leading-[1.75] text-ink-500">
                 Recorded for {formatDate(success.date)}. The report is active immediately and is
                 included in the locality&apos;s public coverage. Your name is never published.
               </p>
@@ -226,16 +237,17 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
             ) : null}
 
             <div
+              id="areaId"
               role="radiogroup"
               aria-labelledby="reportAreaLegend"
               aria-describedby={errors.areaId ? "areaId-error" : undefined}
-              className="border-line max-h-52 overflow-y-auto rounded-2xl border bg-white p-1.5"
+              className="max-h-52 overflow-y-auto rounded-2xl border border-line bg-white p-1.5"
             >
               <span id="reportAreaLegend" className="sr-only">
                 Approved locality
               </span>
               {filteredAreas.length === 0 ? (
-                <p className="text-ink-400 px-3 py-4 text-center text-[0.78rem]">
+                <p className="px-3 py-4 text-center text-[0.78rem] text-ink-400">
                   No approved locality matches “{search}”.
                 </p>
               ) : (
@@ -255,13 +267,13 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
                         value={area._id}
                         checked={checked}
                         onChange={() => update("areaId", area._id)}
-                        className="accent-saffron-600 h-4 w-4 shrink-0"
+                        className="h-4 w-4 shrink-0 accent-saffron-600"
                       />
                       <span className="min-w-0 flex-1">
-                        <span className="text-bark-900 block truncate text-sm font-semibold">
+                        <span className="block truncate text-sm font-semibold text-bark-900">
                           {area.name}
                         </span>
-                        <span className="text-ink-400 block truncate text-[0.68rem]">
+                        <span className="block truncate text-[0.68rem] text-ink-400">
                           {area.type || "Locality"}
                           {area.code ? ` · ${area.code}` : ""}
                         </span>
@@ -300,7 +312,12 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
               />
             </Field>
 
-            <Field id="reportDate" label="Date invitations were extended" required error={errors.reportDate}>
+            <Field
+              id="reportDate"
+              label="Date invitations were extended"
+              required
+              error={errors.reportDate}
+            >
               <TextInput
                 id="reportDate"
                 type="date"
@@ -329,15 +346,16 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
             />
           </Field>
 
-          <div className="border-line rounded-2xl border bg-cream/60 px-4 py-3.5">
-            <p className="text-ink-400 text-[0.64rem] font-bold tracking-[0.12em] uppercase">
+          <div className="rounded-2xl border border-line bg-cream/60 px-4 py-3.5">
+            <p className="text-[0.64rem] font-bold tracking-[0.12em] text-ink-400 uppercase">
               Summary
             </p>
-            <p className="text-ink-600 mt-1.5 text-[0.8rem] leading-relaxed">
+            <p className="mt-1.5 text-[0.8rem] leading-relaxed text-ink-600">
               {selectedArea ? (
                 <>
                   <strong className="text-bark-900">
-                    {form.invitationCount || "—"} {Number(form.invitationCount) === 1 ? "invitation" : "invitations"}
+                    {form.invitationCount || "—"}{" "}
+                    {Number(form.invitationCount) === 1 ? "invitation" : "invitations"}
                   </strong>{" "}
                   in <strong className="text-bark-900">{selectedArea.name}</strong> on{" "}
                   {formatDate(form.reportDate)}.
@@ -348,7 +366,7 @@ export default function SubmitReportModal({ open, onClose, areas = [], onSubmitt
             </p>
           </div>
 
-          <p className="text-ink-400 text-[0.68rem] leading-relaxed">
+          <p className="text-[0.68rem] leading-relaxed text-ink-400">
             Only approved localities accept reports. Pending proposals never appear in this list,
             and a report cannot be dated in the future.
           </p>

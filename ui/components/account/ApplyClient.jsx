@@ -4,11 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { parsePhoneNumber } from "libphonenumber-js";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Tabs from "@/ui/components/ui/Tabs";
 import Field, { SelectInput, TextArea, TextInput } from "@/ui/components/ui/Field";
 import Notice from "@/ui/components/ui/Notice";
 import { Button, ArrowRight } from "@/ui/components/ui/Button";
+import { PasswordInput } from "@/ui/components/ui/PasswordInput";
+import { PhoneInput } from "@/ui/components/ui/PhoneInput";
 import { LotusDivider } from "@/ui/components/ui/Ornament";
 import { useSession } from "@/ui/components/providers/SessionProvider";
 import { apiFetch, fieldErrors } from "@/ui/lib/api-client";
@@ -76,6 +79,24 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
     }
   }
 
+  /**
+   * Validate a phone number using libphonenumber-js, mirroring the backend
+   * E.164 check. The value held in application.phone is already normalized to
+   * E.164 by PhoneInput (e.g. "+919876543210"), so the country is inferred
+   * from the leading "+" and no country code is ever required twice.
+   */
+  function isValidPhone(value) {
+    if (typeof value !== "string" || value.trim().length === 0) {
+      return false;
+    }
+    try {
+      const parsed = parsePhoneNumber(value.trim());
+      return Boolean(parsed && parsed.isValid());
+    } catch {
+      return false;
+    }
+  }
+
   function validateApplication() {
     const errors = {};
     if (application.fullName.trim().length < 2) {
@@ -90,9 +111,8 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
     if (application.password !== application.confirmPassword) {
       errors.confirmPassword = "The two passwords do not match.";
     }
-    const digits = application.phone.replace(/\D/g, "");
-    if (digits.length < 10 || digits.length > 15) {
-      errors.phone = "Enter a phone number with 10 to 15 digits.";
+    if (!isValidPhone(application.phone)) {
+      errors.phone = "Enter a valid phone number with country code.";
     }
     if (!["male", "female"].includes(application.gender)) {
       errors.gender = "Select a gender option.";
@@ -155,7 +175,8 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
     }
     if (Object.keys(errors).length > 0) {
       setLoginErrors(errors);
-      document.getElementById(Object.keys(errors)[0])?.focus();
+      const first = Object.keys(errors)[0];
+      document.getElementById(`login${first[0].toUpperCase()}${first.slice(1)}`)?.focus();
       return;
     }
 
@@ -191,7 +212,7 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
   ];
 
   return (
-    <div className="bg-cream relative overflow-hidden">
+    <div className="relative overflow-hidden bg-cream">
       <div className="pattern-contour absolute inset-0 opacity-60" aria-hidden="true" />
       <div className="shell relative py-12 sm:py-16 lg:py-20">
         <div className="grid items-start gap-10 lg:grid-cols-[0.92fr_1.08fr] lg:gap-16">
@@ -201,12 +222,12 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
             className="lg:sticky lg:top-28"
           >
-            <p className="eyebrow text-saffron-700 eyebrow-line">Join the Mahotsav outreach</p>
-            <h1 className="text-bark-900 mt-5 max-w-xl text-[2.6rem] leading-[1.02] font-semibold tracking-[-0.045em] sm:text-[3.4rem]">
+            <p className="eyebrow eyebrow-line text-saffron-700">Join the Mahotsav outreach</p>
+            <h1 className="mt-5 max-w-xl text-[2.6rem] leading-[1.02] font-semibold tracking-[-0.045em] text-bark-900 sm:text-[3.4rem]">
               Your place on the map begins with a{" "}
               <span className="text-saffron-700 italic">hello.</span>
             </h1>
-            <p className="text-ink-600 mt-6 max-w-lg text-[1.02rem] leading-[1.8]">
+            <p className="mt-6 max-w-lg text-[1.02rem] leading-[1.8] text-ink-600">
               Apply for a devotee account to record invitations in approved localities, propose
               places you know, and help the whole outreach see itself clearly. Already part of the
               campaign? Sign in from the same page.
@@ -214,14 +235,15 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
 
             <ul className="mt-8 space-y-3.5">
               {TRUST_POINTS.map((point) => (
-                <li key={point} className="text-ink-600 flex items-start gap-3 text-sm leading-relaxed">
-                  <span className="bg-saffron-600 mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" />
+                <li
+                  key={point}
+                  className="flex items-start gap-3 text-sm leading-relaxed text-ink-600"
+                >
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-saffron-600" />
                   {point}
                 </li>
               ))}
             </ul>
-
-
           </motion.div>
 
           <motion.div
@@ -230,7 +252,7 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
             transition={{ duration: 0.6, delay: 0.08, ease: [0.16, 1, 0.3, 1] }}
           >
             <div className="card-paper overflow-hidden">
-              <div className="border-line border-b px-5 py-4 sm:px-8 sm:py-5">
+              <div className="border-b border-line px-5 py-4 sm:px-8 sm:py-5">
                 <Tabs
                   items={tabItems}
                   value={mode}
@@ -238,7 +260,7 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                   ariaLabel="Application or sign in"
                   grow
                 />
-                <p className="text-ink-400 mt-3 text-[0.72rem] leading-relaxed">
+                <p className="mt-3 text-[0.72rem] leading-relaxed text-ink-400">
                   {mode === "apply"
                     ? "One application, reviewed by a real administrator. Verification and approval keep the map trustworthy."
                     : "Welcome back. Your account carries the same care and permissions as before."}
@@ -258,7 +280,12 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                       {applicationSuccess ? (
                         <div>
                           <span className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-700">
-                            <svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" aria-hidden="true">
+                            <svg
+                              viewBox="0 0 24 24"
+                              className="h-7 w-7"
+                              fill="none"
+                              aria-hidden="true"
+                            >
                               <path
                                 d="m5 12.5 4.2 4.2L19 6.5"
                                 stroke="currentColor"
@@ -268,10 +295,10 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                               />
                             </svg>
                           </span>
-                          <h2 className="text-bark-900 mt-5 text-2xl font-semibold tracking-[-0.03em]">
+                          <h2 className="mt-5 text-2xl font-semibold tracking-[-0.03em] text-bark-900">
                             Your application has been received.
                           </h2>
-                          <p className="text-ink-500 mt-3 text-sm leading-[1.75]">
+                          <p className="mt-3 text-sm leading-[1.75] text-ink-500">
                             Thank you. A verification link has been prepared for{" "}
                             <strong className="text-bark-900">{applicationSuccess.email}</strong>.
                             After verification, an administrator will review your application.
@@ -279,17 +306,26 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                           <LotusDivider className="my-6" />
                           <ol className="space-y-3">
                             {[
-                              ["Verify your email", "Open the verification link to confirm the address."],
-                              ["Wait for review", "An administrator checks every application personally."],
-                              ["Start reporting", "Once approved, record invitations and propose localities."],
+                              [
+                                "Verify your email",
+                                "Open the verification link to confirm the address.",
+                              ],
+                              [
+                                "Wait for review",
+                                "An administrator checks every application personally.",
+                              ],
+                              [
+                                "Start reporting",
+                                "Once approved, record invitations and propose localities.",
+                              ],
                             ].map(([title, body], index) => (
                               <li key={title} className="flex items-start gap-3">
-                                <span className="bg-bark-900 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[0.64rem] font-bold text-ivory">
+                                <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-bark-900 text-[0.64rem] font-bold text-ivory">
                                   {index + 1}
                                 </span>
                                 <div>
-                                  <p className="text-bark-900 text-sm font-semibold">{title}</p>
-                                  <p className="text-ink-500 mt-0.5 text-[0.78rem] leading-relaxed">
+                                  <p className="text-sm font-semibold text-bark-900">{title}</p>
+                                  <p className="mt-0.5 text-[0.78rem] leading-relaxed text-ink-500">
                                     {body}
                                   </p>
                                 </div>
@@ -305,7 +341,7 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 href={`/verify-email?token=${encodeURIComponent(
                                   applicationSuccess.verificationToken,
                                 )}`}
-                                className="text-saffron-800 mt-2 block font-semibold underline underline-offset-2"
+                                className="mt-2 block font-semibold text-saffron-800 underline underline-offset-2"
                               >
                                 Verify this email now
                               </Link>
@@ -326,8 +362,8 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                               className="mb-5"
                               title="Applications are currently paused"
                             >
-                              New applications are closed at the moment. If you already applied, sign
-                              in to follow your application. Please check back, or refer to the
+                              New applications are closed at the moment. If you already applied,
+                              sign in to follow your application. Please check back, or refer to the
                               official Satsang website for campaign updates.
                             </Notice>
                           ) : null}
@@ -350,7 +386,9 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 name="fullName"
                                 autoComplete="name"
                                 value={application.fullName}
-                                onChange={(event) => updateApplication("fullName", event.target.value)}
+                                onChange={(event) =>
+                                  updateApplication("fullName", event.target.value)
+                                }
                                 invalid={Boolean(applicationErrors.fullName)}
                                 placeholder="As it should appear on your account"
                                 aria-describedby={
@@ -374,7 +412,9 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 onChange={(event) => updateApplication("email", event.target.value)}
                                 invalid={Boolean(applicationErrors.email)}
                                 placeholder="you@example.com"
-                                aria-describedby={applicationErrors.email ? "email-error" : undefined}
+                                aria-describedby={
+                                  applicationErrors.email ? "email-error" : undefined
+                                }
                               />
                             </Field>
 
@@ -386,10 +426,9 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 hint="12+ characters"
                                 error={applicationErrors.password}
                               >
-                                <TextInput
+                                <PasswordInput
                                   id="password"
                                   name="password"
-                                  type="password"
                                   autoComplete="new-password"
                                   value={application.password}
                                   onChange={(event) =>
@@ -408,10 +447,9 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 required
                                 error={applicationErrors.confirmPassword}
                               >
-                                <TextInput
+                                <PasswordInput
                                   id="confirmPassword"
                                   name="confirmPassword"
-                                  type="password"
                                   autoComplete="new-password"
                                   value={application.confirmPassword}
                                   onChange={(event) =>
@@ -435,15 +473,12 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 required
                                 error={applicationErrors.phone}
                               >
-                                <TextInput
+                                <PhoneInput
                                   id="phone"
                                   name="phone"
-                                  type="tel"
-                                  autoComplete="tel"
                                   value={application.phone}
-                                  onChange={(event) => updateApplication("phone", event.target.value)}
+                                  onChange={(value) => updateApplication("phone", value)}
                                   invalid={Boolean(applicationErrors.phone)}
-                                  placeholder="+91 98765 43210"
                                   aria-describedby={
                                     applicationErrors.phone ? "phone-error" : undefined
                                   }
@@ -480,7 +515,9 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                 id="message"
                                 name="message"
                                 value={application.message}
-                                onChange={(event) => updateApplication("message", event.target.value)}
+                                onChange={(event) =>
+                                  updateApplication("message", event.target.value)
+                                }
                                 maxLength={500}
                                 rows={3}
                                 invalid={Boolean(applicationErrors.message)}
@@ -505,7 +542,7 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                                     : "Applications are paused"}
                                 {!applicationBusy && registrationOpen ? <ArrowRight /> : null}
                               </Button>
-                              <p className="text-ink-400 mt-3 text-center text-[0.68rem] leading-relaxed">
+                              <p className="mt-3 text-center text-[0.68rem] leading-relaxed text-ink-400">
                                 By applying you agree to be contacted about your application. We
                                 never publish applicant details.
                               </p>
@@ -522,10 +559,10 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                       exit={reduce ? undefined : { opacity: 0, x: -8 }}
                       transition={{ duration: 0.22 }}
                     >
-                      <h2 className="text-bark-900 text-2xl font-semibold tracking-[-0.03em]">
+                      <h2 className="text-2xl font-semibold tracking-[-0.03em] text-bark-900">
                         Welcome back.
                       </h2>
-                      <p className="text-ink-500 mt-2 text-sm leading-relaxed">
+                      <p className="mt-2 text-sm leading-relaxed text-ink-500">
                         Sign in to follow your application, record invitations, or open the admin
                         workspace.
                       </p>
@@ -537,7 +574,12 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                       ) : null}
 
                       <form onSubmit={submitLogin} noValidate className="mt-6 space-y-4">
-                        <Field id="loginEmail" label="Email address" required error={loginErrors.email}>
+                        <Field
+                          id="loginEmail"
+                          label="Email address"
+                          required
+                          error={loginErrors.email}
+                        >
                           <TextInput
                             id="loginEmail"
                             name="email"
@@ -550,7 +592,12 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                           />
                         </Field>
 
-                        <Field id="loginPassword" label="Password" required error={loginErrors.password}>
+                        <Field
+                          id="loginPassword"
+                          label="Password"
+                          required
+                          error={loginErrors.password}
+                        >
                           <div className="relative">
                             <TextInput
                               id="loginPassword"
@@ -558,7 +605,9 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                               type={showPassword ? "text" : "password"}
                               autoComplete="current-password"
                               value={credentials.password}
-                              onChange={(event) => updateCredentials("password", event.target.value)}
+                              onChange={(event) =>
+                                updateCredentials("password", event.target.value)
+                              }
                               invalid={Boolean(loginErrors.password)}
                               placeholder="Your password"
                               className="pr-14"
@@ -568,31 +617,46 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
                               onClick={() => setShowPassword((value) => !value)}
                               aria-label={showPassword ? "Hide password" : "Show password"}
                               aria-pressed={showPassword}
-                              className="text-ink-400 hover:text-bark-900 absolute top-1/2 right-3 min-h-8 -translate-y-1/2 rounded-lg px-2 text-[0.68rem] font-bold tracking-[0.08em] uppercase"
+                              className="absolute top-1/2 right-3 min-h-8 -translate-y-1/2 rounded-lg px-2 text-[0.68rem] font-bold tracking-[0.08em] text-ink-400 uppercase hover:text-bark-900"
                             >
                               {showPassword ? "Hide" : "Show"}
                             </button>
                           </div>
                         </Field>
 
-                        <Button type="submit" size="lg" className="mt-2 w-full" disabled={loginBusy}>
+                        <Button
+                          type="submit"
+                          size="lg"
+                          className="mt-2 w-full"
+                          disabled={loginBusy}
+                        >
                           {loginBusy ? "Signing in…" : "Sign in"}
                           {!loginBusy ? <ArrowRight /> : null}
                         </Button>
                       </form>
 
-                      <div className="border-line mt-7 border-t pt-5">
-                        <p className="text-ink-500 text-sm">
+                      <div className="mt-7 border-t border-line pt-5">
+                        <p className="text-sm text-ink-500">
                           New to the outreach?{" "}
                           <button
                             type="button"
                             onClick={() => changeMode("apply")}
-                            className="text-saffron-700 hover:text-saffron-800 font-semibold underline underline-offset-2"
+                            className="font-semibold text-saffron-700 underline underline-offset-2 hover:text-saffron-800"
                           >
                             Apply to join
                           </button>
                         </p>
-                        <p className="text-ink-400 mt-3 text-[0.7rem] leading-relaxed">
+                        <p className="mt-3 text-sm text-ink-500">
+                          Forgot your password?{" "}
+                          <button
+                            type="button"
+                            onClick={() => router.push("/reset-password")}
+                            className="font-semibold text-saffron-700 underline underline-offset-2 hover:text-saffron-800"
+                          >
+                            Reset it
+                          </button>
+                        </p>
+                        <p className="mt-3 text-[0.7rem] leading-relaxed text-ink-400">
                           By signing in you agree to use the platform for genuine campaign
                           coordination. Accounts that misrepresent reporting may be suspended.
                         </p>
@@ -603,13 +667,13 @@ export default function ApplyClient({ initialMode = "apply", registrationOpen = 
               </div>
             </div>
 
-            <div className="border-line mt-6 flex flex-col items-start justify-between gap-3 rounded-2xl border bg-white/60 px-5 py-4 sm:flex-row sm:items-center">
-              <p className="text-ink-500 text-[0.78rem] leading-relaxed">
+            <div className="mt-6 flex flex-col items-start justify-between gap-3 rounded-2xl border border-line bg-white/60 px-5 py-4 sm:flex-row sm:items-center">
+              <p className="text-[0.78rem] leading-relaxed text-ink-500">
                 Just here to explore? The venue and About page are open to everyone.
               </p>
               <Link
                 href="/about"
-                className="text-saffron-700 hover:text-saffron-800 inline-flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold whitespace-nowrap text-saffron-700 hover:text-saffron-800"
               >
                 Learn more <ArrowRight className="h-3.5 w-3.5" />
               </Link>

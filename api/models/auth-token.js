@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 
 /**
  * Auth token model - email verification, password reset, admin invitations.
- * 
+ *
  * Token is hashed at rest. Email/URL contains the unhashed token.
  */
 
@@ -18,8 +18,15 @@ const authTokenSchema = new mongoose.Schema(
     userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true,
       index: true,
+      // Optional for admin invitations: the user is created when the
+      // invitation is accepted, so there is no user yet at invitation time.
+    },
+    email: {
+      type: String,
+      lowercase: true,
+      trim: true,
+      // Stores the invitee email for admin invitations when no user exists yet.
     },
     type: {
       type: String,
@@ -29,7 +36,7 @@ const authTokenSchema = new mongoose.Schema(
     expiresAt: {
       type: Date,
       required: true,
-      index: true,
+      // The TTL index below is the single index definition for this field.
     },
     usedAt: {
       type: Date,
@@ -40,7 +47,7 @@ const authTokenSchema = new mongoose.Schema(
   },
   {
     timestamps: true,
-  }
+  },
 );
 
 // TTL index

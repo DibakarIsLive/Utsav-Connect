@@ -51,7 +51,10 @@ export default function SessionProvider({ children }) {
     refresh();
   }, [refresh]);
 
-  const value = useMemo(() => ({ user, loading, refresh, signOut }), [user, loading, refresh, signOut]);
+  const value = useMemo(
+    () => ({ user, loading, refresh, signOut }),
+    [user, loading, refresh, signOut],
+  );
 
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
